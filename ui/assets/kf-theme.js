@@ -1,7 +1,7 @@
 /* Keystone · Financial Crime: one light or dark theme across every page.
 
    Load this in <head>, before the stylesheets paint, so no page flashes the wrong theme. Pages open
-   light; a visitor's choice is kept in local storage and followed on every page (landing, queue,
+   dark; a visitor's choice is kept in local storage and followed on every page (landing, queue,
    case view, phone, drop). Any [data-kf-theme-toggle] button flips it, and the case view's
    [data-k-theme] buttons set it. Parts that must stay dark (the landing photo) carry their own
    data-theme="dark". */
@@ -10,7 +10,7 @@
 
   function saved() { try { var t = localStorage.getItem(KEY); return t === 'light' || t === 'dark' ? t : null; } catch (e) { return null; } }
   function save(t) { try { localStorage.setItem(KEY, t); } catch (e) {} }
-  function current() { return root.getAttribute('data-theme') || 'light'; }
+  function current() { return root.getAttribute('data-theme') || 'dark'; }
 
   function apply(t) {
     root.setAttribute('data-theme', t);
@@ -30,7 +30,7 @@
     setTimeout(function () { root.classList.remove('kf-theming'); }, 400);
   }
 
-  apply(saved() || 'light');
+  apply(saved() || 'dark');
 
   document.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest('[data-kf-theme-toggle]');
