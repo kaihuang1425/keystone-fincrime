@@ -68,7 +68,7 @@
       KF.sentences(c.reason).map(function (x) { return '<p>' + KF.withCites(c, x) + '</p>'; }).join('') + '</article>' +
       '<p class="k-meta">Written by the system from the facts its checks used.' + (run.repeat_identical === true ? ' Run ' + run.repeat_runs + ' times, it wrote the same words each time.' : '') + '</p>';
     function step(bot, title, small, tool) {
-      return '<div class="k-trace__step"><div class="k-row">' + KF.botHTML(bot) + '<b>' + KF.esc(title) + '</b>' + (tool ? '<span class="k-tool">Rules, not AI</span>' : '') + '</div><small>' + small + '</small></div>';
+      return '<div class="k-trace__step"><div class="k-row">' + KF.botHTML(bot) + '<b>' + KF.esc(title) + '</b>' + '' + '</div><small>' + small + '</small></div>';
     }
     tr.innerHTML = '<div class="k-trace is-on"><span class="k-trace__line"></span>' +
       '<div class="k-trace__step is-claim"><b>' + KF.esc(c.verdict + ' · ' + c.reason_code) + '</b></div>' +

@@ -28,7 +28,7 @@ a { color: var(--info); } a:hover { color: var(--ink); }
 .kd-pick { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .kd-help { margin: 0; color: var(--ink-3); font-size: 13.5px; line-height: 1.5; max-width: 72ch; }
 .kd-help code, .kd-mono { font-family: var(--font-mono); font-size: 12.5px; }
-.kd-engine { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--ink-3); font-size: 13px; }
+.kd-engine { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--ink-3); font-size: 13px; } .kd-engine[hidden] { display: none; }
 .kd-err { margin: 0; color: var(--bad); font-size: 14.5px; line-height: 1.45; }
 .kd-err::before { content: "✕ "; font-weight: 600; }
 .kd-sec { display: flex; flex-direction: column; gap: 14px; }
@@ -104,7 +104,7 @@ a { color: var(--info); } a:hover { color: var(--ink); }
 <input type="file" id="kd-dir" webkitdirectory multiple hidden>
 </div>
 <p class="kd-help">Each institution folder holds <code>cases.jsonl</code> and the kit's other files, in any layout. To get a score, add a file of right answers with a case ID and a verdict on each line, such as <code>{"case_id": …, "verdict": "CLOSE"}</code>.</p>
-<div class="kd-engine" id="kd-engine"><span class="k-tool">Rules, not AI</span><span>system/run in this tab</span></div>
+<div class="kd-engine" id="kd-engine" hidden></div>
 <p class="kd-err" id="kd-err" hidden></p>
 </section>
 

@@ -56,8 +56,7 @@
       say(m.step === 'python' ? 'Loading Python, once' : 'Checking the engine files', 'working');
     } else if (m.type === 'ready') {
       ready = true; engine = m.engine; python = m.python;
-      $('kd-engine').innerHTML = '<span class="k-tool">Rules, not AI</span><span>system/run in this tab · Python ' + esc(python) +
-        ' · engine <span class="kd-mono" title="' + esc(engine) + '">' + esc(engine.slice(0, 12)) + '</span></span>';
+      $('kd-engine').title = 'Python ' + python + ' · engine ' + engine;  // kept for debugging, not shown
       if (queued) { var q = queued; queued = null; send(q); } else say('Ready for your cases', 'idle');
     } else if (m.type === 'found') {
       showFound(m.found);
