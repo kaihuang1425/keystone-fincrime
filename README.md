@@ -1,7 +1,53 @@
-# keystone-fincrime
-Keystone: Grok Bots for KYC and AML alert review. Grok Bot Financial Crime Hack, London, 21 Nov 2026.
+# Keystone
 
-[PRIVACY.md](PRIVACY.md) explains how the system would handle personal data under UK and EU law.
+Transaction-monitoring alert triage for Track 1 of the Grok Bot Financial Crime Hack, London, 21 Nov 2026.
+
+**Try it** at https://keystone-fincrime-app.vercel.app. The [drop page](https://keystone-fincrime-app.vercel.app/drop.html) runs the scored system in your browser on any cases you drop in. The files stay in the tab.
+
+## What it decides
+
+Each case gets one verdict. The system asks these questions in this order.
+
+| Verdict | When |
+|---|---|
+| ESCALATE | Something on file points to crime. The customer is never asked, because asking could tip them off. |
+| CLOSE | A document on file explains every alert. It must match the payment on amount, party, account and date. |
+| RFI | Nothing looks criminal, but something has no document behind it. The reason names the one document to request. |
+
+A wrongful close is the costliest mistake, so closing has the strictest test. When anything is left unexplained, the case does not close. [system/README.md](system/README.md) explains the method with a worked example.
+
+## Run it
+
+```
+system/run <institution folder> <output file>
+```
+
+It needs Python 3 and its standard library, nothing more. It makes no model or network call, so every run gives the same output file byte for byte. A run of 1,000 cases takes seconds on a laptop.
+
+## Check it
+
+```
+python tools/verify.py <institutions folder>
+python tools/mutation_test.py <institutions folder>
+```
+
+`verify.py` runs every institution five times and compares the output files byte for byte. It also checks each line's format and that every cited ID exists in the case. `mutation_test.py` changes one fact in a real case and checks that the verdict moves as the SOP requires. All 27 tests pass.
+
+The development cases carry no answers. So we report these checks, not an accuracy figure.
+
+## Where things are
+
+| Path | What it holds |
+|---|---|
+| `system/` | The scored system |
+| `output/` | Its answers on the 4,000 development cases |
+| `tools/` | The checks and the helper tools. [TRACK1.md](TRACK1.md) lists each one |
+| `ui/` | The web app at the link above. [ui/README.md](ui/README.md) lists its pages |
+| `supabase/`, `context/` | The Supabase schema and the saved Tavily sources. Neither is on the decision path |
+| [TRACK1.md](TRACK1.md) | The full layout, and where Supabase and Tavily sit |
+| [PRIVACY.md](PRIVACY.md) | How the system would handle personal data under UK and EU law |
+
+The development cases are the organisers' synthetic kit and are not in this repo. Every person and company named in `output/` and on the site is invented.
 
 ## Working on this repo
 
