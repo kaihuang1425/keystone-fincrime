@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<script src="assets/kf-theme.js"></script>
 <title>Reviews bank alerts by fixed rules · Keystone</title>
 <link rel="stylesheet" href="assets/keystone.css">
 <script src="assets/keystone.js"></script>
@@ -143,29 +145,79 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 .lp-proof b{font-size:32px}
 }
 </style>
-<style>body{margin:0}</style>
+<style>
+/* the page: sticky header, theme switch, and polish shared by both themes */
+html{scroll-behavior:smooth}
+html,body{background:var(--ground)}
+section[id]{scroll-margin-top:64px}
+.lp-page{background:var(--ground);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+.lp-head{position:sticky;top:0;z-index:40;background:var(--ground);border-bottom:1px solid var(--line)}
+.lp-head .lp-in{display:flex;align-items:center;gap:20px;padding-top:12px;padding-bottom:12px}
+.lp-brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.lp-nav{display:flex;gap:4px;flex-wrap:wrap;font-size:14px;margin-right:auto;margin-left:8px}
+.lp-nav a{padding:7px 12px;border-radius:999px;text-decoration:none;color:var(--ink-2);transition:background-color var(--dur-tap) var(--ease-out),color var(--dur-tap) var(--ease-out)}
+.lp-nav a:hover{background:var(--surface-2);color:var(--ink)}
+.lp-nav a:focus-visible,.lp-theme:focus-visible,.lp-brand:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.lp-acts{display:flex;align-items:center;gap:8px;margin-left:auto}
+.lp-theme{display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:999px;background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-2);cursor:pointer;transition:background-color var(--dur-tap) var(--ease-out),color var(--dur-tap) var(--ease-out),transform var(--dur-tap) var(--ease-out)}
+.lp-theme:hover{background:var(--surface-2);color:var(--ink)}
+.lp-theme:active{transform:scale(.94)}
+.lp-theme svg{grid-area:1/1;width:18px;height:18px;transition:opacity .3s var(--ease-out),transform .45s var(--ease-spring)}
+.lp-theme .moon{opacity:0;transform:rotate(-60deg) scale(.5)}
+[data-theme="light"] .lp-theme .sun{opacity:0;transform:rotate(60deg) scale(.5)}
+[data-theme="light"] .lp-theme .moon{opacity:1;transform:none}
+html.kf-theming *,html.kf-theming *::before,html.kf-theming *::after{transition:background-color .3s var(--ease-out),color .3s var(--ease-out),box-shadow .3s var(--ease-out),border-color .3s var(--ease-out) !important}
+/* the hero: a faint lift of tone behind the queue, no decoration */
+.lp-hero{position:relative;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--ground) 0%,var(--ground-2) 100%)}
+.lp-q{box-shadow:inset 0 0 0 1px var(--hairline),var(--shadow-float)}
+[data-theme="light"] .lp-q{box-shadow:inset 0 0 0 1px var(--line),0 18px 40px #0b0b0c14}
+/* citations sit at their own width under a figure instead of stretching across it */
+.lp-proof .k-cite{align-self:flex-start}
+/* the figures read as cards */
+.lp-proof.lp-proof--tests{gap:12px !important}
+.lp-proof.lp-proof--tests > div{padding:20px;border-top:0;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline);gap:8px}
+[data-theme="light"] .lp-proof.lp-proof--tests > div{box-shadow:inset 0 0 0 1px var(--line)}
+.lp-proof.lp-proof--tests span{flex:1}
+@media (min-width:761px){.lp-proof.lp-proof--tests b{font-size:clamp(26px,2.6vw,34px);white-space:nowrap}}
+.lp-problem .lp-proof > div{border-top:0;padding:0}
+.lp-problem .lp-proof b{font-size:56px}
+.lp-foot{border-top:1px solid var(--line)}
+.lp-foot .lp-in{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding-top:28px;padding-bottom:40px}
+.lp-foot .lp-brand{font-size:15px;margin-right:auto}
+@media (max-width:760px){
+.lp-head .lp-in{gap:10px}
+.lp-head .k-btn--primary{height:36px;padding:0 14px;font-size:14px}
+.lp-theme{width:36px;height:36px}
+.lp-problem .lp-proof b{font-size:44px}
+.lp-proof.lp-proof--tests{gap:10px !important}
+.lp-proof.lp-proof--tests > div{padding:14px}
+}
+</style>
 </head>
 <body>
-<div style="background: var(--ground); color: var(--ink); font-family: var(--font-sans);">
+<div class="lp-page">
 
-<header style="position: relative; z-index: 2; border-bottom: 1px solid var(--line);">
-<div class="lp-in" style="padding-top: 14px; padding-bottom: 14px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-<a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 17px; font-weight: 600;"><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>Keystone</a>
-<nav class="lp-nav" style="display: flex; gap: 22px; flex-wrap: wrap; font-size: 14.5px; margin-right: auto;" aria-label="Sections">
-<a href="#phone" style="text-decoration: none; color: var(--ink-2);">On the phone</a>
-<a href="#order" style="text-decoration: none; color: var(--ink-2);">How it decides</a>
-<a href="#facts" style="text-decoration: none; color: var(--ink-2);">Why it is right</a>
-<a href="#runs" style="text-decoration: none; color: var(--ink-2);">Same answer every run</a>
+<header class="lp-head">
+<div class="lp-in">
+<a class="lp-brand" href="#top"><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>Keystone</a>
+<nav class="lp-nav" aria-label="Sections">
+<a href="#phone">On the phone</a>
+<a href="#order">How it decides</a>
+<a href="#facts">Why it is right</a>
+<a href="#runs">Same answer every run</a>
 </nav>
-<a class="k-btn k-btn--primary" href="queue.html" style="margin-left: auto;">Open the alert queue <span class="k-arr">→</span></a>
+<div class="lp-acts">
+<button type="button" class="lp-theme" data-kf-theme-toggle aria-label="Switch theme"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"></path></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"></path></svg></button>
+<a class="k-btn k-btn--primary" href="queue.html">Open the alert queue <span class="k-arr">→</span></a>
+</div>
 </div>
 </header>
 
-<section id="top" style="border-bottom: 1px solid var(--line);">
+<section id="top" class="lp-hero">
 <div class="lp-in lp-in--hero lp-sec lp-sec--hero">
 <div class="lp-copy" style="gap: 24px;">
 <span class="k-label">Hackathon entry · Reviewing bank alerts</span>
-<h1 class="display" style="max-width: 13ch;">Every alert gets a decision. <span class="k-turn">Every decision shows its evidence.</span></h1>
+<h1 class="display" style="max-width: 14ch;">Every alert gets a decision. <span class="k-turn">Every decision shows its evidence.</span></h1>
 <p class="lp-gloss">An alert is a payment, or a pattern of payments, that a bank’s software flags as possible money laundering or fraud.</p>
 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
 <a class="k-btn k-btn--primary k-btn--lg" href="queue.html">Open the alert queue <span class="k-arr">→</span></a>
@@ -357,9 +409,10 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 </div>
 </section>
 
-<footer style="border-top: 1px solid var(--line);">
-<div class="lp-in" style="padding-top: 28px; padding-bottom: 40px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;">
-<span class="k-meta">Keystone · our entry to the Grok Bot Financial Crime Hack, London, 21 Nov 2026</span>
+<footer class="lp-foot">
+<div class="lp-in">
+<a class="lp-brand" href="#top"><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 22px"></span>Keystone</a>
+<span class="k-meta">Our entry to the Grok Bot Financial Crime Hack, London, 21 Nov 2026</span>
 <span class="k-meta">All people and companies named here are invented.</span>
 </div>
 </footer>
