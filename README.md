@@ -2,7 +2,7 @@
 
 Transaction-monitoring alert triage for Track 1 of the Grok Bot Financial Crime Hack, London, 21 Nov 2026.
 
-Note: Do feel free to use the website.**Try it** at https://keystone-fincrime-app.vercel.app. The [drop page](https://keystone-fincrime-app.vercel.app/drop.html) runs the scored system in your browser on any cases you drop in. The files stay in the tab. 
+Note: Do feel free to use the website. **Try it** at https://keystone-fincrime-app.vercel.app. The [drop page](https://keystone-fincrime-app.vercel.app/drop.html) runs the scored system in your browser on any cases you drop in. The files stay in the tab. 
 
 ## What it decides
 
