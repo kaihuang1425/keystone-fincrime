@@ -60,6 +60,20 @@ def _people(case, company):
     return people
 
 
+def _entry_missing(case, alert, m, entry_id):
+    """The alert names a list entry that cannot be read: escalate, since it cannot be ruled out."""
+    txs = [case.inst.tx[t] for t in alert.get("transaction_ids") or [] if t in case.inst.tx]
+    t = txs[0] if txs else None
+    party = (t or {}).get("counterparty_name") or (m.get("matched_party") or "the counterparty")
+    pay = ("the %s %s %s on %s" % (gbp(t["amount_gbp"]), "payment to" if t["direction"] == "out" else "receipt from",
+                                    party, day(t))) if t else "the payment"
+    text = ("%s matched internal list entry %s on %s, but that entry is not in the internal list on file, so "
+            "%s cannot be checked against the listed party's details. Until it is, %s cannot be ruled out as "
+            "the listed party." % (pay[0].upper() + pay[1:], entry_id or "(no ID given)",
+                                   m.get("matched_on") or "one detail", party, party))
+    return Finding("flag", "ESC_LISTED_PARTY", text, txs=[t["transaction_id"]] if t else [], rank=5)
+
+
 def review(case, explains):
     """One Finding per TM22 alert: flag (same party), explain (different party) or gap."""
     out = []
@@ -67,6 +81,11 @@ def review(case, explains):
         m = alert.get("measured") or {}
         entry = case.inst.list_entries.get(m.get("list_entry")) or {}
         entry_id = entry.get("entry_id") or m.get("list_entry")
+        if not entry.get("name"):
+            # The entry the alert names is not on file, so there is nothing to compare against.
+            # Without it a register naming anyone would read as "a different party": never close on that.
+            out.append(_entry_missing(case, alert, m, entry_id))
+            continue
         listed = entry.get("name") or ""
         listed_born = _born(entry.get("date_of_birth") or "")
         txs = [case.inst.tx[t] for t in alert.get("transaction_ids") or [] if t in case.inst.tx]

@@ -11,11 +11,18 @@ def _jsonl(path):
     rows = []
     if not os.path.exists(path):
         return rows
-    with open(path, encoding="utf-8") as fh:
+    # utf-8-sig drops a byte-order mark if the file has one and is otherwise plain UTF-8
+    with open(path, encoding="utf-8-sig", errors="replace") as fh:
         for line in fh:
             line = line.strip()
-            if line:
-                rows.append(json.loads(line))
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue  # one unreadable line must not stop the whole run
+            if isinstance(row, dict):
+                rows.append(row)
     return rows
 
 
@@ -64,11 +71,13 @@ class Institution:
     def __init__(self, folder):
         self.folder = folder
         self.cases = _jsonl(os.path.join(folder, "cases.jsonl"))
-        self.alerts = {a["alert_id"]: a for a in _jsonl(os.path.join(folder, "alerts.jsonl"))}
-        self.customers = {c["customer_id"]: c for c in _jsonl(os.path.join(folder, "customers.jsonl"))}
+        self.alerts = {a["alert_id"]: a for a in _jsonl(os.path.join(folder, "alerts.jsonl")) if a.get("alert_id")}
+        self.customers = {c["customer_id"]: c for c in _jsonl(os.path.join(folder, "customers.jsonl")) if c.get("customer_id")}
         self.tx_by_customer = defaultdict(list)
         self.tx = {}
         for t in _jsonl(os.path.join(folder, "transactions.jsonl")):
+            if not t.get("transaction_id"):
+                continue  # a record with no ID cannot be cited or matched
             self.tx_by_customer[t.get("customer_id")].append(t)
             self.tx[t["transaction_id"]] = t
         for rows in self.tx_by_customer.values():
@@ -79,11 +88,11 @@ class Institution:
         self.reviews = defaultdict(list)
         for r in _jsonl(os.path.join(folder, "previous_reviews.jsonl")):
             self.reviews[r.get("customer_id")].append(r)
-        self.list_entries = {e["entry_id"]: e for e in _jsonl(os.path.join(folder, "internal_list.jsonl"))}
+        self.list_entries = {e["entry_id"]: e for e in _jsonl(os.path.join(folder, "internal_list.jsonl")) if e.get("entry_id")}
         text = ""
         policy_path = os.path.join(folder, "POLICY.md")
         if os.path.exists(policy_path):
-            with open(policy_path, encoding="utf-8") as fh:
+            with open(policy_path, encoding="utf-8-sig", errors="replace") as fh:
                 text = fh.read()
         self.policy = Policy(text)
 
@@ -94,7 +103,7 @@ class Institution:
             path = os.path.join(self.folder, meta.get("file") or "")
             text = ""
             if os.path.isfile(path):
-                with open(path, encoding="utf-8") as fh:
+                with open(path, encoding="utf-8-sig", errors="replace") as fh:
                     text = fh.read()
             docs.append(Doc(meta, text))
         return docs

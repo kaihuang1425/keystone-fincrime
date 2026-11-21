@@ -19,15 +19,50 @@ from triage.decide import safe_decide  # noqa: E402
 FIELDS = ("case_id", "alert_ids", "verdict", "reason_code", "reason", "evidence")
 
 
+def unreadable_folder(folder, out_path, exc):
+    """The folder could not be loaded. No case is dropped: each one found in
+    cases.jsonl is passed to a person, and none is closed."""
+    rows = []
+    try:
+        with open(os.path.join(folder, "cases.jsonl"), encoding="utf-8-sig", errors="replace") as fh:
+            for line in fh:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(row, dict) and row.get("case_id"):
+                    rows.append(row)
+    except OSError:
+        pass
+    with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
+        for row in rows:
+            fh.write(json.dumps({
+                "case_id": row.get("case_id"),
+                "alert_ids": list(row.get("alert_ids") or []),
+                "verdict": "ESCALATE",
+                "reason_code": "ESC_UNEXPLAINED_FUNDS",
+                "reason": ("The system could not read this institution's records (%s), so this case has not "
+                           "been assessed. It is passed to the MLRO for a manual review and must not be "
+                           "closed automatically." % type(exc).__name__),
+                "evidence": [],
+            }, ensure_ascii=False) + "\n")
+    sys.stderr.write("could not load %s (%s: %s); %d cases escalated unread\n"
+                     % (folder, type(exc).__name__, exc, len(rows)))
+    return 0
+
+
 def main(argv):
     if len(argv) != 3:
         sys.stderr.write("usage: run <institution folder> <output file>\n")
         return 2
     folder, out_path = os.path.abspath(argv[1]), os.path.abspath(argv[2])
-    inst = Institution(folder)
     out_dir = os.path.dirname(out_path)
     if out_dir and not os.path.isdir(out_dir):
         os.makedirs(out_dir)
+    try:
+        inst = Institution(folder)
+    except Exception as exc:  # the folder would not load: every case still gets a line
+        return unreadable_folder(folder, out_path, exc)
     counts = {}
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
         for row in inst.cases:
