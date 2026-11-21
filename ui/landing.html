@@ -44,6 +44,85 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 .lp-key dd{margin:0}
 .lp-gloss{margin:0;font-size:16px;line-height:1.5;color:var(--ink-2);max-width:44ch}
 .lp-q{padding:6px 18px 14px;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline)}
+/* the phone scene: a miniature of phone.html, driven by assets/kf-scene.js */
+.lp-stage{display:flex;flex-direction:column;align-items:center;gap:18px;min-width:0}
+.lp-phone{position:relative;display:block;max-width:100%;aspect-ratio:390/760;padding:9px;box-sizing:border-box;border-radius:50px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-window);color:var(--ink);text-decoration:none;transition:transform var(--dur-flip) var(--ease-out)}
+.lp-phone:hover{color:var(--ink);transform:translateY(-3px)}
+.lp-phone:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
+.lp-scr{position:relative;height:100%;border-radius:42px;overflow:hidden;background:var(--ground);display:flex;flex-direction:column;font-size:13.5px;line-height:1.45;isolation:isolate}
+.lp-scr__bar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.lp-scr__bar i{display:flex;gap:3px}.lp-scr__bar i b{width:4px;height:4px;border-radius:50%;background:var(--ink-2)}
+.lp-scr__bots{display:flex;align-items:center;gap:10px;padding:8px 14px 11px;border-bottom:1px solid var(--line)}
+.lp-scr__lead{display:inline-flex;padding:2px;border-radius:999px;box-shadow:0 0 0 1.5px var(--ink)}
+.lp-scr__body{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;padding:16px 14px 0;overflow:hidden}
+.lp-scr__h{font-size:20px;font-weight:500;letter-spacing:-.015em}
+.lp-scr .k-ticket__msg{font-size:13.5px;line-height:1.45;padding:11px 13px;min-height:4.5em}
+.lp-scr .k-ticket__msg small{font-size:11px;margin-bottom:3px}
+.lp-scr__why{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;padding-top:2px}
+.lp-scr__why b{font-weight:500}
+.lp-scr__why small{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:5px;font-size:11px;color:var(--ink-3)}
+.lp-mk{display:grid;place-items:center;width:18px;height:18px;margin-top:1px}.lp-mk > *{grid-area:1/1}
+.lp-mk .kw-dots{animation:none;transition:opacity .2s var(--ease-exit),transform .2s var(--ease-exit)}
+.lp-mk .k-mk{opacity:0;transform:scale(.4);transition:opacity .3s var(--ease-out),transform .45s var(--ease-spring)}
+.lp-phone.mk .lp-mk .kw-dots{opacity:0;transform:scale(.5)}
+.lp-phone.mk .lp-mk .k-mk{opacity:1;transform:none}
+.lp-chip{position:relative;display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:var(--radius-xs);background:var(--info-soft);color:var(--info);font-family:var(--font-mono);font-size:10.5px;font-weight:500}
+.lp-scr__pop{position:absolute;z-index:3;left:0;right:0;top:calc(100% + 8px);padding:11px 13px;border-radius:var(--radius-md);background:var(--surface-3);box-shadow:var(--shadow-float);font-size:13px;line-height:1.45;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .22s var(--ease-out),transform .22s var(--ease-out)}
+.lp-scr__pop small{display:block;margin-top:6px;font-family:var(--font-mono);font-size:10px;color:var(--ink-3)}
+.lp-phone.pop .lp-scr__pop{opacity:1;transform:none}
+.lp-scr .k-approve{padding:12px;gap:10px;border-radius:var(--radius-lg)}
+.lp-scr .k-approve__head{gap:10px}
+.lp-scr .k-approve__head b{font-size:14.5px}
+.lp-scr .k-approve__head small{font-size:10px;font-family:var(--font-mono)}
+.lp-scr .k-approve .k-chip{height:22px;padding:0 8px;font-size:11px}
+.lp-scr .k-btn{height:34px;padding:0 14px;font-size:12.5px;cursor:inherit}
+.lp-scr .k-btn--text{padding:0 8px}
+.lp-scr .k-event{padding:0 2px;font-size:12.5px;animation:none}
+.lp-scr__ask{flex:none;display:flex;align-items:center;height:38px;margin:10px 12px 16px;padding:0 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-4);font-size:12.5px}
+.lp-scr__toast{position:absolute;z-index:4;left:12px;right:12px;bottom:66px;display:flex;justify-content:center;opacity:0;transform:translateY(14px) scale(.96);pointer-events:none;transition:opacity .3s var(--ease-exit),transform .42s var(--ease-spring)}
+.lp-phone.toast .lp-scr__toast{opacity:1;transform:none}
+.lp-scr .k-toast{animation:none;min-height:40px;padding:4px 4px 4px 12px;font-size:12px;gap:8px}
+.lp-scr .k-toast::after{animation:none;transform:scaleX(0)}
+.lp-phone.toast .k-toast::after{animation:k-timer 3s linear forwards}
+.lp-scr__undo{display:inline-grid;place-items:center;height:30px;padding:0 10px;color:var(--info);font-weight:600}
+/* parts arrive with their step; the steps only move forward */
+.lp-phone [data-at]{opacity:0;transform:translateY(8px);filter:blur(3px);transition:opacity .45s var(--ease-out),transform .45s var(--ease-out),filter .45s var(--ease-out)}
+.lp-phone.s1 [data-at="1"],.lp-phone.s2 [data-at="2"],.lp-phone.s3 [data-at="3"],.lp-phone.s4 [data-at="4"],.lp-phone.s6 [data-at="6"]{opacity:1;transform:none;filter:none}
+.lp-phone.gone [data-gone]{opacity:0;transform:translateY(-6px);filter:none;transition-duration:.3s}
+.lp-scr__next{margin-top:-4px}
+.lp-phone:not(.s6) .lp-scr__next{display:none}
+.lp-phone.s6 [data-gone]{display:none}
+.lp-scr__body{transition:opacity .4s var(--ease-exit)}
+.lp-phone.out .lp-scr__body{opacity:0}
+.lp-phone.rs *,.lp-phone.rs *::after{transition:none !important}
+/* a simulated tap: a soft ring and a small press */
+.lp-tapme{position:relative}
+.lp-tapme::after{content:"";position:absolute;left:50%;top:50%;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:var(--ink);opacity:0;transform:scale(.3);pointer-events:none}
+.lp-tapme.tap::after{animation:lp-tap .6s var(--ease-out)}
+.lp-tapme.tap{animation:lp-press .32s var(--ease-out)}
+@keyframes lp-tap{0%{opacity:.32;transform:scale(.3)}100%{opacity:0;transform:scale(1.5)}}
+@keyframes lp-press{50%{transform:scale(.94)}}
+.lp-steps{display:flex;gap:6px;margin:0;padding:4px;list-style:none;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline);font-size:13px}
+.lp-steps li{padding:6px 14px;border-radius:999px;color:var(--ink-4);transition:background .3s var(--ease-out),color .3s var(--ease-out)}
+.lp-steps li.on{background:var(--surface-3);color:var(--ink)}
+@media (min-width:761px){.lp-phone{width:340px}}
+@media (max-width:760px){.lp-phone{width:310px}}
+/* the stress tests under "facts have to match", and the real fingerprints in the five runs */
+.lp-tests{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;min-width:0}
+@media (min-width:761px){.lp-proof.lp-proof--tests{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:0 24px}}
+.lp-proof.lp-proof--tests > :first-child{grid-column:auto}
+.kl-run b{font-family:var(--font-mono);font-weight:500;letter-spacing:.02em}
+@media (max-width:760px){
+.lp-proof.lp-proof--tests{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:0 16px}
+.lp-proof.lp-proof--tests b{font-size:24px;white-space:nowrap}
+.lp-proof.lp-proof--tests > div{position:relative}
+.lp-proof.lp-proof--tests .k-cite{position:static}
+.lp-proof.lp-proof--tests > :nth-child(odd) .k-cite__pop{left:0;right:auto}
+.lp-proof.lp-proof--tests > :nth-child(even) .k-cite__pop{left:auto;right:0}
+.kl-run{grid-template-columns:44px minmax(0,1fr) 18px}
+.kl-run > :nth-child(2){display:none}
+.kl-run > :nth-child(3){display:block}
+}
 @media (min-width:761px){
 .lp-in{padding-left:24px;padding-right:24px}
 .lp-in--hero{padding-top:72px;padding-bottom:64px}
@@ -73,11 +152,12 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <div class="lp-in" style="padding-top: 14px; padding-bottom: 14px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
 <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 17px; font-weight: 600;"><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>Keystone</a>
 <nav class="lp-nav" style="display: flex; gap: 22px; flex-wrap: wrap; font-size: 14.5px; margin-right: auto;" aria-label="Sections">
+<a href="#phone" style="text-decoration: none; color: var(--ink-2);">On the phone</a>
 <a href="#order" style="text-decoration: none; color: var(--ink-2);">How it decides</a>
-<a href="#facts" style="text-decoration: none; color: var(--ink-2);">What counts as proof</a>
+<a href="#facts" style="text-decoration: none; color: var(--ink-2);">Why it is right</a>
 <a href="#runs" style="text-decoration: none; color: var(--ink-2);">Same answer every run</a>
 </nav>
-<a class="k-btn k-btn--primary" href="drop.html" style="margin-left: auto;">Run your cases <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--primary" href="queue.html" style="margin-left: auto;">Open the alert queue <span class="k-arr">→</span></a>
 </div>
 </header>
 
@@ -88,8 +168,8 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <h1 class="display" style="max-width: 13ch;">Every alert gets a decision. <span class="k-turn">Every decision shows its evidence.</span></h1>
 <p class="lp-gloss">An alert is a payment, or a pattern of payments, that a bank’s software flags as possible money laundering or fraud.</p>
 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-<a class="k-btn k-btn--primary k-btn--lg" href="drop.html">Run your cases <span class="k-arr">→</span></a>
-<a class="k-btn k-btn--ghost k-btn--lg" href="queue.html">Browse the practice alerts</a>
+<a class="k-btn k-btn--primary k-btn--lg" href="queue.html">Open the alert queue <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--ghost k-btn--lg" href="drop.html">Run your own files</a>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
@@ -118,7 +198,58 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 </div>
 </section>
 
-<section id="order">
+<section id="phone">
+<div class="lp-in lp-in--sec lp-sec">
+<div class="lp-copy">
+<div class="lp-who"><span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 40px"></span></div>
+<h2 class="h1">An escalation lands on the MLRO’s phone. <span class="k-turn">Every fact in it names its record.</span></h2>
+<div><a class="k-btn k-btn--ghost" href="phone.html">Open the phone view <span class="k-arr">→</span></a></div>
+</div>
+<div class="lp-stage">
+<a class="lp-phone" id="scene-phone" href="phone.html?inst=bank&amp;case=BK-CS106820" aria-label="Animation of the phone view. The bots read the records on escalation BK-CS106820, the reason names each record, a tap on CHT-7644 shows the sentence that cites it, and the MLRO takes the case. Opens the phone view on this case.">
+<div class="lp-scr" aria-hidden="true">
+<div class="lp-scr__bar"><span>9:41</span><i><b></b><b></b><b></b></i></div>
+<div class="lp-scr__bots">
+<span class="lp-scr__lead"><span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 30px"></span></span>
+<span data-k-bot data-shape="card" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 30px"></span>
+<span data-k-bot data-shape="doc" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 30px"></span>
+<span data-k-bot data-shape="lens" data-color="green" data-state="done" data-name="Screening Bot" style="--size: 30px"></span>
+<span data-k-bot data-shape="venn" data-color="teal" data-state="idle" data-name="Match Bot" style="--size: 30px"></span>
+</div>
+<div class="lp-scr__body">
+<b class="lp-scr__h">For the MLRO</b>
+<div class="k-ticket__msg" data-at="1" data-gone data-ticket><small>BK-CS106820 · 3 alerts · 1 of 250</small>RPT-5158 (5 August 2026) from Northgate Bank reports that Nico Faldale paid <span class="kw-hl">£475.00</span> on 4 August 2026 and was scammed, and RPT-5501 (6 August 2026) from Northgate Bank reports that Val Oakworth paid…</div>
+<div class="k-ticket__msg lp-scr__next" data-at="6" data-next><small>BK-CS109535 · 2 alerts · 1 of 249</small><span class="kw-hl">£19,212.04</span> went to Lebanon in 4 payments to Dale Milldale, Reese Sandford, Rowan Calton, Teddy Garcombe, a higher-risk country the…</div>
+<div class="lp-scr__why" data-at="2" data-gone>
+<span class="lp-mk"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span>
+<span><b data-records>5 records support it</b><small data-chips><span class="lp-chip">RPT-5158</span><span class="lp-chip">RPT-5501</span><span class="lp-chip lp-tapme">CHT-7644</span><span>and 2 more</span></small></span>
+<span class="lp-scr__pop" data-pop>In CHT-7644 the customer says &quot;Their clients pay into my account and I send it on to the company's crypto account&quot;.<small>CHT-7644 · Chat with the customer</small></span>
+</div>
+<div data-at="3" data-gone>
+<div class="k-approve">
+<div class="k-approve__head">
+<span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 28px"></span>
+<span class="k-grow"><b data-ap-title>Mule activity</b><small data-ap-code>ESC_MULE_ACTIVITY</small></span>
+<span class="k-chip k-chip--bad">↑ ESCALATE</span>
+</div>
+<div class="k-approve__actions">
+<span class="k-btn k-btn--text">Send back</span>
+<span class="k-btn k-btn--primary lp-tapme" data-take>Take the case</span>
+</div>
+</div>
+</div>
+<div class="k-event" data-at="4" data-gone><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M12 8v5M12 16h.01"></path></svg><span><b>Nothing asked</b> of the customer</span></div>
+</div>
+<div class="lp-scr__toast"><div class="k-toast"><span class="k-mk k-mk--ok">✓</span><span data-toast>Taken by the MLRO: BK-CS106820.</span><span class="lp-scr__undo">Undo</span></div></div>
+<div class="lp-scr__ask">Message Case Lead</div>
+</div>
+</a>
+<ol class="lp-steps" data-for="scene-phone" aria-hidden="true"><li data-k="1">Checked</li><li data-k="2">Cited</li><li data-k="5">Taken</li></ol>
+</div>
+</div>
+</section>
+
+<section id="order" style="background: var(--ground-2);">
 <div class="lp-in lp-in--sec lp-sec">
 <div class="lp-copy">
 <div class="lp-who"><span data-k-bot data-shape="lens" data-color="green" data-state="working" data-name="The check for crime" style="--size: 40px"></span></div>
@@ -134,7 +265,7 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 </div>
 </section>
 
-<section id="facts" style="background: var(--ground-2);">
+<section id="facts">
 <div class="lp-in lp-in--sec lp-sec">
 <div class="lp-copy">
 <div class="lp-who"><span data-k-bot data-shape="doc" data-color="blue" data-state="working" data-name="The document check" style="--size: 40px"></span></div>
@@ -174,43 +305,54 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 </div>
 </div>
 </div>
+<div class="lp-tests">
+<span class="k-label">Then we broke the proof on purpose</span>
+<div class="lp-proof lp-proof--tests">
+<div class="kw-r" style="--d: .1s;"><b>2,000 of 2,000</b><span>closes stopped closing when we slipped in £5,000 from a stranger</span><button type="button" class="k-cite">Stress test<span class="k-cite__pop">We added a £5,000 payment from a stranger to the alert in every case the system closes, at all four sample firms. All 2,000 stopped closing.<small>tools/stress.py · destroy test · run on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .25s;"><b>150 of 150</b><span>watch-list closes stopped when the listed person was put on the company register</span><button type="button" class="k-cite">Stress test<span class="k-cite__pop">These cases close because the person on the watch list is not the one behind the payment. We put the listed person on the company register as officer and owner, and gave the person in the deciding document the listed date of birth. None of the 150 closed.<small>tools/stress.py · listdob test · run on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .4s;"><b>33 of 33</b><span>closes backed by an order stopped when we changed the invoice. And again when we changed the order number</span><button type="button" class="k-cite">Stress test<span class="k-cite__pop">In each of the 33 closes that rest on a purchase order, we raised the invoice by half in one test and changed the order number in another. All 33 stopped closing both times.<small>tools/stress.py · order tests · run on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .55s;"><b>35 of 35</b><span>rule tests pass. Each changes one key fact and checks the decision follows</span><button type="button" class="k-cite">Rule tests<span class="k-cite__pop">Each test changes one fact in a case, such as an amount or a date of birth, and checks that the decision changes as the bank’s procedure says. 35 of 35 passed.<small>tools/mutation_test.py · checked on 21 Nov</small></span></button></div>
+</div>
+</div>
 </div>
 </section>
 
-<section id="runs">
+<section id="runs" style="background: var(--ground-2);">
 <div class="lp-in lp-in--sec lp-sec">
 <div class="lp-copy">
 <div class="lp-who"><span data-k-bot data-shape="venn" data-color="teal" data-state="done" data-name="The rules" style="--size: 40px"></span></div>
 <h2 class="h1">No AI model decides. <span class="k-turn">The same case gets the same answer every run.</span></h2>
-<div class="lp-proof lp-proof--ours">
-<div class="kw-r" style="--d: .2s;"><b>5 of 5</b><span>identical runs on each of four sample firms’ 1,000 cases</span><button type="button" class="k-cite">Our check, 21 Nov<span class="k-cite__pop">Five runs on each sample firm’s 1,000 practice cases gave the same output every time, 20 runs in all.<small>Our own check · 21 Nov 2026, 12:02</small></span></button></div>
-<div class="kw-r" style="--d: .35s;"><b>3.8 s</b><span>to decide 1,000 bank cases</span><button type="button" class="k-cite">Speed check<span class="k-cite__pop">Ran each sample firm’s 1,000 cases five times. The bank’s took 3.8 s a run, and all five outputs matched at every firm.<small>tools/verify.py · checked on 21 Nov</small></span></button></div>
-<div class="kw-r" style="--d: .5s;"><b>33 of 33</b><span>rule tests pass. Each changes one key fact and checks the decision follows</span><button type="button" class="k-cite">Rule tests<span class="k-cite__pop">Each test changes one fact in a case, such as an amount or a date of birth, and checks that the decision changes as the bank’s procedure says. 33 of 33 passed.<small>tools/mutation_test.py · checked on 21 Nov</small></span></button></div>
-<div class="kw-r" style="--d: .65s;"><b>£0</b><span>in fees per run. No AI model, no internet</span><button type="button" class="k-cite">How it runs<span class="k-cite__pop">Plain Python with fixed rules. It calls no AI model and needs no internet connection, so a run costs nothing.<small>system/README.md</small></span></button></div>
-</div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
 <div class="kl-runs" aria-label="Five runs on the bank's 1,000 cases give the same output">
-<div class="kl-run"><span>Run 1</span><span>sample bank · 1,000 decisions</span><b>same output</b><span class="k-mk k-mk--ok">✓</span></div>
-<div class="kl-run"><span>Run 2</span><span>sample bank · 1,000 decisions</span><b>same output</b><span class="k-mk k-mk--ok">✓</span></div>
-<div class="kl-run"><span>Run 3</span><span>sample bank · 1,000 decisions</span><b>same output</b><span class="k-mk k-mk--ok">✓</span></div>
-<div class="kl-run"><span>Run 4</span><span>sample bank · 1,000 decisions</span><b>same output</b><span class="k-mk k-mk--ok">✓</span></div>
-<div class="kl-run"><span>Run 5</span><span>sample bank · 1,000 decisions</span><b>same output</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 1</span><span>sample bank · 1,000 decisions</span><b data-sha>32f8e357e9a4</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 2</span><span>sample bank · 1,000 decisions</span><b data-sha>32f8e357e9a4</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 3</span><span>sample bank · 1,000 decisions</span><b data-sha>32f8e357e9a4</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 4</span><span>sample bank · 1,000 decisions</span><b data-sha>32f8e357e9a4</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 5</span><span>sample bank · 1,000 decisions</span><b data-sha>32f8e357e9a4</b><span class="k-mk k-mk--ok">✓</span></div>
 </div>
-<p class="k-meta" style="margin: 0;">We fingerprinted each run’s output file with SHA-256. All five fingerprints match.</p>
+<p class="k-meta" style="margin: 0;">We fingerprinted each run’s output file with SHA-256. All five fingerprints match. Check it yourself with <code>python tools/verify.py &lt;institutions folder&gt;</code>.</p>
 <p class="kl-reason"><span class="kw-hl" style="--d: .2s;">SOL-4102</span> from <span class="kw-hl" style="--d: .6s;">Hale &amp; Co Solicitors</span>, dated <span class="kw-hl" style="--d: 1s;">2 March 2026</span>, confirms a distribution of <span class="kw-hl" style="--d: 1.4s;">£41,500.00</span> from the estate of R. Field. The same amount arrived on 6 March 2026. The rest of the money received in the window, <span class="kw-hl" style="--d: 1.8s;">£2,800.00</span>, is within 3 times the declared £2,800.00.</p>
 <p class="k-meta">A reason as the system writes it, using only facts on file.</p>
+</div>
+<div class="lp-tests">
+<div class="lp-proof lp-proof--tests">
+<div class="kw-r" style="--d: .2s;"><b>5 of 5</b><span>identical runs on each of four sample firms’ 1,000 cases</span><button type="button" class="k-cite">Our check, 21 Nov<span class="k-cite__pop">Five runs on each sample firm’s 1,000 practice cases gave a byte-identical output file every time, 20 runs in all. SHA-256 of each firm’s output: bank 32f8e357, e-money 636cfd42, investment 7956f96e, payments 2e7dea2a.<small>tools/verify.py · checked on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .35s;"><b>4,000 of 4,000</b><span>decisions came out word for word the same when we ran the cases in random batches of 200</span><button type="button" class="k-cite">Stress test<span class="k-cite__pop">The unseen test sets have 200 cases a firm. We drew random 200-case sets, five per firm, and every verdict, code, piece of evidence and reason matched the full run.<small>tools/stress.py · subset test · run on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .5s;"><b>8,000 of 8,000</b><span>verdicts held after new IDs, new names, shuffled files and every date moved a year</span><button type="button" class="k-cite">Stress test<span class="k-cite__pop">We rebuilt every firm’s folder with fresh IDs, swapped every name for another and shuffled each file’s lines, then did it again with every date a year later. No verdict or reason code moved.<small>tools/stress.py · relabel and shift tests · run on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .65s;"><b>£0</b><span>in fees per run. No AI model, no internet</span><button type="button" class="k-cite">How it runs<span class="k-cite__pop">Plain Python with fixed rules. It calls no AI model and needs no internet connection, so a run costs nothing and nothing outside can change an answer.<small>system/README.md</small></span></button></div>
+</div>
 </div>
 </div>
 </section>
 
-<section id="demo" style="background: var(--ground-2);">
+<section id="demo">
 <div class="lp-in lp-in--close" style="display: flex; flex-direction: column; gap: 28px; align-items: center; text-align: center;">
 <span data-k-bot data-shape="shield" data-color="chief" data-state="done" data-name="Keystone" style="--size: 88px"></span>
 <h2 class="display" style="max-width: 16ch;">Decided on evidence. <span class="k-turn">Never on a guess.</span></h2>
 <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-<a class="k-btn k-btn--primary k-btn--lg" href="drop.html">Run your cases <span class="k-arr">→</span></a>
-<a class="k-btn k-btn--ghost k-btn--lg" href="queue.html">Browse the practice alerts</a>
+<a class="k-btn k-btn--primary k-btn--lg" href="queue.html">Open the alert queue <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--ghost k-btn--lg" href="drop.html">Run your own files</a>
 </div>
 </div>
 </section>
@@ -228,5 +370,6 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <script src="assets/kf-config.js"></script>
 <script src="assets/kf-data.js"></script>
 <script src="assets/kf-landing.js"></script>
+<script src="assets/kf-scene.js"></script>
 </body>
 </html>
