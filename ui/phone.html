@@ -32,20 +32,20 @@ body{margin:0}
 <div class="ks-stage"><div class="ks-box"><div class="ks-fit" data-w="387" data-h="964">
 <div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; position: relative; background: var(--ground); color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column;">
 <div style="display: flex; align-items: center; gap: 14px; padding: 16px 16px 12px; border-bottom: 1px solid var(--line); overflow: hidden;" aria-label="Bots">
-<span style="padding: 3px; border-radius: 999px; box-shadow: 0 0 0 2px var(--ink);"><span data-k-bot data-shape="house" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 40px"></span></span>
-<span data-k-bot data-shape="cloud" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 40px"></span>
-<span data-k-bot data-shape="squircle" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 40px"></span>
-<span data-k-bot data-shape="flower" data-color="green" data-state="idle" data-name="Screening Bot" style="--size: 40px"></span>
-<span data-k-bot data-shape="triangle" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 40px"></span>
+<span style="padding: 3px; border-radius: 999px; box-shadow: 0 0 0 2px var(--ink);"><span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 40px"></span></span>
+<span data-k-bot data-shape="card" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 40px"></span>
+<span data-k-bot data-shape="doc" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 40px"></span>
+<span data-k-bot data-shape="lens" data-color="green" data-state="idle" data-name="Screening Bot" style="--size: 40px"></span>
+<span data-k-bot data-shape="venn" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 40px"></span>
 </div>
 
 <div style="flex-grow: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow: hidden;">
 <div style="display: flex; align-items: center; gap: 8px;"><h1 class="h3" style="margin-right: auto;">For the MLRO</h1><span class="k-honest k-honest--synthetic">Synthetic</span></div>
 <div class="k-ticket__msg kw-r" style="--d: .3s;"><small>BK-CS204814 · TM04 · TM02</small><span class="kw-hl" style="--d: 1.1s;">14 people</span> paid in over two days. <span class="kw-hl" style="--d: 2s;">£6,200</span> left within the hour.</div>
-<div class="kw-row kw-r" style="--d: 2.6s; --m: 3.3s; border-top: 0; padding: 0;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span><span><b>No document explains it</b><small>Two senders’ banks report scams <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>RPT-4410<span class="k-cite__pop">Sending bank fraud report. The payer's bank reports that its customer was the victim of a scam.<small>Fraud report from a sending bank · synthetic</small></span></button></small></span><span></span></div>
+<div class="kw-row kw-r" style="--d: 2.6s; --m: 3.3s; border-top: 0; padding: 0;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span><span><b>No document explains it</b><small>Two senders’ banks report scams <button type="button" class="k-cite">RPT-4410<span class="k-cite__pop">Sending bank fraud report. The payer's bank reports that its customer was the victim of a scam.<small>Fraud report from a sending bank · synthetic</small></span></button></small></span><span></span></div>
 <section class="k-approve kw-r" style="--d: 4s; padding: 16px; gap: 12px;" aria-labelledby="ph-ap">
 <div class="k-approve__head">
-<span data-k-bot data-shape="house" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 32px"></span>
+<span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 32px"></span>
 <span class="k-grow"><b id="ph-ap">Money mule activity</b><small>ESC_MULE_ACTIVITY</small></span>
 <span class="k-chip k-chip--bad">↑ ESCALATE</span>
 </div>
@@ -93,8 +93,11 @@ body{margin:0}
 
 <script>
 (function () {
-  document.querySelectorAll('.k-approve .k-btn--primary').forEach(function (b) { b.setAttribute('data-k-approve', 'Case taken. Nothing has been asked of the customer.'); });
-  var t = document.querySelector('.k-toast'); if (t) t.parentNode.style.display = 'none';
+  var btn = document.querySelector('.k-approve .k-btn--primary'), t = document.querySelector('.k-toast');
+  if (btn) {
+    btn.setAttribute('data-k-approve', 'Case taken. Nothing has been asked of the customer.');
+    btn.addEventListener('click', function () { if (t) t.parentNode.style.display = 'none'; });
+  }
 })();
 </script>
 </body>

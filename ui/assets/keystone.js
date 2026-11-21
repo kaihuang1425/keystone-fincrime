@@ -1,3 +1,4 @@
+/* Keystone, with the canvas's bot shapes added for Keystone · Financial Crime. */
 /* @ds-bundle: {"format":4,"namespace":"Keystone","components":[{"name":"AppShell"},{"name":"BotAvatar"},{"name":"Roster"},{"name":"Thread"},{"name":"ActionFeed"},{"name":"Handoff"},{"name":"Routine"},{"name":"Approval"},{"name":"Takeover"},{"name":"Toast"},{"name":"Citation"},{"name":"SourcePeek"},{"name":"ExtractionTable"},{"name":"Trace"},{"name":"Chip"},{"name":"Metrics"},{"name":"PropertyCard"},{"name":"EPC"},{"name":"Compliance"},{"name":"RentRoll"},{"name":"Ticket"},{"name":"Covenant"},{"name":"Map"},{"name":"Button"},{"name":"AskBar"},{"name":"Loader"},{"name":"TitleCard"}]} */
 /* Keystone helpers: a vanilla script, no framework. Assigns window.Keystone.
    Bots: Keystone.bot(el, opts) and Keystone.mount(root). Motion: count, flip, type, fly, toast, feed,
@@ -41,7 +42,14 @@
     cloud: { d: 'M28 84a18 18 0 0 1-5-35a22 22 0 0 1 34-21a20 20 0 0 1 30 20a19 19 0 0 1-9 36z', face: [57, 56] },
     flower: { d: flower(), face: [57, 46] },
     pill: { d: 'M36 28h28a26 26 0 0 1 0 52H36a26 26 0 0 1 0-52z', face: [60, 52] },
-    triangle: { d: 'M50 12c5 0 8 3 11 8l28 50c5 9 0 18-10 18H21c-10 0-15-9-10-18l28-50c3-5 6-8 11-8z', face: [52, 62] }
+    triangle: { d: 'M50 12c5 0 8 3 11 8l28 50c5 9 0 18-10 18H21c-10 0-15-9-10-18l28-50c3-5 6-8 11-8z', face: [52, 62] },
+    shield: { d: 'M53.5 10.3C62 14.5 73 17.5 84 17.5Q89 17.5 89 22.5V46C89 69 73 84 53.5 92.6Q50 94.2 46.5 92.6C27 84 11 69 11 46V22.5Q11 17.5 16 17.5C27 17.5 38 14.5 46.5 10.3Q50 8.4 53.5 10.3z', face: [58, 44] },
+    doc: { d: 'M30 10H59Q63 10 66 13L77 24Q80 27 80 31V82A10 10 0 0 1 70 92H30A10 10 0 0 1 20 82V20A10 10 0 0 1 30 10z', face: [56, 45] },
+    card: { d: 'M17 22H83A9 9 0 0 1 92 31V33H8V31A9 9 0 0 1 17 22zM8 41H92V71A9 9 0 0 1 83 80H17A9 9 0 0 1 8 71z', face: [63, 60] },
+    browser: { d: 'M20 14H80A10 10 0 0 1 90 24V30H10V24A10 10 0 0 1 20 14zM10 36H90V82A10 10 0 0 1 80 92H20A10 10 0 0 1 10 82zM19 19.4A2.6 2.6 0 1 1 19 24.6A2.6 2.6 0 1 1 19 19.4zM27 19.4A2.6 2.6 0 1 1 27 24.6A2.6 2.6 0 1 1 27 19.4zM35 19.4A2.6 2.6 0 1 1 35 24.6A2.6 2.6 0 1 1 35 19.4z', face: [56, 62] },
+    lens: { d: 'M56 14A30 30 0 1 1 56 74A30 30 0 1 1 56 14zM56 20A24 24 0 1 1 56 68A24 24 0 1 1 56 20zM56 23A21 21 0 1 1 56 65A21 21 0 1 1 56 23zM30.42 59.68L14.28 75.82A7 7 0 0 0 24.18 85.72L40.32 69.58A30 30 0 0 1 30.42 59.68z', face: [58, 42] },
+    bubble: { d: 'M32 14H68A22 22 0 0 1 90 36V48A22 22 0 0 1 68 70H44L27 86Q22 90.5 22 84V67.6A22 22 0 0 1 10 48V36A22 22 0 0 1 32 14z', face: [58, 40] },
+    venn: { d: 'M62 28A26 26 0 1 1 62 80A26 26 0 1 1 62 28zM44.69 29.5A26 26 0 1 0 44.69 78.5A30 30 0 0 1 44.69 29.5z', face: [64, 52] }
   };
   K.shapes = Object.keys(SHAPES);
   K.colors = ['chief', 'blue', 'pink', 'orange', 'green', 'violet', 'teal'];
@@ -63,7 +71,7 @@
     el('rect', { 'class': 'k-b-bar', x: '44.5', y: '28', width: '11', height: '36', rx: '5.5' }, all);
     var wrap = el('g', { 'class': 'k-b-wrap' }, all);
     var bob = el('g', { 'class': 'k-b-bob' }, wrap);
-    el('path', { 'class': 'k-b-body', d: s.d }, bob);
+    el('path', { 'class': 'k-b-body', d: s.d, 'fill-rule': 'evenodd' }, bob);
     var face = el('g', { transform: 'translate(' + s.face[0] + ' ' + s.face[1] + ')' }, bob);
     var look = el('g', { 'class': 'k-b-look' }, face);
     var eyes = el('g', { 'class': 'k-b-eyes' }, look);
