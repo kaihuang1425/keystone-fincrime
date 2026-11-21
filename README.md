@@ -31,7 +31,7 @@ python tools/verify.py <institutions folder>
 python tools/mutation_test.py <institutions folder>
 ```
 
-`verify.py` runs every institution five times and compares the output files byte for byte. It also checks each line's format and that every cited ID exists in the case. `mutation_test.py` changes one fact in a real case and checks that the verdict moves as the SOP requires. All 27 tests pass.
+`verify.py` runs every institution five times and compares the output files byte for byte. It also checks each line's format and that every cited ID exists in the case. `mutation_test.py` changes one fact in a real case and checks that the verdict moves as the SOP requires. All 35 tests pass.
 
 The development cases carry no answers. So we report these checks, not an accuracy figure.
 
