@@ -1,5 +1,5 @@
-/* The alert queue, on the system's real verdicts. Twenty cases at a time, in the order the system
-   wrote them, or twenty of one verdict when a filter is on. Each row says what was decided once: a
+/* The alert queue, on the system's real verdicts. Twenty cases a page with page numbers, in the order the system
+   wrote them, or of one verdict when a filter is on. Each row says what was decided once: a
    plain title, the case ID and alert count, a one-line summary, the SOP's checks marked ✓, ✕ or –, and one chip; the reason
    code sits in the chip's tooltip and in the case view. Each row opens the case. The institutions are
    tabs with their case count and how many people have decided; the heading counts what is left. The RFI card sends the system's request, editable first, and Undo takes
@@ -17,7 +17,7 @@
   sendBtn.removeAttribute('data-k-approve');
 
   var PAGE = 20;
-  var inst = KF.inst(), all = null, data = null, standing = {}, cursor = 0, shown = [], rfi = null, filter = 'ALL';
+  var inst = KF.inst(), all = null, data = null, standing = {}, page = 1, matched = [], shown = [], rfi = null, filter = 'ALL';
 
   // the reading animation plays once per visit: after the first queue in this tab, rows arrive still
   var seen = false;
@@ -31,27 +31,53 @@
     if (x) { b.title = name + ' ' + x.does; b.setAttribute('aria-label', name); }
   });
 
-  // filters by verdict, then Next 20, where Replay was
+  // filters by verdict where Replay was; the pager sits under the list
   var bar = replayBtn.parentNode;
   var seg = document.createElement('div');
   seg.className = 'k-seg kf-filter'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Show');
   seg.innerHTML = [['ALL', 'All'], ['CLOSE', '✓ Close'], ['RFI', '? RFI'], ['ESCALATE', '↑ Escalate']].map(function (f) {
     return '<button type="button" data-f="' + f[0] + '" aria-pressed="' + (f[0] === filter) + '">' + f[1] + '</button>';
   }).join('');
-  var nextBtn = document.createElement('button');
-  nextBtn.type = 'button'; nextBtn.className = 'k-btn k-btn--sm'; nextBtn.textContent = 'Next ' + PAGE;
-  bar.replaceChild(seg, replayBtn); bar.appendChild(nextBtn);
+  var pager = document.createElement('nav');
+  pager.className = 'kf-pager'; pager.setAttribute('aria-label', 'Pages');
+  list.parentNode.appendChild(pager);
+  var narrow = window.matchMedia('(max-width: 480px)');
+  bar.replaceChild(seg, replayBtn);
   bar.style.gap = '8px';
 
-  function pick(d, from) {
-    var out = [], n = d.decisions.length;
-    for (var k = 0; k < n && out.length < PAGE; k++) {
-      var c = d.decisions[(from + k) % n];
-      if (standing[c.case_id] || (filter !== 'ALL' && c.verdict !== filter)) continue;
-      out.push(c);
-    }
-    return out.sort(function (a, b) { return a.i - b.i; });
+  // the decisions that match the filter and are still open, in the system's order; one page of them is shown
+  function pick(d) {
+    return d.decisions.filter(function (c) { return !standing[c.case_id] && (filter === 'ALL' || c.verdict === filter); })
+      .sort(function (a, b) { return a.i - b.i; });
   }
+  function pages() { return Math.max(1, Math.ceil(matched.length / PAGE)); }
+  function slice() { shown = matched.slice((page - 1) * PAGE, page * PAGE); }
+  // first, last and the current page with its neighbours; a gap of one page shows that page, a wider gap an ellipsis
+  function window_(cur, last, sib) {
+    var set = {}, out = [], prev = 0;
+    [1, last].concat(range(cur - sib, cur + sib)).forEach(function (p) { if (p >= 1 && p <= last) set[p] = 1; });
+    if (!narrow.matches) { if (cur <= 2) range(1, 3).forEach(function (p) { if (p <= last) set[p] = 1; }); if (cur >= last - 1) range(last - 2, last).forEach(function (p) { if (p >= 1) set[p] = 1; }); }
+    Object.keys(set).map(Number).sort(function (x, y) { return x - y; }).forEach(function (p) {
+      if (prev && p - prev === 2) out.push(prev + 1); else if (prev && p - prev > 2) out.push('…');
+      out.push(p); prev = p;
+    });
+    return out;
+  }
+  function range(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
+  function renderPager() {
+    var last = pages(), total = matched.length;
+    if (!total) { pager.innerHTML = ''; return; }
+    var from = (page - 1) * PAGE + 1, to = Math.min(page * PAGE, total);
+    pager.innerHTML = '<p class="k-meta kf-pager__meta">Cases ' + n(from) + '–' + n(to) + ' of ' + n(total) + '</p>' +
+      (last > 1 ? '<div class="kf-pager__btns">' +
+        '<button type="button" class="k-btn k-btn--sm" data-p="' + (page - 1) + '"' + (page <= 1 ? ' disabled' : '') + ' aria-label="Previous page">‹ Prev</button>' +
+        window_(page, last, narrow.matches ? 0 : 1).map(function (p) {
+          return p === '…' ? '<span class="kf-pager__gap" aria-hidden="true">…</span>'
+            : '<button type="button" class="k-btn k-btn--sm' + (p === page ? ' k-btn--primary' : '') + '" data-p="' + p + '"' + (p === page ? ' aria-current="page"' : '') + ' aria-label="Page ' + p + '">' + p + '</button>';
+        }).join('') +
+        '<button type="button" class="k-btn k-btn--sm" data-p="' + (page + 1) + '"' + (page >= last ? ' disabled' : '') + ' aria-label="Next page">Next ›</button></div>' : '');
+  }
+  function paint() { slice(); renderList(); renderPager(); }
   function nextRfi(d, from) {
     var n = d.decisions.length;
     for (var k = 0; k < n; k++) { var c = d.decisions[(from + k) % n]; if (c.verdict === 'RFI' && !standing[c.case_id]) return c; }
@@ -96,7 +122,7 @@
   }
 
   function renderApprove() {
-    rfi = nextRfi(data, cursor);
+    rfi = nextRfi(data, shown.length ? shown[0].i : 0);
     if (!rfi) {
       msg.innerHTML = '<small>' + KF.esc(KF.instInfo(inst).name) + '</small>Every RFI in this queue has been sent.';
       codeRow.style.display = 'none'; btnRow.style.display = 'none';
@@ -130,14 +156,13 @@
   }
   function replay() { list.style.display = 'none'; void list.offsetWidth; list.style.display = ''; }
 
-  function show(id, keepCursor) {
+  function show(id) {
     inst = id; KF.setInst(id);
     return Promise.all([Promise.all(ORDER.map(KF.load)), KF.store.list()]).then(function (r) {
       all = r[0]; standing = KF.standing(r[1]);
       data = all[ORDER.indexOf(id)];
-      if (!keepCursor) cursor = 0;
-      shown = pick(data, cursor);
-      renderList(); renderApprove(); renderInsts();
+      page = 1; matched = pick(data); slice();
+      renderList(); renderPager(); renderApprove(); renderInsts();
       KF.ready(); replay();
       var u = new URL(location.href); u.searchParams.set('inst', id); history.replaceState(null, '', u);
     });
@@ -152,12 +177,15 @@
     var b = e.target.closest('[data-f]'); if (!b || !data) return;
     filter = b.getAttribute('data-f');
     $$('[data-f]', seg).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-    still(); cursor = 0; shown = pick(data, cursor); renderList();
+    still(); page = 1; matched = pick(data); paint();
   });
-  nextBtn.addEventListener('click', function () {
-    if (!shown.length) return;
-    cursor = (shown[shown.length - 1].i + 1) % data.decisions.length;
-    still(); shown = pick(data, cursor); renderList(); renderApprove();
+  narrow.addEventListener && narrow.addEventListener('change', function () { if (data) renderPager(); });
+  pager.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-p]'); if (!b || b.disabled || !data) return;
+    var p = Number(b.getAttribute('data-p'));
+    if (p < 1 || p > pages() || p === page) return;
+    page = p; still(); paint(); renderApprove();
+    var cur = $('[aria-current="page"]', pager); if (cur) cur.focus();
   });
 
   editBtn.addEventListener('click', function () {
