@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Run your cases · Keystone</title>
+<meta name="description" content="Drop a zip or folder of transaction-monitoring cases and the scored system decides them in this browser tab. Add the right answers to get the brief's score.">
+<link rel="stylesheet" href="assets/keystone.css">
+<script src="assets/keystone.js"></script>
+<link rel="stylesheet" href="assets/fincrime.css">
+<link rel="stylesheet" href="assets/kf.css">
+<style>
+body { margin: 0; }
+a { color: var(--info); } a:hover { color: var(--ink); }
+.kd-page { min-height: 100vh; background: var(--ground); color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column; }
+.kd-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); background: var(--surface); }
+.kd-head__name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.kd-head nav { display: flex; gap: 4px; margin-left: auto; }
+.kd-main { display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin: 0 auto; }
+.kd-main h1 { margin: 0; text-wrap: balance; }
+.kd-drop { display: grid; gap: 14px; border-radius: var(--radius-xl); background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--hairline); transition: box-shadow var(--dur-tap, .16s) var(--ease-out), background-color var(--dur-tap, .16s) var(--ease-out); }
+.kd-drop.is-over { background: var(--info-soft); box-shadow: inset 0 0 0 2px var(--info); }
+.kd-drop.is-busy .kd-pick { opacity: .45; pointer-events: none; }
+.kd-drop__top { display: flex; align-items: center; gap: 14px; }
+.kd-drop__title { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+.kd-say { min-height: 1.4em; color: var(--ink-2); font-size: 15px; }
+.kd-pick { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.kd-help { margin: 0; color: var(--ink-3); font-size: 13.5px; line-height: 1.5; max-width: 72ch; }
+.kd-help code, .kd-mono { font-family: var(--font-mono); font-size: 12.5px; }
+.kd-engine { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--ink-3); font-size: 13px; }
+.kd-err { margin: 0; color: var(--bad); font-size: 14.5px; line-height: 1.45; }
+.kd-err::before { content: "✕ "; font-weight: 600; }
+.kd-sec { display: flex; flex-direction: column; gap: 14px; }
+.kd-sec[hidden] { display: none; }
+.kd-sec h2 { margin: 0; text-wrap: balance; }
+.kd-bar { height: 6px; border-radius: 3px; background: var(--surface-3); overflow: hidden; min-width: 120px; }
+.kd-bar i { display: block; height: 100%; width: var(--p, 0%); border-radius: 3px;
+  background: linear-gradient(90deg, var(--spectrum-1), var(--spectrum-2), var(--spectrum-3), var(--spectrum-4), var(--spectrum-5));
+  transition: width .3s var(--ease-out); }
+.kd-split { display: grid; gap: 6px; min-width: 180px; }
+.kd-split .k-occ { margin-top: 0; }
+.kd-split small { display: flex; gap: 10px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; }
+.kd-sub { display: block; color: var(--ink-3); font-family: var(--font-mono); font-size: 11.5px; margin-top: 2px; word-break: break-all; }
+.kd-ok { color: var(--ok); font-weight: 500; }
+.kd-bad { color: var(--bad); font-weight: 500; }
+.kd-reason { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--ink-2); font-size: 13.5px; line-height: 1.45; max-width: 60ch; }
+.kd-ids { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); line-height: 1.6; }
+.kd-tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.kd-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.kd-note { margin: 0; color: var(--ink-3); font-size: 13.5px; line-height: 1.5; }
+.kd-files { margin: 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); line-height: 1.7; }
+.k-table td.kd-num, .k-table th.kd-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* desktop and tablet: 761px and up */
+@media (min-width: 761px) {
+  .kd-head { padding: 14px 24px; }
+  .kd-main { max-width: 1200px; padding: 32px 24px 64px; gap: 28px; }
+  .kd-drop { padding: 28px; }
+  .kd-mobile-hide { display: table-cell; }
+}
+/* phones: 760px and down */
+@media (max-width: 760px) {
+  .kd-head { padding: 12px 16px; }
+  .kd-head nav { width: 100%; margin-left: 0; }
+  .kd-main { padding: 22px 16px 48px; gap: 22px; }
+  .kd-main .h1 { font-size: 30px; }
+  .kd-main .h2 { font-size: 24px; }
+  .kd-drop { padding: 18px; }
+  .kd-drop__title { font-size: 18px; }
+  .kd-pick .k-btn { flex: 1 1 auto; }
+  .k-metric__val { font-size: 40px; }
+  .kd-mobile-hide { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="kd-page" data-theme="light">
+<header class="kd-head">
+<span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>
+<span class="kd-head__name">Keystone</span>
+<span class="k-honest">Your files are not uploaded</span>
+<nav aria-label="Pages">
+<a class="k-btn k-btn--text k-btn--sm" href="landing.html">How it works</a>
+<a class="k-btn k-btn--text k-btn--sm" href="queue.html">Queue</a>
+</nav>
+</header>
+
+<main class="kd-main">
+<h1 class="h1">Drop your cases. <span class="k-turn">The scored rules decide them here.</span></h1>
+
+<section class="kd-drop" id="kd-drop" aria-label="Drop cases here">
+<div class="kd-drop__top">
+<span id="kd-lead" data-k-bot data-shape="shield" data-color="chief" data-state="working" data-name="Case Lead" style="--size: 40px"></span>
+<div>
+<p class="kd-drop__title">Drop a zip, a tar or a folder here</p>
+<div class="kd-say" id="kd-say" aria-live="polite">Loading Python, once</div>
+</div>
+</div>
+<div class="kd-pick">
+<button class="k-btn k-btn--primary" type="button" id="kd-pick-zip">Choose a zip</button>
+<button class="k-btn" type="button" id="kd-pick-dir">Choose a folder</button>
+<input type="file" id="kd-zip" multiple accept=".zip,.tar,.gz,.tgz,.bz2,.xz,.jsonl,.json,.csv,.tsv" hidden>
+<input type="file" id="kd-dir" webkitdirectory multiple hidden>
+</div>
+<p class="kd-help">Each institution folder holds <code>cases.jsonl</code> and the kit's other files, in any layout. To get a score, add a file of right answers with a case ID and a verdict on each line, such as <code>{"case_id": …, "verdict": "CLOSE"}</code>.</p>
+<div class="kd-engine" id="kd-engine"><span class="k-tool">Rules, not AI</span><span>system/run in this tab</span></div>
+<p class="kd-err" id="kd-err" hidden></p>
+</section>
+
+<section class="kd-sec" id="kd-found" hidden>
+<h2 class="h2" id="kd-found-h"></h2>
+<div class="k-tablewrap"><table class="k-table">
+<thead><tr><th>Institution</th><th class="kd-num">Cases</th><th>Verdicts</th><th>Checks</th><th class="kd-num kd-mobile-hide">Time</th><th class="kd-mobile-hide">Fingerprint</th></tr></thead>
+<tbody id="kd-insts"></tbody>
+</table></div>
+<p class="kd-note" id="kd-found-note"></p>
+<ul class="kd-files" id="kd-files" hidden></ul>
+</section>
+
+<section class="kd-sec" id="kd-score" hidden></section>
+
+<section class="kd-sec" id="kd-cases" hidden>
+<h2 class="h3">Every verdict, with its records</h2>
+<div class="kd-tools">
+<div class="k-seg" id="kd-inst-seg" role="group" aria-label="Institution"></div>
+<div class="k-seg" id="kd-v-seg" role="group" aria-label="Verdict"></div>
+</div>
+<div class="k-tablewrap"><table class="k-table">
+<thead><tr><th>Case</th><th>Verdict</th><th>Reason</th><th class="kd-mobile-hide">Evidence</th></tr></thead>
+<tbody id="kd-rows"></tbody>
+</table></div>
+<div class="kd-actions"><button class="k-btn k-btn--sm" type="button" id="kd-more" hidden>Show 50 more</button><span class="k-meta" id="kd-shown"></span></div>
+</section>
+
+<section class="kd-sec" id="kd-done" hidden>
+<div class="kd-actions">
+<button class="k-btn k-btn--primary" type="button" id="kd-download">Download the answers</button>
+<button class="k-btn" type="button" id="kd-again">Run again and compare</button>
+<span class="k-meta" id="kd-again-out" aria-live="polite"></span>
+</div>
+</section>
+</main>
+</div>
+<script src="assets/kf-data.js"></script>
+<script src="assets/kf-drop.js"></script>
+</body>
+</html>

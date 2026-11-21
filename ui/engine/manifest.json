@@ -1,0 +1,50 @@
+{
+  "note": "Written by tools/sync_ui_engine.py. Copies of system/ and tools/run_drop.py.",
+  "engine": "e75688e6901b8b16c86bc5c37f1050df11216c68e659b07c7c476a54b416063c",
+  "files": [
+    {
+      "path": "run",
+      "sha256": "2dbed85336bd2e8dec5f4fe8b83a8e002a85c064d6174505412ceaca34a6be86"
+    },
+    {
+      "path": "triage/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "triage/case.py",
+      "sha256": "3cedd35f15277c25513ecccd60a50c51e73d732643129c7da1a0bfeaa9b99b6f"
+    },
+    {
+      "path": "triage/decide.py",
+      "sha256": "502d00f245da74e692b5183be512e172e26fd6bc2ebccfa55aab376dfbf7e37f"
+    },
+    {
+      "path": "triage/explain.py",
+      "sha256": "cbd839a4f727d16289c85733a642f2f4207f0bb937337817b23d5b600d7e07a1"
+    },
+    {
+      "path": "triage/flags.py",
+      "sha256": "86caca24b6c1082381304c692e2a7851a80852a23e7ff2fd1aa00f3ada3622ee"
+    },
+    {
+      "path": "triage/listmatch.py",
+      "sha256": "097819d07ac929b1b52b00bfca90734e45fb5164b11e402dc2fb6fba68c22565"
+    },
+    {
+      "path": "triage/loader.py",
+      "sha256": "550fcb362789a2e4ef8040100d3819d2d5cb5774b3f905e4543de1573d21c38c"
+    },
+    {
+      "path": "triage/textfacts.py",
+      "sha256": "a904edd3f0410d3f6172497dbc26f0c5e8026269ec1ca9b3211eca932a75c253"
+    },
+    {
+      "path": "run_drop.py",
+      "sha256": "f698d6f43d4d8e926db23393e8387c920fb5310774caf3ae0aa77d0a474b42e2"
+    },
+    {
+      "path": "browser.py",
+      "sha256": "a163c97aed7e736b590a5532cd042822d02b56845e2f1de14477e8eed3ef623f"
+    }
+  ]
+}
