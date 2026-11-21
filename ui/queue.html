@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="assets/fincrime.css">
 <link rel="stylesheet" href="assets/keystone-walk.css">
 <script src="assets/keystone-walk.js" defer></script>
+<link rel="stylesheet" href="assets/kf.css">
 <style>
 body{margin:0}
 a{color:var(--info)}a:hover{color:var(--ink)}
@@ -82,17 +83,9 @@ a{color:var(--info)}a:hover{color:var(--ink)}
 </div>
 </div>
 
-<script>
-(function () {
-  var K = window.Keystone;
-  document.querySelectorAll('.k-approve .k-btn--primary').forEach(function (b) { b.setAttribute('data-k-approve', 'RFI sent. BK-CS204813 waits for one document.'); });
-  // the queue works itself in CSS; Replay runs it again, and it first plays when it scrolls into view
-  var list = document.querySelector('.kq-list'), btn = document.querySelector('[data-kq-replay]');
-  function replay() { list.style.display = 'none'; void list.offsetWidth; list.style.display = ''; }
-  if (btn) btn.addEventListener('click', replay);
-  K.whenVisible(list, replay);
-  setTimeout(function () { document.querySelectorAll('header [data-k-bot][data-state="working"]').forEach(function (b) { if (b._kbot) b._kbot.set('done'); }); }, 13500);
-})();
-</script>
+<script>document.documentElement.classList.add('kf-wait')</script>
+<script src="assets/kf-config.js"></script>
+<script src="assets/kf-data.js"></script>
+<script src="assets/kf-queue.js"></script>
 </body>
 </html>

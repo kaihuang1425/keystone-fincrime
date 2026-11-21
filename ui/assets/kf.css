@@ -1,0 +1,32 @@
+/* Keystone · Financial Crime: what the working pages add to the canvas look. Interaction only. */
+
+/* the canvas's invented example stays hidden while the real verdicts load */
+html.kf-wait .k-app__col,
+html.kf-wait .k-app__aside > section,
+html.kf-wait .kq-list,
+html.kf-wait .k-approve,
+html.kf-wait .aq-inst .k-occ,
+html.kf-wait .ks-fit > div > div:nth-child(2) { visibility: hidden; }
+
+/* queue rows and institutions open and switch */
+a.kq-row { color: inherit; text-decoration: none; border-radius: var(--radius-md, 10px); }
+a.kq-row:hover b { text-decoration: underline; text-underline-offset: 3px; }
+a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.aq-inst { cursor: pointer; }
+.kq-done { color: var(--ink-3); }
+.k-ticket__msg [contenteditable="true"] { display: block; outline: 1px solid var(--line); outline-offset: 4px; border-radius: 4px; }
+
+/* institution menu in the case view */
+.kf-menu { position: absolute; z-index: 30; min-width: 200px; padding: 6px; border-radius: var(--radius-md, 10px);
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline), 0 12px 32px rgba(0, 0, 0, .28); }
+.kf-menu button { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: none;
+  color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.kf-menu button:hover, .kf-menu button[aria-current="true"] { background: var(--ground-2); }
+
+/* records in the conversation */
+.kf-recs { display: flex; flex-direction: column; gap: 6px; }
+.kf-recs .k-event { margin: 0; }
+
+/* Case Lead's reply on the phone */
+.kf-reply { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.kf-reply b { color: var(--ink); }

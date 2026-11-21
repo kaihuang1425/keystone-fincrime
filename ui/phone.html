@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="assets/fincrime.css">
 <link rel="stylesheet" href="assets/keystone-walk.css">
 <script src="assets/keystone-walk.js" defer></script>
+<link rel="stylesheet" href="assets/kf.css">
 <style>
 body{margin:0}
 </style>
@@ -91,14 +92,9 @@ body{margin:0}
 })();
 </script>
 
-<script>
-(function () {
-  var btn = document.querySelector('.k-approve .k-btn--primary'), t = document.querySelector('.k-toast');
-  if (btn) {
-    btn.setAttribute('data-k-approve', 'Case taken. Nothing has been asked of the customer.');
-    btn.addEventListener('click', function () { if (t) t.parentNode.style.display = 'none'; });
-  }
-})();
-</script>
+<script>document.documentElement.classList.add('kf-wait')</script>
+<script src="assets/kf-config.js"></script>
+<script src="assets/kf-data.js"></script>
+<script src="assets/kf-phone.js"></script>
 </body>
 </html>

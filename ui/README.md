@@ -10,22 +10,36 @@ Serve the folder rather than double-clicking, so the scripts behave as they do o
 python -m http.server 8080 --directory ui
 ```
 
-Then go to http://localhost:8080/walk-monitoring.html.
+Then go to http://localhost:8080/queue.html.
 
 ## Pages
 
 | Page | Shows |
 |---|---|
 | `walk-monitoring.html` | One case in five steps that play themselves: alert, records, evidence, rule, verdict. `?step=3` opens on a step, `?hold` starts paused |
-| `app.html` | The case view: why a case closed, the comparison row by row, the verdict last, and the evidence behind it |
-| `queue.html` | The alert queue worked one case after another to CLOSE, RFI or ESCALATE, and one RFI for the analyst to send |
-| `phone.html` | An escalation reaching the MLRO on a phone, with nothing asked of the customer |
-| `landing.html` | What it does, in three verdicts |
+| `queue.html` | The system's real verdicts, six at a time, for any of the four institutions. Each row opens its case. The RFI card shows what the system says to ask; Edit changes it, Send the request saves it, and Undo takes it back. `?inst=emoney` picks an institution |
+| `app.html` | One real case: why it closed, needs a document or was escalated, in the system's own reason. Each bot shows the records it owns; the evidence panel lists the records, the reason sentence by sentence and the trace. The message box answers from that case's reason and records only. `?case=BK-CS100112` opens a case |
+| `phone.html` | The real escalations reaching the MLRO, one at a time. Take the case and Send back are saved; the toast shows the latest action from any page, with Undo |
+| `landing.html` | What it does: the three rules Track 1 tests, each drawn as a loop, and the measured figures |
 | `title-card.html`, `end-card.html` | 1920 × 1080 cards for the video; add `?raw` to record at full size |
 
 ## What is real
 
-The cases on these pages are synthetic examples written in the kit's ID formats, so the interface can be seen before the system's output is wired in. They are not taken from the development cases, and nothing here is read by `system/`. To show real results, render the lines of `output/*.jsonl` into the same markup: the verdict chip, the reason code, the reason, and one citation chip per evidence ID.
+`queue.html`, `app.html` and `phone.html` show the system's verdicts on the development cases. They read `data/<institution>.json`, which `tools/export_ui.py` writes from `output/`:
+
+```bash
+python tools/export_ui.py --rerun bank emoney investment payments_fx --out ui/data
+```
+
+Run it again whenever `output/` changes. The files hold the system's own words only: verdict, reason code, reason, alert IDs and evidence IDs. No record text from the kit is on the site, so a citation chip shows its ID and the sentence of the reason that cites it. The reasons do name the kit's invented people and amounts, as `output/` does.
+
+`walk-monitoring.html`, `landing.html` and the video cards use invented examples to explain the rules, and say so.
+
+## Where the analyst's actions are kept
+
+Sending an RFI, taking or sending back an escalation, and undoing are saved as rows of `analyst_actions` (see `supabase/schema.sql`). Undo adds an `undone` row; nothing is edited or deleted. Until `assets/kf-config.js` names a Supabase project, the rows are kept in the browser's local storage, so each browser sees its own. To share them, run `supabase/schema.sql` in the project and set its URL and anon key in `assets/kf-config.js`. The anon key is public by design, and row level security lets it read and insert only. Never put the service role key in this folder: it is published.
+
+`assets/kf-data.js` holds the data and the store; `kf-queue.js`, `kf-case.js` and `kf-phone.js` drive the three pages; `kf.css` adds the few styles they need.
 
 ## The design system
 

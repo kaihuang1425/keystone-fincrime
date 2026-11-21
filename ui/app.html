@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="assets/fincrime.css">
 <link rel="stylesheet" href="assets/keystone-walk.css">
 <script src="assets/keystone-walk.js" defer></script>
+<link rel="stylesheet" href="assets/kf.css">
 <style>
 body{margin:0}
 a{color:var(--info)}a:hover{color:var(--ink)}
@@ -141,12 +142,9 @@ a{color:var(--info)}a:hover{color:var(--ink)}
 
 </div>
 
-<script>
-(function () {
-  var K = window.Keystone, $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  $('.k-ask').addEventListener('submit', function (e) { e.preventDefault(); var i = this.querySelector('input'); if (i.value) { K.toast('Sent to Case Lead.', { mark: false, ms: 2500 }); i.value = ''; } });
-  $$('.k-msgrow').forEach(function (r, i) { var b = r.querySelector('[data-k-bot]'); setTimeout(function () { if (b && b._kbot) b._kbot.ack(); }, i === 0 ? 500 : 4200); });
-})();
-</script>
+<script>document.documentElement.classList.add('kf-wait')</script>
+<script src="assets/kf-config.js"></script>
+<script src="assets/kf-data.js"></script>
+<script src="assets/kf-case.js"></script>
 </body>
 </html>
