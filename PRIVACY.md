@@ -8,7 +8,7 @@ The hackathon cases are synthetic. Every person and company in them is invented,
 
 The decision engine in `system/` is plain Python. It calls no model and uses no network. That is the strongest privacy property we have. `system/run` can run on each institution's own machines, in its own UK or EU region. Customer data never has to leave the firm. At most the output file's hash and the verdict counts leave.
 
-The public demo site has one page that reads files, `ui/drop.html`. It runs the same code in the visitor's own browser and does not upload the dropped files. Opening the page loads Python from cdn.jsdelivr.net and fonts from Google Fonts, so those two services see the visitor's IP address, but not the files. The landing page also loads its hero photo from images.unsplash.com, so Unsplash sees the visitor's IP address too.
+The public demo site has one page that reads files, `ui/drop.html`. It runs the same code in the visitor's own browser and does not upload the dropped files. Opening the page loads Python from cdn.jsdelivr.net and fonts from Google Fonts, so those two services see the visitor's IP address, but not the files.
 
 Each institution is a separate controller of its data. We act as its processor, under the contract that Article 28 requires in both regimes. Four firms means four sealed tenants. We never pool cases across firms, and we never tune rules on a firm's live cases. Either step would make us a controller. It would also break the rule that AML data serves AML alone. In the UK that rule is regulation 41 of the Money Laundering Regulations 2017.
 

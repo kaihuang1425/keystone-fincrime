@@ -1,6 +1,6 @@
 # Keystone UI
 
-The interface for the transaction-monitoring system: plain HTML pages on one design system. No build step and no framework. Each page loads the files in `assets/` and nothing else, plus Geist from Google Fonts. The landing page's hero photo loads from images.unsplash.com: a desk at night by JC Gellidon, https://unsplash.com/photos/lit-desk-lamp-on-top-of-desk-EH9f0TI5wco, under the Unsplash License.
+The interface for the transaction-monitoring system: plain HTML pages on one design system. No build step and no framework. Each page loads the files in `assets/` and nothing else, plus Geist from Google Fonts. The landing page's hero photo (`assets/hero-desk-night-*.jpg`) is a desk at night by JC Gellidon, https://unsplash.com/photos/lit-desk-lamp-on-top-of-desk-EH9f0TI5wco, used under the Unsplash License.
 
 ## Open it
 
