@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/sync_ui_engine.py. Copies of system/ and tools/run_drop.py.",
-  "engine": "e75688e6901b8b16c86bc5c37f1050df11216c68e659b07c7c476a54b416063c",
+  "engine": "c6b4475443bbb4800c574c3d8f65ee5b423071755c6deed4e381d31f5bf71c11",
   "files": [
     {
       "path": "run",
@@ -12,7 +12,7 @@
     },
     {
       "path": "triage/case.py",
-      "sha256": "3cedd35f15277c25513ecccd60a50c51e73d732643129c7da1a0bfeaa9b99b6f"
+      "sha256": "4d19d432ff10bf33acf14395b2feed4a1e1000daa215f95514ff387472dcab93"
     },
     {
       "path": "triage/decide.py",
@@ -20,11 +20,11 @@
     },
     {
       "path": "triage/explain.py",
-      "sha256": "cbd839a4f727d16289c85733a642f2f4207f0bb937337817b23d5b600d7e07a1"
+      "sha256": "12905f9a68d1ee577e80ccfa93c947d5f14a51b223ddf2ef7f5cfbe69eb3b884"
     },
     {
       "path": "triage/flags.py",
-      "sha256": "86caca24b6c1082381304c692e2a7851a80852a23e7ff2fd1aa00f3ada3622ee"
+      "sha256": "15b4f7a592a66e1fe786a2b12802176c74e4d4e514aa2a82c4d7aa4d71443447"
     },
     {
       "path": "triage/listmatch.py",
@@ -40,7 +40,7 @@
     },
     {
       "path": "run_drop.py",
-      "sha256": "f698d6f43d4d8e926db23393e8387c920fb5310774caf3ae0aa77d0a474b42e2"
+      "sha256": "89eff89ee78f40a3b999b5dc74e8a7b2ba010912d00d84d4b5593cc12184d7dd"
     },
     {
       "path": "browser.py",

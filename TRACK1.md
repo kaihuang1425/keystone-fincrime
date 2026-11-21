@@ -11,7 +11,7 @@ Start with [system/README.md](system/README.md). It explains the method in plain
 | `system/` | The scored system. `system/run <institution folder> <output file>` |
 | `output/` | The system's answers on the 4,000 development cases |
 | `tools/verify.py` | Five-run repeatability, output checks and a leak check |
-| `tools/mutation_test.py` | 21 tests that change one fact and check the verdict moves |
+| `tools/mutation_test.py` | 27 tests that change one fact and check the verdict moves |
 | `tools/export_ui.py` | Writes one JSON per institution for the UI, with the run facts |
 | `tools/run_drop.py` | Runs the system on an archive or folder of cases in any layout and checks the output. Scores it when the right answers come with it |
 | `tools/publish_supabase.py` | Copies finished output into Supabase for the UI and the audit trail |

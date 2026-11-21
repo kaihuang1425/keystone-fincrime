@@ -243,5 +243,70 @@ ok = r1["verdict"] == "ESCALATE"
 results.append(ok)
 print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "refund from a higher-risk country with no earlier payment", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
 
+# 19. a sale receipt with the two names swapped: the customer is now the buyer, so it explains nothing
+I = inst("emoney")
+row, r0 = find_case(I, "TM05", ["sale_receipt"], "CLOSE", "DOCUMENTED_EVENT")
+me = I.customers[row["customer_id"]]["name"]
+
+
+def swap_parties(text, mine=me):
+    others = [n for n in re.findall(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b", text) if n != mine and " " in n
+              and n.split()[0] not in ("Sale", "Bike", "Carbon", "Road", "Bill", "Receipt", "Document", "Total", "Sold")]
+    if not others:
+        return text
+    other = max(sorted(set(others)), key=others.count)
+    return text.replace(mine, "\0").replace(other, mine).replace("\0", other)
+
+
+r1 = safe_decide(Mutant(I, edit_doc=only("sale_receipt", swap_parties)), row)
+ok = (r1["verdict"], r1["reason_code"]) == ("RFI", "RFI_SOURCE_OF_FUNDS")
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "sale receipt with seller and buyer swapped", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 20. a sale receipt that names someone else as seller, while only the advert names the customer
+r1 = safe_decide(Mutant(I, edit_doc=only("sale_receipt", lambda t: t.replace(me, "Jo Example"))), row)
+ok = (r1["verdict"], r1["reason_code"]) == ("RFI", "RFI_SOURCE_OF_FUNDS")
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "sale receipt in another seller's name", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 21. an insurer's letter addressed to a named person who is not the customer
+I = inst("bank")
+for row in I.cases:
+    docs = [d for d in I.docs_for(row["customer_id"]) if d.type == "insurer_letter"]
+    name = I.customers[row["customer_id"]]["name"]
+    if docs and re.search(r"Dear\s+%s" % re.escape(name), docs[0].text):
+        break
+r0 = safe_decide(I, row)
+r1 = safe_decide(Mutant(I, edit_doc=only("insurer_letter", lambda t: t.replace(name, "Jo Example"))), row)
+ok = r0["verdict"] == "CLOSE" and r1["verdict"] == "RFI"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "insurer letter addressed to someone else", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 22. a credit note made out to another company, for a refund from a higher-risk country
+I = inst("payments_fx")
+row, r0 = find_case(I, "TM06+TM08", ["credit_note"], "CLOSE", "REFUND_OF_EARLIER_PAYMENT")
+name = I.customers[row["customer_id"]]["name"]
+r1 = safe_decide(Mutant(I, edit_doc=only("credit_note", lambda t: t.replace(name, "Other Example Ltd"))), row)
+ok = r1["verdict"] == "ESCALATE"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "credit note made out to another company", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 23. a documented collection still closes when only one of its two alerts fired
+I = inst("bank")
+row, r0 = find_case(I, "TM02+TM04", ["booking_confirmation"], "CLOSE", "COLLECTION_DOCUMENTED")
+only_tm04 = dict(row, alert_ids=[a for a in row["alert_ids"] if I.alerts[a]["rule_id"] == "TM04"])
+r1 = safe_decide(I, only_tm04)
+ok = (r1["verdict"], r1["reason_code"]) == ("CLOSE", "COLLECTION_DOCUMENTED")
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "collection with only the many-payers alert", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 24. when the customer gave two stories for cash, the reason lists them in the order they were told
+row, r0 = find_case(I, "TM01+TM02+TM05", ["support_chat"], "ESCALATE", "ESC_UNEXPLAINED_FUNDS")
+chats = sorted((d for d in I.docs_for(row["customer_id"]) if d.type == "support_chat"), key=lambda d: (str(d.dated), d.id))
+cited = re.findall(r"CHT-\d+", r0["reason"])
+ok = len(chats) >= 2 and cited[:2] == [chats[0].id, chats[1].id]
+results.append(ok)
+print("%s %-58s %s: chats cited %s, dated order %s" % ("PASS" if ok else "FAIL", "two cash stories are given in date order", row["case_id"], cited[:2], [c.id for c in chats[:2]]))
+
 print("\n%d of %d mutation tests passed" % (sum(results), len(results)))
 sys.exit(0 if all(results) else 1)

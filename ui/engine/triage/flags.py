@@ -249,7 +249,8 @@ def unexplained_cash(case, covered):
     if not onward:
         return []
     stories, docs = [], []
-    for chat in case.docs_of("support_chat"):
+    # in the order the customer said them, so "first ... and then ..." is true
+    for chat in sorted(case.docs_of("support_chat"), key=lambda c: (str(c.dated or ""), c.id)):
         said = _customer_lines(chat)
         for label, pattern in _SOURCES:
             if re.search(pattern, said, re.I) and label not in stories:

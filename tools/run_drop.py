@@ -536,7 +536,7 @@ def handle(inp, args, single):
                 hashes.add(sha256(again) if os.path.exists(again) else "missing")
             cases, rows, problems, counts = check_output(folder, out)
             entry.update({"cases": len(cases), "verdicts": counts, "identical_runs": len(hashes) == 1,
-                          "problems": problems})
+                          "sha256": sha256(out), "problems": problems})
             if problems or len(hashes) != 1:
                 status = 1
             print("  %-12s %5d cases   %s   %s   %.1fs a run   %s" % (

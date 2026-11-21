@@ -34,6 +34,36 @@ def _for_someone_else(doc, case, labels):
     return False
 
 
+_GENERIC_SALUTATION = set(
+    "sir madam sirs customer client tenant employee colleague colleagues beneficiary guest investor student "
+    "policyholder claimant applicant member subscriber resident leaseholder holder account valued former "
+    "team sales accounts finance procurement department payable director directors shareholder partner "
+    "partners supplier buyer seller borrower executor executors trustee trustees friend friends all "
+    "mr mrs ms miss mx dr and or the our of to whom it may concern".split())
+
+
+def _addressed_to_another(doc, case):
+    """The letter opens 'Dear <name>' and that name is a specific someone who is not the customer.
+
+    'Dear Tenant' or 'Dear Sir/Madam' names nobody and proves nothing either way.
+    'Dear Jo Example' on a letter in another customer's file is not that customer's letter.
+    """
+    m = re.search(r"^\W*Dear\s+([^,\n:]+)", doc.text, re.M | re.I)
+    if not m:
+        return False
+    words = set(re.findall(r"[a-z]+", m.group(1).lower()))
+    named = words - _GENERIC_SALUTATION
+    return bool(named) and not (named & set(re.findall(r"[a-z]+", case.name.lower())))
+
+
+def _customer_is_buyer(doc, case):
+    """A sale receipt puts the customer on the paying side: 'to <customer>', 'Buyer: <customer>'
+    or 'received from <customer>'. Such a receipt shows the customer spent money, not received it."""
+    name = re.escape(case.name)
+    return bool(re.search(r"\bbuyer\W{0,6}%s\b|\bto\s+%s\b|\breceived\s+from\s+%s\b" % (name, name, name),
+                          doc.text, re.I))
+
+
 def _dated_by(doc, t, slack=0):
     """The document is dated no later than the transaction (plus slack days)."""
     d, when = doc.dated, tx_date(t)
@@ -51,6 +81,10 @@ def one_off_events(case):
         "completion_statement": "a completion statement from %s showing %s due to the customer from a property sale",
     }
     for doc in case.docs_of(*sorted(kinds)):
+        if _addressed_to_another(doc, case):
+            continue
+        if doc.type == "insurer_letter" and not tf.mentions(doc.text, case.name):
+            continue  # an insurer names the person it pays, so a letter without the name is not this customer's
         for t in case.inbound():
             if not any(tf.close(t["amount_gbp"], m) for m in doc.money):
                 continue
@@ -87,7 +121,10 @@ def cash_sales(case):
     out = []
     for doc in case.docs_of("vehicle_sale_receipt", "sale_receipt"):
         advert = case.doc("advert")
-        if not (tf.mentions(doc.text, case.name) or (advert and tf.mentions(advert.text, case.name))):
+        # the receipt itself must name the customer, and as the seller, not the buyer
+        if not tf.mentions(doc.text, case.name) or _customer_is_buyer(doc, case):
+            continue
+        if _for_someone_else(doc, case, ("seller",)):
             continue
         for t in case.inbound():
             if t.get("channel") not in ("cash_deposit", "cash_topup"):
@@ -121,8 +158,8 @@ def cash_redeposit(case):
     institution's own records show and an earlier review already looked at."""
     out = []
     chats = case.docs_of("support_chat")
-    for t in case.alert_txs("TM05"):
-        if t.get("direction") != "in":
+    for t in case.inbound():  # any alerted cash paid in, whichever rule raised it
+        if t.get("channel") not in ("cash_deposit", "cash_topup"):
             continue
         earlier = [w for w in case.txs
                    if w.get("direction") == "out" and w.get("channel") == "cash_withdrawal"
@@ -152,7 +189,7 @@ def cash_redeposit(case):
 def loan_and_purchase(case):
     out = []
     loan, invoice = case.doc("loan_agreement"), case.doc("dealer_invoice")
-    if loan and not _for_someone_else(loan, case, ("borrower",)):
+    if loan and tf.mentions(loan.text, case.name) and not _for_someone_else(loan, case, ("borrower",)):
         for t in case.inbound():
             if any(tf.close(t["amount_gbp"], m) for m in loan.money) and _names(loan, t) and _dated_by(loan, t):
                 text = ("%s is a loan agreement between %s and %s for %s, and that amount arrived "
@@ -274,6 +311,8 @@ def returning_customer(case):
 def refunds(case):
     out = []
     for doc in case.docs_of("venue_email", "credit_note"):
+        if _addressed_to_another(doc, case) or _for_someone_else(doc, case, ("customer", "client", "bill to", "buyer")):
+            continue
         for t in case.inbound():
             if not any(tf.close(t["amount_gbp"], m) for m in doc.money):
                 continue
@@ -307,13 +346,13 @@ def refunds(case):
                                extra=extra, covers=[t["transaction_id"]],
                                rules=("TM01", "TM02", "TM06", "TM08"), rank=15))
     doc = case.doc("cancellation_confirmation")
-    if doc:
-        for t in case.outbound():
+    if doc and not _addressed_to_another(doc, case):
+        for t in case.in_window("out"):
             if not any(tf.close(t["amount_gbp"], m) for m in doc.money):
                 continue
             if not (case.is_self(t) and tf.same_account(doc.text, t.get("counterparty_account") or "")):
                 continue
-            paid_in = [f for f in case.inbound() if tf.close(f["amount_gbp"], t["amount_gbp"])
+            paid_in = [f for f in case.in_window("in") if tf.close(f["amount_gbp"], t["amount_gbp"])
                        and case.is_self(f) and f.get("counterparty_account") == t.get("counterparty_account")
                        and (f.get("booked_at") or "") <= (t.get("booked_at") or "")]
             if not paid_in:
@@ -334,8 +373,10 @@ def tenancy_deposits(case):
     """A deposit returned by one letting agent and a holding deposit paid to the next."""
     out = []
     for doc in case.docs_of("deposit_return_letter", "holding_deposit_receipt"):
+        if _addressed_to_another(doc, case):
+            continue
         want = "in" if doc.type == "deposit_return_letter" else "out"
-        for t in case.alert_tx:
+        for t in case.in_window():
             if t["direction"] != want or not any(tf.close(t["amount_gbp"], m) for m in doc.money):
                 continue
             if not _names(doc, t) or not _dated_by(doc, t, 1):
@@ -354,16 +395,16 @@ def tenancy_deposits(case):
 def collections(case):
     """Money collected from named people for one booking, then paid to the supplier."""
     doc = case.doc("booking_confirmation")
-    if not doc or not tf.mentions(doc.text, case.name):
+    if not doc or not tf.mentions(doc.text, case.name) or _for_someone_else(doc, case, ("lead traveller",)):
         return []
     travellers = [m.strip() for m in re.findall(r"^\s*\d+\.\s+(.+?)\s*$", doc.text, re.M)]
     if not travellers or not doc.money:
         return []
     per_person, total = doc.money[0], max(doc.money)
-    paid = [t for t in case.inbound()
+    paid = [t for t in case.in_window("in")
             if tf.close(t["amount_gbp"], per_person)
             and any(tf.same_name(t.get("counterparty_name"), n) for n in travellers)]
-    onward = [t for t in case.outbound()
+    onward = [t for t in case.in_window("out")
               if tf.close(t["amount_gbp"], total)
               and (tf.same_account(doc.text, t.get("counterparty_account") or "") or _names(doc, t))]
     if not paid or not onward:
@@ -439,6 +480,8 @@ def invoices(case):
     out = []
     contract = case.doc("supply_contract")
     for doc in case.docs_of("hospital_invoice", "supplier_invoice", "carrier_invoice", "invoice", "receipt"):
+        if _for_someone_else(doc, case, ("buyer", "bill to", "customer")):
+            continue  # an invoice made out to another party does not explain this customer's payment
         for t in case.outbound():
             if not any(tf.close(t["amount_gbp"], m) for m in doc.money):
                 continue
@@ -460,7 +503,7 @@ def invoices(case):
                         docs.append(chat.id)
                         support = (" The payment reference and the customer's account in %s both name the "
                                    "patient, %s." % (chat.id, patient))
-                elif contract and _names(contract, t) and _dated_by(contract, t):
+                elif contract and _names(contract, t) and _dated_by(contract, t) and tf.mentions(contract.text, case.name):
                     docs.append(contract.id)
                     support = " %s, dated %s, is the supply contract with %s that the invoice falls under." % (
                         contract.id, tf.nice_date(contract.dated), _party(t))
@@ -476,6 +519,8 @@ def invoices(case):
                                rules=("TM01", "TM02", "TM06", "TM07", "TM08"), rank=40))
     # invoices the customer issued, matched to the payers
     for doc in case.docs_of("freight_invoices"):
+        if not tf.mentions(doc.text, case.name):
+            continue
         hits = []
         for row in doc.rows():
             amounts = [m for c in row.values() for m in tf.money(c)]
@@ -591,7 +636,8 @@ def third_parties(case):
     out = []
     for doc in case.docs_of("gift_letter"):
         for t in case.inbound():
-            if any(tf.close(t["amount_gbp"], m) for m in doc.money) and _names(doc, t) and _dated_by(doc, t):
+            if (any(tf.close(t["amount_gbp"], m) for m in doc.money) and _names(doc, t) and _dated_by(doc, t)
+                    and tf.mentions(doc.text, case.name)):
                 rel = re.search(r"to my (\w+)", doc.body)
                 text = ("%s is a signed gift letter from %s, dated %s, giving %s to %s%s with no "
                         "repayment and no interest in the account. The same amount arrived from %s on %s."
@@ -604,7 +650,8 @@ def third_parties(case):
     if advice and agreement:
         for t in case.inbound():
             if (any(tf.close(t["amount_gbp"], m) for m in advice.money) and _names(advice, t)
-                    and _names(agreement, t) and not _for_someone_else(advice, case, ("client",))
+                    and _names(agreement, t) and tf.mentions(agreement.text, case.name)
+                    and not _for_someone_else(advice, case, ("client",))
                     and _dated_by(agreement, t)):
                 text = ("%s is an invoice finance agreement between %s and %s, dated %s, under which "
                         "advances are paid into this account. %s is the remittance advice for the %s "
@@ -650,7 +697,7 @@ def documented_redemption(case):
         return []
     letter, email = case.doc("redundancy_letter"), case.doc("customer_email")
     sells = [t for t in case.alert_txs("TM10") if t.get("channel") == "fund_redemption"]
-    if not (letter and email and sells):
+    if not (letter and email and sells) or _addressed_to_another(letter, case):
         return []
     sold = tx_date(sells[-1])
     employer = case.customer.get("employer") or ""

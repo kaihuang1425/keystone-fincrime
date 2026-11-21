@@ -101,6 +101,16 @@ class Case:
     def outbound(self, pool=None):
         return [t for t in (self.alert_tx if pool is None else pool) if t.get("direction") == "out"]
 
+    def in_window(self, direction=None):
+        """Every transaction from the start of the review window on, alerted or not.
+
+        A document can match a payment that no alert happened to list, for
+        example the onward payment of a collection when only the payers were
+        alerted. Explanations look here for the other leg of a matched pair.
+        """
+        return [t for t in self.txs if (t.get("booked_at") or "")[:10] >= self.window_from
+                and (direction is None or t.get("direction") == direction)]
+
     def is_self(self, t):
         return tf.same_name(t.get("counterparty_name"), self.name)
 
