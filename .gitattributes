@@ -1,0 +1,6 @@
+# The grader runs system/run on Linux. A CRLF shebang line would fail every case.
+* text=auto eol=lf
+system/run text eol=lf
+*.py text eol=lf
+*.jsonl text eol=lf
+*.md text eol=lf

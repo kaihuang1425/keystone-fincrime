@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+# development data and scratch analysis never go in the repo
+tools/dumps/
+institutions/
+.tavily/

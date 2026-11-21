@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Alert triage: system/run <institution folder> <output file>
+
+Reads one institution folder and writes one JSON line per case. Standard
+library only, no network, no model, no randomness: the same input always
+gives the same bytes out.
+"""
+import json
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+sys.dont_write_bytecode = True
+
+from triage.loader import Institution  # noqa: E402
+from triage.decide import safe_decide  # noqa: E402
+
+FIELDS = ("case_id", "alert_ids", "verdict", "reason_code", "reason", "evidence")
+
+
+def main(argv):
+    if len(argv) != 3:
+        sys.stderr.write("usage: run <institution folder> <output file>\n")
+        return 2
+    folder, out_path = os.path.abspath(argv[1]), os.path.abspath(argv[2])
+    inst = Institution(folder)
+    out_dir = os.path.dirname(out_path)
+    if out_dir and not os.path.isdir(out_dir):
+        os.makedirs(out_dir)
+    counts = {}
+    with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
+        for row in inst.cases:
+            result = safe_decide(inst, row)
+            counts[result["verdict"]] = counts.get(result["verdict"], 0) + 1
+            fh.write(json.dumps({k: result[k] for k in FIELDS}, ensure_ascii=False) + "\n")
+    sys.stderr.write("%d cases: %s\n" % (len(inst.cases), ", ".join(
+        "%s %d" % (k, counts[k]) for k in sorted(counts))))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
