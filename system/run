@@ -7,6 +7,7 @@ gives the same bytes out.
 """
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -19,36 +20,48 @@ from triage.decide import safe_decide  # noqa: E402
 FIELDS = ("case_id", "alert_ids", "verdict", "reason_code", "reason", "evidence")
 
 
-def unreadable_folder(folder, out_path, exc):
-    """The folder could not be loaded. No case is dropped: each one found in
-    cases.jsonl is passed to a person, and none is closed."""
-    rows = []
-    try:
-        with open(os.path.join(folder, "cases.jsonl"), encoding="utf-8-sig", errors="replace") as fh:
-            for line in fh:
-                try:
-                    row = json.loads(line)
-                except ValueError:
-                    continue
-                if isinstance(row, dict) and row.get("case_id"):
-                    rows.append(row)
-    except OSError:
-        pass
-    with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
-        for row in rows:
-            fh.write(json.dumps({
-                "case_id": row.get("case_id"),
-                "alert_ids": list(row.get("alert_ids") or []),
-                "verdict": "ESCALATE",
-                "reason_code": "ESC_UNEXPLAINED_FUNDS",
-                "reason": ("The system could not read this institution's records (%s), so this case has not "
-                           "been assessed. It is passed to the MLRO for a manual review and must not be "
-                           "closed automatically." % type(exc).__name__),
-                "evidence": [],
-            }, ensure_ascii=False) + "\n")
-    sys.stderr.write("could not load %s (%s: %s); %d cases escalated unread\n"
-                     % (folder, type(exc).__name__, exc, len(rows)))
-    return 0
+CASE_ID = re.compile(r'"case_id"\s*:\s*"([^"\\]+)"')
+ALERT_ID = re.compile(r'"([^"\\]+)"')
+ALERT_LIST = re.compile(r'"alert_ids"\s*:\s*\[([^\]]*)')
+
+
+def case_lines(folder):
+    """Every case in cases.jsonl, in file order: (row, None) when the line reads as JSON,
+    or (recovered, "damaged") when it does not but a case ID can still be read from it."""
+    out = []
+    with open(os.path.join(folder, "cases.jsonl"), encoding="utf-8-sig", errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                row = None
+            if isinstance(row, dict):
+                if row.get("case_id"):
+                    out.append((row, None))
+                continue
+            m = CASE_ID.search(line)
+            if m:
+                alerts = ALERT_LIST.search(line)
+                out.append(({"case_id": m.group(1),
+                             "alert_ids": ALERT_ID.findall(alerts.group(1)) if alerts else []}, "damaged"))
+    return out
+
+
+def unassessed(row, why):
+    """A case the system could not assess: passed to a person, never closed."""
+    alert_ids = [a for a in (row.get("alert_ids") or []) if isinstance(a, str)]
+    return {
+        "case_id": row.get("case_id"),
+        "alert_ids": alert_ids,
+        "verdict": "ESCALATE",
+        "reason_code": "ESC_UNEXPLAINED_FUNDS",
+        "reason": ("The system could not read %s, so case %s has not been assessed. It is passed to the MLRO "
+                   "for a manual review and must not be closed automatically." % (why, row.get("case_id"))),
+        "evidence": alert_ids,
+    }
 
 
 def main(argv):
@@ -60,16 +73,32 @@ def main(argv):
     if out_dir and not os.path.isdir(out_dir):
         os.makedirs(out_dir)
     try:
+        rows = case_lines(folder)
+    except OSError as exc:  # no cases can be read at all: say so with a failing exit code
+        sys.stderr.write("could not read %s: %s\n" % (os.path.join(folder, "cases.jsonl"), exc))
+        return 1
+    try:
         inst = Institution(folder)
     except Exception as exc:  # the folder would not load: every case still gets a line
-        return unreadable_folder(folder, out_path, exc)
-    counts = {}
+        inst = None
+        sys.stderr.write("could not load %s (%s: %s); every case escalated unread\n"
+                         % (folder, type(exc).__name__, exc))
+        why = "this institution's records (%s)" % type(exc).__name__
+    counts, damaged = {}, 0
     with open(out_path, "w", encoding="utf-8", newline="\n") as fh:
-        for row in inst.cases:
-            result = safe_decide(inst, row)
+        for row, problem in rows:
+            if inst is None:
+                result = unassessed(row, why)
+            elif problem:
+                damaged += 1
+                result = unassessed(row, "this case's line in cases.jsonl, which is damaged")
+            else:
+                result = safe_decide(inst, row)
             counts[result["verdict"]] = counts.get(result["verdict"], 0) + 1
             fh.write(json.dumps({k: result[k] for k in FIELDS}, ensure_ascii=False) + "\n")
-    sys.stderr.write("%d cases: %s\n" % (len(inst.cases), ", ".join(
+    if damaged:
+        sys.stderr.write("%d damaged case lines escalated unread\n" % damaged)
+    sys.stderr.write("%d cases: %s\n" % (len(rows), ", ".join(
         "%s %d" % (k, counts[k]) for k in sorted(counts))))
     return 0
 

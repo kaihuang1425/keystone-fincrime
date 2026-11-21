@@ -99,11 +99,18 @@ def jsonl(path):
     rows = []
     if not os.path.exists(path):
         return rows
-    with open(path, encoding="utf-8-sig") as fh:
+    # read the way system/triage/loader.py does, so damage the system survives does not stop the check
+    with open(path, encoding="utf-8-sig", errors="replace") as fh:
         for line in fh:
             line = line.strip()
-            if line:
-                rows.append(json.loads(line))
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(row, dict):
+                rows.append(row)
     return rows
 
 
