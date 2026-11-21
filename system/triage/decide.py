@@ -258,8 +258,24 @@ def gap(case, open_alerts, covered):
 
 
 # ------------------------------------------------------------------ wording
+_ABBREVIATION = re.compile(r"\b(?:INV|Inv|NO|No|REF|Ref|e\.g|i\.e)\.$")
+
+
 def _sentences(text):
-    return [s.strip() for s in re.split(r"(?<=[a-z0-9\)\"%])\.\s+(?=[A-Z\"£0-9])", text.strip()) if s.strip()]
+    """Split text into sentences, without breaking inside 'INV. NO. 123'."""
+    out, start = [], 0
+    text = text.strip()
+    for m in re.finditer(r"(?<=[.!?])[\"')]?\s+(?=[A-Z\"£0-9])", text):
+        if _ABBREVIATION.search(text[start:m.start()]):
+            continue
+        piece = text[start:m.start()].strip()
+        if piece:
+            out.append(piece)
+        start = m.end()
+    tail = text[start:].strip()
+    if tail:
+        out.append(tail)
+    return out
 
 
 def _compose(parts, limit=4):
@@ -273,6 +289,47 @@ def _compose(parts, limit=4):
         if len(out) >= limit:
             break
     return ". ".join(out) + "."
+
+
+MATERIAL = 1000.0  # the smallest money limit any of the four SOPs sets
+
+
+def undocumented_remainder(case, covered):
+    """Alerted money that a close would leave with no document behind it.
+
+    A wrong close costs far more than an unnecessary question, so a case closes
+    only when nothing material is left over. A payment is left over when no
+    document covers it, it is not everyday spending, it is at least £1,000, and
+    the other party has never appeared on the account before the review window.
+    For a personal customer, money from an account in their own name that has
+    never appeared before counts too, because the SOP treats such an account as
+    theirs only when a document shows it.
+    """
+    left = []
+    before = [o for o in case.txs if (o.get("booked_at") or "")[:10] < case.window_from]
+    for t in case.alert_tx:
+        if t["transaction_id"] in covered or case.is_spending(t) or t["amount_gbp"] < MATERIAL:
+            continue
+        who, acct = t.get("counterparty_name"), t.get("counterparty_account")
+        if case.is_self(t):
+            seen = any(o.get("counterparty_account") == acct for o in before)
+            if not case.is_business and acct and not seen:
+                left.append(t)
+        elif not (who and any(same_party(o.get("counterparty_name"), who) for o in before)):
+            left.append(t)
+    return left
+
+
+def remainder_gap(case, left):
+    t = _largest(left)
+    who = t.get("counterparty_name") or "an unnamed party"
+    verb = "arrived from" if t["direction"] == "in" else "went to"
+    text = ("%s %s %s on %s (reference %s) with no document behind it, and that party has no earlier "
+            "history on the account. The other alerted activity is documented and nothing is suspicious, "
+            "but the case cannot close while this payment is unexplained."
+            % (gbp(t["amount_gbp"]), verb, who, day(t), t.get("reference") or "none"))
+    ask = "Ask the customer who %s is and what the payment was for, with a document that shows it." % who
+    return Finding("gap", "RFI_PURPOSE_DOCUMENTS", text, txs=ids(left), ask=ask)
 
 
 def held_payment_gap(case, covered):
@@ -331,11 +388,20 @@ def decide(inst, row):
     if red:
         red.sort(key=lambda f: (f.rank, f.code))
         code = red[0].code
-        reason = _compose([f.text for f in red[:2]])
+        lines = _sentences(red[0].text)[:4]
+        # a second sign of crime adds a line only when it brings a new fact
+        for f in red[1:2]:
+            for s in _sentences(f.text):
+                amounts = tf.money(s)
+                repeats = amounts and all(gbp(a) in " ".join(lines) for a in amounts)
+                if len(lines) < 4 and not repeats and s not in lines:
+                    lines.append(s)
+        reason = ". ".join(s.rstrip(".") for s in lines) + "."
         return _result(case, code, reason, _evidence(red[:2], case), red, explains, open_alerts)
 
     held = held_payment_gap(case, covered)
-    if not open_alerts and case.alerts and not held:
+    leftover = undocumented_remainder(case, covered) if not open_alerts else []
+    if not open_alerts and case.alerts and not held and not leftover:
         used = [f for f in explains if set(f.covers) & set(ids(case.alert_tx)) or f.code in ("RETURNING_CUSTOMER",)]
         used.sort(key=lambda f: (f.rank, f.docs[0] if f.docs else "", f.code))
         main = used[0]
@@ -381,6 +447,8 @@ def decide(inst, row):
     gaps = [f for f in identity if f.kind == "gap"]
     if not gaps and held and not open_alerts:
         gaps = [held]
+    if not gaps and leftover:
+        gaps = [remainder_gap(case, leftover)]
     if not gaps:
         gaps = [gap(case, open_alerts or case.alerts, covered)]
     g = gaps[0]

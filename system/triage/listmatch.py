@@ -24,6 +24,11 @@ def _born(text):
     return None
 
 
+def _first_sentence(text):
+    """The first sentence of a list entry's reason, for quoting."""
+    return re.split(r"(?<=[.!?])\s+", (text or "").strip())[0].rstrip(".")
+
+
 def _same_birth(a, b):
     """Two birth dates agree on every part both of them give."""
     if not a or not b:
@@ -91,7 +96,7 @@ def review(case, explains):
             if verdict is True:
                 same = ("%s gives %s's date of birth as %s, the same as list entry %s (%s, born %s, listed as \"%s\")"
                         % (doc.id, party, said, entry_id, listed, tf.nice_date(entry.get("date_of_birth")),
-                           (entry.get("reason") or "").rstrip(".")), [doc.id])
+                           _first_sentence(entry.get("reason"))), [doc.id])
             elif verdict is False:
                 different = ("%s gives %s's date of birth as %s, but the listed %s in entry %s was born %s"
                              % (doc.id, party, said, listed, entry_id, tf.nice_date(entry.get("date_of_birth"))),
@@ -116,7 +121,7 @@ def review(case, explains):
                     same = ("%s shows %s, born %s, held control of %s (%s) %s. That matches list entry %s (%s, born %s, "
                             "listed as \"%s\"), so the listed party still controlled the company when it was paid.%s"
                             % (p["doc"].id, p["name"], p["born_text"], party, p["what"] or p["role"], until, entry_id,
-                               listed, tf.nice_date(entry.get("date_of_birth")), (entry.get("reason") or "").rstrip("."), resigned),
+                               listed, tf.nice_date(entry.get("date_of_birth")), _first_sentence(entry.get("reason")), resigned),
                             docs)
                 else:
                     p = sorted(agree, key=lambda p: (str(p["ended"]), p["doc"].id))[-1]

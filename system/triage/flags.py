@@ -101,7 +101,7 @@ def mule_admission(case):
         top = max(onward, key=lambda t: (t["amount_gbp"], t["transaction_id"]))
         text = ('In %s the customer says "%s". %d different people paid into the account in the window and '
                 "money was sent on to %s. The account is being used to receive and pass on other people's money."
-                % (chat.id, _quote(said).rstrip(". "), len(payers), top["counterparty_name"]))
+                % (chat.id, _sentence_with(said, r"pay into my account|send it on|pass it on|forward|crypto"), len(payers), top["counterparty_name"]))
         return [Finding("flag", "ESC_MULE_ACTIVITY", text, docs=[chat.id],
                         txs=ids(case.inbound())[:3] + [top["transaction_id"]], rank=11)]
     return []
@@ -211,7 +211,7 @@ def dissolved_payer(case):
             if said:
                 docs.append(chat.id)
                 story = ' In %s the customer calls the money "%s", which does not fit the payment reference %s.' % (
-                    chat.id, _quote(said, 90), "/".join(refs) if refs else "given")
+                    chat.id, _sentence_with(said, r"loan|gift|friend|family|borrow|invest|cousin|payment|money|sav"), "/".join(refs) if refs else "given")
                 break
         onward = [t for t in case.outbound() if not case.is_spending(t) and t.get("counterparty_name")
                   and not case.is_self(t)]
@@ -380,7 +380,8 @@ def third_party_investing(case, covered):
         said = _customer_lines(chat)
         if re.search(r"invest(?:ing)? (?:for|through)|to invest for|through mine|for a few people|"
                      r"cannot open an account|can't open an account", said, re.I):
-            admission = ' In %s the customer says "%s".' % (chat.id, _quote(said).rstrip(". "))
+            admission = ' In %s the customer says "%s".' % (
+                chat.id, _sentence_with(said, r"invest(?:ing)? (?:for|through)|to invest for|through mine|for a few people|open an account"))
             docs.append(chat.id)
             break
     if not payouts and not admission:
@@ -485,7 +486,7 @@ def high_risk_corridor(case, covered):
         said = _customer_lines(chat)
         if said:
             docs.append(chat.id)
-            notes.append('the only explanation is the customer\'s word in %s ("%s"), with no document' % (chat.id, _quote(said, 80)))
+            notes.append('the only explanation is the customer\'s word in %s ("%s"), with no document' % (chat.id, _sentence_with(said, r"loan|gift|friend|family|borrow|invest|cousin|payment|money|sav")))
             break
     funders = [t for t in case.inbound() if t.get("counterparty_name") and not case.is_self(t)
                and t not in open_txs and t["transaction_id"] not in covered

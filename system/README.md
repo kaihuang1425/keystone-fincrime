@@ -55,6 +55,14 @@ A case closes only when every alert in it passes.
 | TM10 early redemption | A dated document gives the reason and nothing was paid to anyone else |
 | TM22 internal list | Identity facts on file show the counterparty is a different party |
 
+## When in doubt, it does not close
+
+A wrong decision costs more than no decision. In the brief's scoring a wrongful close costs 10 and an unnecessary question costs 3. So passing the tests above is not enough. Two further checks run before any close.
+
+The first check looks for leftovers. It searches the alerted transactions for a payment of £1,000 or more that no document covers and whose other party has never appeared on the account before. One such payment turns the close into an RFI. For a personal customer the same applies to money from an own-name account that has never appeared before.
+
+The second check applies at the payments firm. A held payment of £10,000 or more to anyone but the client is not released without a matching invoice or contract on file. The system reads that threshold from `POLICY.md`.
+
 ## Signs of crime
 
 Each escalation rests on evidence in the file. The system never escalates on a hunch or on the size of a payment.
@@ -102,7 +110,7 @@ This choice makes the five scored runs identical, and a run costs nothing. Every
 
 The development cases carry no labels, so we cannot report an accuracy figure. We tested the reasoning instead.
 
-**Mutation tests.** A system can reach the right verdict for the wrong reason. It might close whenever a document of the right type is present. `tools/mutation_test.py` guards against that. It takes real cases, changes one fact in memory and checks that the verdict moves as the SOP requires. A letter stating a different amount no longer closes a case. A statement in another person's name no longer proves an own account. A gift letter whose date of birth matches the list entry escalates, and the same letter with a different date of birth closes. All 20 tests pass.
+**Mutation tests.** A system can reach the right verdict for the wrong reason. It might close whenever a document of the right type is present. `tools/mutation_test.py` guards against that. It takes real cases, changes one fact in memory and checks that the verdict moves as the SOP requires. A letter stating a different amount no longer closes a case. A statement in another person's name no longer proves an own account. A gift letter whose date of birth matches the list entry escalates, and the same letter with a different date of birth closes. A fully documented case with one extra £5,000 payment from a stranger no longer closes. All 21 tests pass.
 
 **Repeat runs.** `tools/verify.py` runs each institution five times under five different hash seeds from inside `system/`. The five output files are identical.
 
