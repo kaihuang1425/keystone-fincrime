@@ -40,6 +40,9 @@ def sha256(path):
 
 def rerun(institution, folder, expected, times=5):
     """Run the system again and compare each output with the published one."""
+    if not os.path.exists(os.path.join(folder, "cases.jsonl")):
+        # without this the system would write an empty file and the record would wrongly say "differs"
+        raise SystemExit("--rerun takes the path to the institutions folder. %s has no cases.jsonl." % folder)
     identical, seconds = True, []
     with tempfile.TemporaryDirectory(prefix="triage-rerun-") as tmp:
         for i in range(times):
