@@ -31,7 +31,7 @@
     if (x) { b.title = name + ' ' + x.does; b.setAttribute('aria-label', name); }
   });
 
-  // filters by verdict, then Next six, where Replay was
+  // filters by verdict, then Next 20, where Replay was
   var bar = replayBtn.parentNode;
   var seg = document.createElement('div');
   seg.className = 'k-seg kf-filter'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Show');

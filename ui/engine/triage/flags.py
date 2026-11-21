@@ -341,11 +341,13 @@ def commission_pool(case):
     """A third party funds payouts to many people who share a few addresses."""
     for doc in case.docs_of("payment_file"):
         rows = doc.rows()
-        counts = {}
+        counts, shown = {}, {}
         for row in rows:
-            addr = (row.get("address") or "").strip()
+            raw = (row.get("address") or "").strip()
+            addr = tf.norm(raw)  # count addresses the way explain._shared_addresses does
             if addr:
                 counts[addr] = counts.get(addr, 0) + 1
+                shown.setdefault(addr, raw)
         if not counts or max(counts.values()) < 3:
             continue
         funders = [t for t in case.inbound() if t.get("counterparty_name") and not case.is_self(t)]
@@ -362,7 +364,7 @@ def commission_pool(case):
         text = ("%s%s, the payment file dated %s, lists %d individual payees but only %d addresses "
                 "between them, with %d listed at %s. The client's declared business is \"%s\", which "
                 "does not involve paying commission to individuals funded by another company."
-                % (fund, doc.id, tf.nice_date(doc.dated), len(rows), len(counts), top[1], top[0],
+                % (fund, doc.id, tf.nice_date(doc.dated), len(rows), len(counts), top[1], shown[top[0]],
                    (case.customer.get("business_activity") or "").rstrip(".")))
         return [Finding("flag", "ESC_THIRD_PARTY_FUNDING", text, docs=[doc.id], txs=txs, rank=40)]
     return []

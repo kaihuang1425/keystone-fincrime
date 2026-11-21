@@ -12,6 +12,8 @@ exactly one line per case. Then:
 
   same    the output must equal the undamaged run byte for byte
   one     the damaged case is escalated and every other line is unchanged
+  noclose a record a case relies on is gone: no case may move towards
+          CLOSE, and the cases that lost one must not close (checked below)
   safer   no case may move towards CLOSE: not to CLOSE from RFI or ESCALATE,
           and not from ESCALATE to RFI (losing information may only move a
           case towards a person)
@@ -107,6 +109,50 @@ def cut_case_line(folder):
     return row["case_id"]
 
 
+def bad_alert_ids(folder):
+    """Give the sixth case an alert_ids value that is not a list."""
+    p = os.path.join(folder, "cases.jsonl")
+    with open(p, encoding="utf-8") as fh:
+        rows = [json.loads(l) for l in fh if l.strip()]
+    rows[5]["alert_ids"] = 5
+    with open(p, "w", encoding="utf-8") as fh:
+        fh.writelines(json.dumps(r) + "\n" for r in rows)
+    return rows[5]["case_id"]
+
+
+def drop_lines(name, pick):
+    """Remove the lines of one file that pick() chooses, using the cases and alerts to choose them."""
+    def damage(folder):
+        def rows(f):
+            with open(os.path.join(folder, f), encoding="utf-8") as fh:
+                return [json.loads(l) for l in fh if l.strip()]
+        gone, hit = pick(rows("cases.jsonl"), {a["alert_id"]: a for a in rows("alerts.jsonl")})
+        key = {"alerts.jsonl": "alert_id", "transactions.jsonl": "transaction_id"}[name]
+        keep = [r for r in rows(name) if r.get(key) not in gone]
+        with open(os.path.join(folder, name), "w", encoding="utf-8") as fh:
+            fh.writelines(json.dumps(r) + "\n" for r in keep)
+        return hit
+    return damage
+
+
+# the last alert of every case with two or more, and the last transaction of every first alert with two or more
+def _last_alerts(cases, alerts):
+    many = [c for c in cases if len(c["alert_ids"]) > 1]
+    return {c["alert_ids"][-1] for c in many}, {c["case_id"] for c in many}
+
+
+def _last_txs(cases, alerts):
+    many = [c for c in cases if c["alert_ids"] and len(alerts.get(c["alert_ids"][0], {}).get("transaction_ids") or []) > 1]
+    gone = {alerts[c["alert_ids"][0]]["transaction_ids"][-1] for c in many}
+    # a transaction can sit in another case's alert too: every case whose alerts name a removed one is hit
+    hit = {c["case_id"] for c in cases if any(t in gone for a in c["alert_ids"] for t in alerts.get(a, {}).get("transaction_ids") or [])}
+    return gone, hit
+
+
+LAST_ALERTS = drop_lines("alerts.jsonl", _last_alerts)
+LAST_TXS = drop_lines("transactions.jsonl", _last_txs)
+
+
 DAMAGE = [
     # name, check, what it does
     ("truncated transaction line", "same", lambda f: append(os.path.join(f, "transactions.jsonl"), '{"transaction_id": "X\n')),
@@ -117,6 +163,9 @@ DAMAGE = [
     ("unknown extra field", "same", extra_field),
     ("transaction with no transaction_id", "same", lambda f: append(os.path.join(f, "transactions.jsonl"), '{"customer_id": "NONE", "amount_gbp": 1}\n')),
     ("cut-off line in cases.jsonl", "one", cut_case_line),
+    ("alert_ids that is not a list", "one", bad_alert_ids),
+    ("an alert line missing", "noclose", LAST_ALERTS),
+    ("an alerted transaction missing", "noclose", LAST_TXS),
     ("internal_list.jsonl missing", "safer", lambda f: os.remove(os.path.join(f, "internal_list.jsonl"))),
     ("named list entries missing", "safer", drop_list_entry),
     ("folder cannot be loaded", "safer", unloadable),
@@ -171,6 +220,16 @@ def main(argv):
                 if others:
                     problems.append("%d other lines changed" % len(others))
                 note = "%s escalated, the other %d lines identical" % (hit, len(base) - 1)
+            elif not problems and check == "noclose":
+                # every case that lost a record it relies on must not close; the rest must not move towards CLOSE
+                v = verdicts(lines)
+                down = sorted(c for c in v if RANK[v[c]] < RANK.get(base_v.get(c), 0))
+                if down:
+                    problems.append("%d cases moved towards CLOSE, e.g. %s" % (len(down), down[0]))
+                still = sorted(c for c in hit if v.get(c) == "CLOSE")
+                if still:
+                    problems.append("%d of the %d cases that lost a record still close, e.g. %s" % (len(still), len(hit), still[0]))
+                note = "none of the %d cases that lost a record closes" % len(hit)
             elif not problems and check == "safer":
                 v = verdicts(lines)
                 down = sorted(c for c in v if RANK[v[c]] < RANK.get(base_v.get(c), 0))
