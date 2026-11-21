@@ -24,6 +24,7 @@ a{color:var(--ink)}a:hover{color:var(--ink-2)}
 .lp-proof b{font-size:40px;font-weight:300;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .lp-proof span{font-size:14px;color:var(--ink-2)}
 .lp-proof b.is-bad{color:var(--bad)}
+.kl-meter .k-meter__line::after{transform:translateX(-12px)}
 .lp-problem{display:grid;gap:12px;align-items:end}
 .lp-proof.lp-proof--one{grid-template-columns:minmax(0,1fr) !important}
 .lp-proof.lp-proof--ours{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:0 24px;margin-top:8px}
@@ -85,7 +86,7 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <div class="lp-copy" style="gap: 24px;">
 <span class="k-label">Hackathon entry · Reviewing bank alerts</span>
 <h1 class="display" style="max-width: 13ch;">Every alert gets a decision. <span class="k-turn">Every decision shows its evidence.</span></h1>
-<p class="lp-gloss">An alert is a payment that a bank’s software flags as possible money laundering or fraud.</p>
+<p class="lp-gloss">An alert is a payment, or a pattern of payments, that a bank’s software flags as possible money laundering or fraud.</p>
 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
 <a class="k-btn k-btn--primary k-btn--lg" href="drop.html">Run your cases <span class="k-arr">→</span></a>
 <a class="k-btn k-btn--ghost k-btn--lg" href="queue.html">Browse the practice alerts</a>
@@ -123,7 +124,7 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <div class="lp-copy">
 <div class="lp-who"><span data-k-bot data-shape="lens" data-color="green" data-state="working" data-name="The check for crime" style="--size: 40px"></span></div>
 <h2 class="h1">Signs of crime come first. <span class="k-turn">A suspect is never asked a question.</span></h2>
-<p class="lp-gloss">A question could warn them. That is called tipping off, and the bank’s procedure forbids it.</p>
+<p class="lp-gloss">A question could warn them. That is called tipping off, and in the UK it is a crime.</p>
 </div>
 <div class="kl-gates">
 <div class="kl-case" aria-hidden="true"><span><b>Case A</b> · another bank has reported fraud</span><span><b>Case B</b> · a solicitor’s letter matches the payment</span><span><b>Case C</b> · £30,000 paid in, nothing on file</span></div>
@@ -155,7 +156,7 @@ html.kf-wait .lp-q > *,html.kf-wait .kl-reason{visibility:hidden}
 <article class="k-doc"><div class="k-doc__head"><span>Letter from Hale &amp; Co Solicitors</span><span>dated before the payment</span></div><p>Distribution of £41,500.00 from the estate of R. Field</p></article>
 <div class="kw-cmp"><span>Amount</span><span class="kw-cmp__word">Matches</span><span>£41,500.00</span></div>
 <div class="kw-cmp"><span>Payer</span><span class="kw-cmp__word">Matches</span><span>Hale &amp; Co Solicitors</span></div>
-<div class="k-meter kl-meter" style="--t: 18.7%; margin-top: 10px;"><div class="k-meter__top"><span>March total, less the explained £41,500</span><span class="k-meter__val"><span class="v1">£44,300</span><span class="v2">£2,800</span></span></div><div class="k-meter__bar"><span class="k-meter__fill"></span><span class="k-meter__line" data-label="alert limit £8,400"></span></div></div>
+<div class="k-meter kl-meter" style="--t: 18.7%; margin-top: 10px;"><div class="k-meter__top"><span>March total, less the explained £41,500</span><span class="k-meter__val"><span class="v1">£44,300</span><span class="v2">£2,800</span></span></div><div class="k-meter__bar"><span class="k-meter__fill"></span><span class="k-meter__line" data-label="limit 3 × £2,800 = £8,400"></span></div></div>
 <div class="kw-verdict"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>DOCUMENTED_EVENT</code></div>
 </div>
 <div class="kl-panel">
