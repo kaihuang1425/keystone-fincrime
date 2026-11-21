@@ -1,7 +1,8 @@
 /* The case view, on one real verdict: app.html?inst=bank&case=BK-CS100112 (the queue links here).
    Case Lead explains the decision as a one-line summary and a table of the SOP's checks, each marked
    passed, failed or not reached, with the system's own sentences beside them; each bot shows the records it owns;
-   the evidence panel lists the records and the reason sentence by sentence. Question buttons ask
+   the evidence panel lists the records, each with the numbered step of the reason that cites it, and the
+   reason as numbered steps. Question buttons ask
    Case Lead what this page can answer from the case itself, and the answers stay when a bot is
    opened and closed. Below them the analyst decides: agree with Keystone's verdict or pick a more
    cautious one, then go to the next undecided case. */
@@ -245,12 +246,15 @@
     src.innerHTML = c.evidence.map(function (id) {
       var s = KF.citing(c, id);
       return '<article class="k-doc"><div class="k-doc__head"><span>' + KF.esc(KF.kind(id)) + '</span><span>' + KF.esc(id) + '</span></div>' +
-        (s.length ? s.map(function (x) { return '<p>' + KF.esc(x).split(id).join('<span class="k-hl is-on">' + id + '</span>') + '</p>'; }).join('')
+        (s.length ? s.map(function (x) {
+          return '<p class="kf-cited"><span class="kf-stepn" title="Step ' + KF.stepOf(c, x) + ' of the reason">' + KF.stepOf(c, x) + '</span>' +
+            KF.esc(x).split(KF.esc(id)).join('<span class="k-hl is-on">' + KF.esc(id) + '</span>') + '</p>';
+        }).join('')
           : '<p>Listed in the evidence. The reason does not quote it.</p>') + '</article>';
     }).join('') + '<p class="k-meta">The site shows each record’s id and the sentences that cite it, not the record itself.</p>';
     abs.setAttribute('aria-label', 'Reason');
     abs.innerHTML = '<article class="k-doc"><div class="k-doc__head"><span>' + KF.esc(KF.title(c.reason_code)) + '</span>' + KF.code(c.reason_code) + '</div>' +
-      KF.sentences(c.reason).map(function (x) { return '<p>' + KF.withCites(c, x) + '</p>'; }).join('') + '</article>' +
+      KF.steps(c) + '</article>' +
       '<p class="k-meta">Written by the system from the facts its checks used.' + (run.repeat_identical === true ? ' Run ' + run.repeat_runs + ' times, it wrote the same words each time.' : '') + '</p>';
     KF.mountBots(aside);
   }

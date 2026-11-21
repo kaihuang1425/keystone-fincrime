@@ -97,8 +97,9 @@
   KF.describe = function (code) { return KF.CODES[code] ? KF.CODES[code][1] + '.' : ''; };
   // the reason code itself, kept on screen but quiet, with the brief's description on hover
   KF.code = function (code) { return '<code class="kf-code" title="' + KF.esc(KF.describe(code)) + '">' + KF.esc(code) + '</code>'; };
+  // a new sentence starts after . ! or ? with a capital, £, a quote or a figure ("lead traveller. 13 of…")
   KF.sentences = function (text) {
-    return String(text).split(/(?<=[.!?]["”’]?)\s+(?=[A-Z£"“‘])/).filter(Boolean);
+    return String(text).split(/(?<=[.!?]["”’]?)\s+(?=[A-Z0-9£"“‘])/).filter(Boolean);
   };
   KF.clip = function (s, n) { s = String(s); return s.length > n ? s.slice(0, n - 1).replace(/[\s,;:]+\S*$/, '') + '…' : s; };
   KF.alerts = function (c) { return c.alert_ids.length + (c.alert_ids.length === 1 ? ' alert' : ' alerts'); };
@@ -160,6 +161,34 @@
     var re = new RegExp('\\b(' + ids.map(function (i) { return i.replace(/[-]/g, '\\-'); }).join('|') + ')\\b', 'g');
     return html.replace(re, function (id) { return KF.cite(c, id); });
   };
+  /* ---------- the reason as numbered steps: one sentence each, in the system's order and words ---------- */
+  // the case's record ids that a sentence names, in the order it names them
+  KF.idsIn = function (c, s) {
+    var seen = {}, out = [];
+    KF.records(c).forEach(function (id) {
+      if (seen[id]) return; seen[id] = 1;
+      var m = new RegExp('(^|[^A-Za-z0-9-])' + id.replace(/[-]/g, '\\-') + '(?![A-Za-z0-9])').exec(s);
+      if (m) out.push([m.index + m[1].length, id]);
+    });
+    return out.sort(function (a, b) { return a[0] - b[0]; }).map(function (x) { return x[1]; });
+  };
+  // opts.max: show that many steps, then opts.more(n) for the rest; opts.text(sentence, i): the
+  // sentence as safe HTML (escaped by default); opts.cls: extra classes on the list
+  KF.stepItems = function (c, opts) {
+    opts = opts || {};
+    var s = KF.sentences(c.reason), max = Math.min(opts.max || s.length, s.length);
+    return s.slice(0, max).map(function (x, i) {
+      var ids = KF.idsIn(c, x);
+      return '<li><span class="kf-steps__t">' + (opts.text ? opts.text(x, i) : KF.esc(x)) + '</span>' +
+        (ids.length ? ' <span class="kf-steps__ids">' + ids.map(function (id) { return KF.cite(c, id); }).join('') + '</span>' : '') + '</li>';
+    }).join('') + (s.length > max && opts.more ? '<li class="kf-steps__more">' + opts.more(s.length - max) + '</li>' : '');
+  };
+  KF.steps = function (c, opts) {
+    opts = opts || {};
+    return '<ol class="kf-steps' + (opts.cls ? ' ' + opts.cls : '') + '">' + KF.stepItems(c, opts) + '</ol>';
+  };
+  // which step (1-based) a sentence of the reason is
+  KF.stepOf = function (c, sentence) { return KF.sentences(c.reason).indexOf(sentence) + 1; };
   KF.amounts = function (text) { return KF.esc(text).replace(/£[\d,]+(?:\.\d\d)?/g, '<span class="kw-hl">$&</span>'); };
 
   /* ---------- Case Lead answers from the case's own reason and records, nothing else ---------- */

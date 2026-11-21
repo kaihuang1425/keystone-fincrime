@@ -127,3 +127,33 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
   .kf-checks .kf-ck__in { justify-content: flex-end; }
   .kf-checks .k-table .kf-ck__facts { grid-column: 1 / -1; padding-bottom: 10px; }
 }
+
+/* the reason as numbered steps: one sentence a step, in the system's own order and words, with the
+   records each sentence names beside it as citation chips */
+.kf-steps { list-style: none; margin: 0; padding: 0; counter-reset: kf-step; display: grid; gap: 10px; }
+.kf-steps > li { position: relative; min-width: 0; padding-left: 32px; counter-increment: kf-step; overflow-wrap: anywhere; }
+.kf-steps > li::before, .kf-stepn { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 999px;
+  background: var(--surface-3); color: var(--ink-2); font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; line-height: 1; }
+.kf-steps > li::before { content: counter(kf-step); position: absolute; left: 0; top: 1px; }
+.kf-steps__ids { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 2px; vertical-align: middle; }
+.kf-steps__ids .k-cite { vertical-align: 0; }
+.kf-steps > li.kf-steps__more { counter-increment: none; color: var(--ink-3); font-size: .92em; }
+.kf-steps > li.kf-steps__more::before { content: none; }
+.k-doc .kf-steps { gap: 8px; }
+.k-doc .kf-steps > li { padding-left: 30px; }
+/* an evidence card: the step of the reason that cites this record */
+.kf-cited { position: relative; padding-left: 30px; }
+.kf-cited .kf-stepn { position: absolute; left: 0; top: 0; }
+.k-doc .kf-steps > li::before { top: 0; }
+/* on the phone: the first steps, each held to three lines, the records under it */
+.kf-steps--compact { gap: 8px; margin-top: 2px; font-size: 14px; line-height: 1.45; }
+.kf-steps--compact > li { padding-left: 30px; }
+.kf-steps--compact > li::before { top: -1px; }
+.kf-steps--compact .kf-steps__t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.kf-steps--compact .kf-steps__ids { display: flex; margin: 4px 0 0; }
+.kf-steps--compact .kf-steps__more a { color: var(--ink-2); }
+/* the landing's example reason keeps its box */
+.kl-reason.kf-steps { padding: 16px 18px; gap: 10px; }
+.kl-open { display: inline-block; margin-left: 4px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.kl-open:hover { color: var(--ink-2); }
+.kl-open[hidden] { display: none; }
