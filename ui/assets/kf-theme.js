@@ -1,15 +1,13 @@
 /* Keystone · Financial Crime: light and dark on the landing page.
 
    Load this in <head>, before the stylesheets paint, so the page never flashes the wrong theme.
-   The visitor's own choice is kept in local storage; until they make one, the page follows the
-   system setting and keeps following it. Any [data-kf-theme-toggle] button flips the theme. */
+   The page opens dark. A visitor's own choice is kept in local storage and wins on later visits.
+   Any [data-kf-theme-toggle] button flips the theme. */
 (function () {
   var KEY = 'kf-theme', root = document.documentElement;
-  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
 
-  function saved() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function saved() { try { var t = localStorage.getItem(KEY); return t === 'light' || t === 'dark' ? t : null; } catch (e) { return null; } }
   function save(t) { try { localStorage.setItem(KEY, t); } catch (e) {} }
-  function system() { return mq && mq.matches ? 'light' : 'dark'; }
   function current() { return root.getAttribute('data-theme') || 'dark'; }
 
   function apply(t) {
@@ -23,12 +21,7 @@
     }
   }
 
-  apply(saved() || system());
-
-  if (mq) {
-    var follow = function () { if (!saved()) apply(system()); };
-    if (mq.addEventListener) mq.addEventListener('change', follow); else if (mq.addListener) mq.addListener(follow);
-  }
+  apply(saved() || 'dark');
 
   document.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest('[data-kf-theme-toggle]');
