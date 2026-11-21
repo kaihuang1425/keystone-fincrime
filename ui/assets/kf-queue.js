@@ -1,7 +1,8 @@
-/* The alert queue, on the system's real verdicts. Six cases at a time, in the order the system wrote
-   them: three closes, one RFI and two escalations, or six of one verdict when a filter is on. Each row
-   opens the case. Each institution shows its real split and how many cases people have decided; the
-   heading counts what is left. The RFI card sends the system's request, editable first, and Undo takes
+/* The alert queue, on the system's real verdicts. Twenty cases at a time, in the order the system
+   wrote them, or twenty of one verdict when a filter is on. Each row says what was decided once: a
+   plain title, the case ID and alert count, the first sentence of the reason and one chip; the reason
+   code sits in the chip's tooltip and in the case view. Each row opens the case. The institutions are
+   tabs with their case count and how many people have decided; the heading counts what is left. The RFI card sends the system's request, editable first, and Undo takes
    it back. The rows play their reading animation on the first visit in a tab, and stay still after. */
 (function () {
   var K = window.Keystone, KF = window.KF;
@@ -15,6 +16,7 @@
   var editBtn = $('.k-btn--text', btnRow), sendBtn = $('.k-btn--primary', btnRow);
   sendBtn.removeAttribute('data-k-approve');
 
+  var PAGE = 20;
   var inst = KF.inst(), all = null, data = null, standing = {}, cursor = 0, shown = [], rfi = null, filter = 'ALL';
 
   // the reading animation plays once per visit: after the first queue in this tab, rows arrive still
@@ -37,17 +39,16 @@
     return '<button type="button" data-f="' + f[0] + '" aria-pressed="' + (f[0] === filter) + '">' + f[1] + '</button>';
   }).join('');
   var nextBtn = document.createElement('button');
-  nextBtn.type = 'button'; nextBtn.className = 'k-btn k-btn--sm'; nextBtn.textContent = 'Next six';
+  nextBtn.type = 'button'; nextBtn.className = 'k-btn k-btn--sm'; nextBtn.textContent = 'Next ' + PAGE;
   bar.replaceChild(seg, replayBtn); bar.appendChild(nextBtn);
   bar.style.gap = '8px';
 
   function pick(d, from) {
-    var want = filter === 'ALL' ? { CLOSE: 3, RFI: 1, ESCALATE: 2 } : {}, out = [], n = d.decisions.length;
-    if (filter !== 'ALL') want[filter] = 6;
-    for (var k = 0; k < n && out.length < 6; k++) {
+    var out = [], n = d.decisions.length;
+    for (var k = 0; k < n && out.length < PAGE; k++) {
       var c = d.decisions[(from + k) % n];
-      if (standing[c.case_id] || !want[c.verdict]) continue;
-      want[c.verdict]--; out.push(c);
+      if (standing[c.case_id] || (filter !== 'ALL' && c.verdict !== filter)) continue;
+      out.push(c);
     }
     return out.sort(function (a, b) { return a.i - b.i; });
   }
@@ -68,21 +69,17 @@
   function row(c) {
     var st = standing[c.case_id];
     return '<a class="kq-row kw-r" href="' + href(c) + '" data-case="' + KF.esc(c.case_id) + '">' +
-      '<span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span>' + KF.mark(c.verdict) + '</span>' +
       '<span><b>' + KF.esc(KF.title(c.reason_code)) + '</b><span class="kq-id">' + KF.esc(c.case_id) + ' · ' + KF.alerts(c) +
       (st ? '<span class="kq-done"> · ' + KF.DID[st.action] + '</span>' : '') + '</span>' +
       '<span class="kq-line"><span class="q">Queued</span><span class="a">Reading ' + c.evidence.length + ' records</span>' +
-      '<span class="b">' + KF.esc(KF.clip(KF.sentences(c.reason)[0], 118)) + '</span></span></span>' +
-      '<span class="kq-end">' + KF.chip(c.verdict) + KF.code(c.reason_code) + '</span></a>';
+      '<span class="b">' + KF.esc(KF.sentences(c.reason)[0]) + '</span></span></span>' +
+      '<span class="kq-end" title="' + KF.esc(c.reason_code + ': ' + KF.describe(c.reason_code)) + '">' + KF.chip(c.verdict) + '</span></a>';
   }
 
   function renderList() {
-    var t = tally(shown), run = data.run;
-    var chips = [['CLOSE', 'ok', '✓', 'closed'], ['RFI', 'ask', '?', 'asked'], ['ESCALATE', 'bad', '↑', 'escalated']]
-      .filter(function (x) { return t[x[0]]; })
-      .map(function (x) { return '<span class="k-chip k-chip--' + x[1] + '">' + x[2] + ' ' + t[x[0]] + ' ' + x[3] + '</span>'; }).join('');
+    var run = data.run;
     list.innerHTML = shown.length
-      ? shown.map(row).join('') + '<div class="kq-tally kw-r">' + chips + repeat(run) + '</div>'
+      ? shown.map(row).join('') + '<div class="kq-tally kw-r">' + repeat(run) + '</div>'
       : '<p class="k-meta kf-empty">Every case here has been decided.</p>';
     headTitle.textContent = KF.instInfo(inst).name + ' · queue';
   }
@@ -92,7 +89,6 @@
     if (!rfi) {
       msg.innerHTML = '<small>' + KF.esc(KF.instInfo(inst).name) + '</small>Every RFI in this queue has been sent.';
       codeRow.style.display = 'none'; btnRow.style.display = 'none';
-      if (h1turn) h1turn.textContent = 'Nothing left to send.';
       return;
     }
     var s = KF.sentences(rfi.reason), ask = s.filter(function (x) { return /^Ask\b/.test(x); });
@@ -100,22 +96,19 @@
     codeRow.innerHTML = KF.chip('RFI') + '<span class="kq-id" title="' + KF.esc(KF.describe(rfi.reason_code)) + '">' + KF.esc(rfi.reason_code) + '</span>';
     codeRow.style.display = ''; btnRow.style.display = '';
     editBtn.textContent = 'Edit';
-    if (h1turn) h1turn.textContent = 'One question to send.';
   }
 
-  // each institution: its real split of verdicts, the counts beside it, and how many are decided
+  // each institution is a tab: its name, its case count and how many people have decided
   function renderInsts() {
     insts.forEach(function (el, i) {
       var id = ORDER[i], r = all[i].run, done = decided(id);
       el.setAttribute('role', 'button'); el.tabIndex = 0;
       el.setAttribute('aria-current', id === inst ? 'true' : 'false');
-      el.innerHTML = '<span><b>' + KF.esc(KF.instInfo(id).long) + '</b><small class="kf-left">' + n(r.cases) + ' cases' + (done ? ' · ' + n(done) + ' decided' : '') + '</small></span>' +
-        '<div class="k-occ kf-split" role="img" aria-label="' + n(r.closes) + ' closed, ' + n(r.rfis) + ' asked, ' + n(r.escalations) + ' escalated">' +
-        '<i style="flex: ' + r.closes + '"></i><i class="is-ask" style="flex: ' + r.rfis + '"></i><i class="is-bad" style="flex: ' + r.escalations + '"></i></div>' +
-        '<small class="kf-n" aria-hidden="true"><span><i class="ok">✓</i>' + n(r.closes) + '</span><span><i class="ask">?</i>' + n(r.rfis) + '</span><span><i class="bad">↑</i>' + n(r.escalations) + '</span></small>';
+      el.setAttribute('title', n(r.closes) + ' closed, ' + n(r.rfis) + ' asked, ' + n(r.escalations) + ' escalated');
+      el.innerHTML = '<b>' + KF.esc(KF.instInfo(id).name) + '</b><small>' + n(r.cases) + ' cases' + (done ? ' · ' + n(done) + ' decided' : '') + '</small>';
     });
     var left = data.run.cases - decided(inst);
-    if (h1 && h1.firstChild && h1.firstChild.nodeType === 3) h1.firstChild.nodeValue = left ? n(left) + ' cases to review. ' : 'Every case reviewed. ';
+    if (h1) h1.textContent = left ? n(left) + ' cases to review.' : 'Every case reviewed.';
   }
 
   // only what the export proves: identical runs, runs that differed, or nothing when it was not re-run
