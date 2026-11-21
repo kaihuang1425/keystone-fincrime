@@ -53,6 +53,10 @@ create table if not exists analyst_actions (
   note       text,
   created_at timestamptz not null default now()
 );
+-- The case view added 'closed' and 'escalated'. Re-running this file brings an older table up to date.
+alter table analyst_actions drop constraint if exists analyst_actions_action_check;
+alter table analyst_actions add constraint analyst_actions_action_check
+  check (action in ('closed', 'rfi_sent', 'escalated', 'escalation_taken', 'sent_back', 'undone'));
 
 -- The queue reads this view: the decisions of the newest run for each institution.
 create or replace view latest_decisions as

@@ -188,12 +188,19 @@
       }
     };
   }
-  // Supabase when it answers; this browser's storage when it does not, so the pages always work
+  // Supabase when it answers; this browser's storage when it does not, so the pages always work.
+  // Rows that fell back to this browser are read alongside Supabase's, in time order, so an action
+  // Supabase refused still shows.
   KF.store = {
     where: remote ? 'Supabase' : 'this browser',
     list: function () {
       if (!remote) return local.list();
-      return remote.list().catch(function (e) { console.warn('Keystone: ' + e.message + '; using this browser instead.'); KF.store.where = 'this browser'; return local.list(); });
+      return Promise.all([
+        remote.list().catch(function (e) { console.warn('Keystone: ' + e.message + '; using this browser instead.'); KF.store.where = 'this browser'; return []; }),
+        local.list()
+      ]).then(function (r) {
+        return r[1].length ? r[0].concat(r[1]).sort(function (a, b) { return Date.parse(a.created_at) - Date.parse(b.created_at); }) : r[0];
+      });
     },
     add: function (a) {
       if (!remote) return local.add(a);
