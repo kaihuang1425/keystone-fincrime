@@ -15,6 +15,10 @@ Start with [system/README.md](system/README.md). It explains the method in plain
 | `tools/stress.py` | Builds new institution folders from the kit with the right outcome fixed by construction, and checks the system on each |
 | `tools/export_ui.py` | Writes one JSON per institution for the UI, with the run facts |
 | `tools/run_drop.py` | Runs the system on an archive or folder of cases in any layout and checks the output. Scores it when the right answers come with it |
+| `tools/damage_test.py` | Damages one institution folder 14 ways (cut-off lines, missing records, a byte-order mark, a folder that won't load) and checks every case still gets a line and nothing moves towards CLOSE |
+| `tools/near_miss_test.py` | Makes the smallest change that breaks each CLOSE's documents (amount +£1.00, a misspelt payee or customer) and checks the case stops closing |
+| `tools/show_case.py` | Prints everything an analyst reads for one case, with no verdict, for a blind second reading |
+| `tools/pick_cases.py` | Picks a fixed sample of cases for that reading, the same every time, with no verdicts in the file |
 | `tools/publish_supabase.py` | Copies finished output into Supabase for the UI and the audit trail |
 | `tools/mlro_context.py` | Fetches official-source context with Tavily for corridor escalations |
 | `supabase/schema.sql` | The tables the two tools above write to |

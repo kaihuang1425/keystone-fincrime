@@ -489,21 +489,51 @@ def _result(case, code, reason, evidence, red, explains, open_alerts):
     }
 
 
+def _ids(value):
+    """The string IDs in a list field; anything else is ignored."""
+    return [x for x in value if isinstance(x, str)] if isinstance(value, list) else []
+
+
+def _not_on_file(inst, row):
+    """Alerts the case names, and transactions those alerts name, that could not be read."""
+    missing = []
+    for a in _ids(row.get("alert_ids")):
+        alert = inst.alerts.get(a)
+        if alert is None:
+            missing.append(a)
+            continue
+        missing += [t for t in _ids(alert.get("transaction_ids")) if t not in inst.tx]
+    return missing
+
+
+def _unassessed(inst, row, why, error=None):
+    alert_ids = _ids(row.get("alert_ids"))
+    txs = []
+    for a in alert_ids:
+        txs += [t for t in _ids((inst.alerts.get(a) or {}).get("transaction_ids")) if t in inst.tx][:2]
+    out = {
+        "case_id": row.get("case_id"), "alert_ids": alert_ids, "verdict": "ESCALATE",
+        "reason_code": "ESC_UNEXPLAINED_FUNDS",
+        "reason": ("The system could not read %s, so this case has not been fully assessed. It is passed to the "
+                   "MLRO for a manual review and must not be closed automatically." % why),
+        "evidence": (txs or alert_ids)[:4],
+        "_trace": {"error": error or why},
+    }
+    return out
+
+
 def safe_decide(inst, row):
-    """Never drop a case. If anything goes wrong, send it to a person."""
+    """Never drop a case, and never decide one below ESCALATE on records that could not all be read."""
     try:
-        return decide(inst, row)
+        result = decide(inst, row)
     except Exception as exc:  # a case we cannot read is escalated, never closed
-        alert_ids = list(row.get("alert_ids") or [])
-        txs = []
-        for a in alert_ids:
-            txs += (inst.alerts.get(a, {}).get("transaction_ids") or [])[:2]
-        return {
-            "case_id": row.get("case_id"), "alert_ids": alert_ids, "verdict": "ESCALATE",
-            "reason_code": "ESC_UNEXPLAINED_FUNDS",
-            "reason": ("The system could not read this case's records (%s), so it has not been assessed. "
-                       "It is passed to the MLRO for a manual review and must not be closed automatically."
-                       % type(exc).__name__),
-            "evidence": txs[:4],
-            "_trace": {"error": "%s: %s" % (type(exc).__name__, exc)},
-        }
+        return _unassessed(inst, row, "this case's records (%s)" % type(exc).__name__,
+                           "%s: %s" % (type(exc).__name__, exc))
+    missing = _not_on_file(inst, row)
+    if missing and result["verdict"] != "ESCALATE":
+        # the verdict rests only on the alerts and payments that happened to load: a missing one
+        # could be what explains the case, or what makes it suspicious, so a person decides
+        return _unassessed(inst, row, "%s, which the alerts name but which %s not on file"
+                           % (", ".join(missing[:3]) + (" and others" if len(missing) > 3 else ""),
+                              "is" if len(missing) == 1 else "are"))
+    return result
