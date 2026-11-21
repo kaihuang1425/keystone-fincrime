@@ -39,7 +39,8 @@ _GENERIC_SALUTATION = set(
     "policyholder claimant applicant member subscriber resident leaseholder holder account valued former "
     "team sales accounts finance procurement department payable director directors shareholder partner "
     "partners supplier buyer seller borrower executor executors trustee trustees friend friends all "
-    "mr mrs ms miss mx dr and or the our of to whom it may concern".split())
+    "mr mrs ms miss mx dr prof professor messrs esq and or the our of to at for in on behalf attention attn "
+    "family household both everyone whom it may concern".split())
 
 
 def _addressed_to_another(doc, case):
@@ -52,9 +53,17 @@ def _addressed_to_another(doc, case):
     if not m:
         return False
     suffixes = {"ltd", "limited", "llp", "plc", "co", "company", "inc"}  # shared by unrelated companies
-    words = set(re.findall(r"[a-z]+", m.group(1).lower())) - suffixes
-    named = words - _GENERIC_SALUTATION
-    return bool(named) and not (named & (set(re.findall(r"[a-z]+", case.name.lower())) - suffixes))
+
+    def words(s):
+        return set(w for w in re.findall(r"[a-z]+", s.lower()) if len(w) > 1) - suffixes
+
+    named, own = words(m.group(1)) - _GENERIC_SALUTATION, words(case.name)
+    if not named:
+        return False
+    # The customer's letter uses only words from the customer's name ("Dear Mr Field"), or
+    # carries the whole name ("Dear Sam Field and Alex Field"). Sharing "Furniture Imports"
+    # with the customer does not make "Dear Other Furniture Imports Ltd" the customer's letter.
+    return not (named <= own or own <= named)
 
 
 def _customer_is_buyer(doc, case):
@@ -72,6 +81,10 @@ def _dated_by(doc, t, slack=0):
 
 
 # ---------------------------------------------------------------- one-off events
+# "the estate of the late Jo Example": the letter itself says whose estate it is about
+_ESTATE_NAMED = re.compile(r"(?i:estate\s+of\s+(?:the\s+late\s+)?)(?:(?:Mr|Mrs|Ms|Miss|Dr)\.?\s+)?[A-Z][\w.'-]+\s+[A-Z][\w'-]+")
+
+
 def one_off_events(case):
     """A letter from the payer states the amount that then arrived."""
     out = []
@@ -94,11 +107,18 @@ def one_off_events(case):
             detail = ""
             ref = t.get("reference") or ""
             m = re.search(r"ESTATE OF (.+)", ref, re.I)
-            if m and tf.mentions(doc.text, m.group(1)):
-                detail = ", the estate of %s" % m.group(1).title()
-            m = re.search(r"CLAIM\s*\d+", ref, re.I)
-            if m and tf.norm(m.group(0)) in tf.norm(doc.text):
-                detail = ", reference %s" % m.group(0).upper()
+            if m:
+                if tf.mentions(doc.text, m.group(1)):
+                    detail = ", the estate of %s" % m.group(1).title()
+                elif not tf.mentions(doc.text, m.group(1).split()[-1]) and _ESTATE_NAMED.search(doc.text):
+                    continue  # the payment names one estate and the letter names another
+            m = re.search(r"CLAIM\W*(\d+)", ref, re.I)
+            if m:
+                quoted = re.findall(r"CLAIM[^\w£]*(\d+)", doc.text, re.I)
+                if m.group(1) in quoted:
+                    detail = ", reference CLAIM %s" % m.group(1)
+                elif any(len(q) >= 4 for q in quoted) and m.group(1) not in re.findall(r"\d+", doc.text):
+                    continue  # the letter quotes a claim number and the payment's number is nowhere in it
             if doc.type == "completion_statement":
                 if _for_someone_else(doc, case, ("client",)):
                     continue

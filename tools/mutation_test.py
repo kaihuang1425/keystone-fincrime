@@ -365,5 +365,30 @@ ok = (r1["verdict"], r1["reason_code"]) == ("RFI", "RFI_BUSINESS_RECORDS")
 results.append(ok)
 print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "collection reports headed with another company", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
 
+# 31. an order addressed to a company that shares the customer's trade words but not its name
+I = inst("payments_fx")
+for row in I.cases:
+    name = I.customers[row["customer_id"]]["name"]
+    orders = [d for d in I.docs_for(row["customer_id"]) if d.type == "purchase_order"]
+    if orders and re.search(r"Dear\s+%s" % re.escape(name), orders[0].text):
+        break
+lookalike = "Zzexample " + " ".join(name.split()[1:])
+r0 = safe_decide(I, row)
+r1 = safe_decide(Mutant(I, edit_doc=only("purchase_order", lambda t: t.replace(name, lookalike))), row)
+ok = r0["verdict"] == "CLOSE" and r1["verdict"] == "RFI"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "order addressed to a similarly named company", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 32. a solicitor's letter about a different estate from the one in the payment reference
+I = inst("bank")
+row, r0 = find_case(I, "TM01", ["solicitor_letter"], "CLOSE", "DOCUMENTED_EVENT")
+ref = next(I.tx[t]["reference"] for a in row["alert_ids"] for t in I.alerts[a]["transaction_ids"]
+           if "ESTATE OF" in (I.tx[t]["reference"] or "").upper())
+late = re.sub(r"(?i)estate of ", "", ref).title()
+r1 = safe_decide(Mutant(I, edit_doc=only("solicitor_letter", lambda t: re.sub(re.escape(late), "Jo Example", t, flags=re.I))), row)
+ok = (r1["verdict"], r1["reason_code"]) == ("RFI", "RFI_SOURCE_OF_FUNDS")
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "estate letter about a different estate", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
 print("\n%d of %d mutation tests passed" % (sum(results), len(results)))
 sys.exit(0 if all(results) else 1)
