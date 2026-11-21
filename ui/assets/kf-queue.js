@@ -1,28 +1,49 @@
-/* The alert queue, on the system's real verdicts. Six cases at a time (three closes, one RFI, two
-   escalations, in the order the system wrote them); each row opens the case. The RFI card sends the
-   system's request, editable first, and Undo takes it back. */
+/* The alert queue, on the system's real verdicts. Six cases at a time, in the order the system wrote
+   them: three closes, one RFI and two escalations, or six of one verdict when a filter is on. Each row
+   opens the case. Each institution shows its real split and how many cases people have decided; the
+   heading counts what is left. The RFI card sends the system's request, editable first, and Undo takes
+   it back. The rows play their reading animation on the first visit in a tab, and stay still after. */
 (function () {
   var K = window.Keystone, KF = window.KF;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  var list = $('.kq-list'), card = $('[data-kq]'), approve = $('.k-approve'), h1turn = $('h1 .k-turn');
+  var list = $('.kq-list'), card = $('[data-kq]'), approve = $('.k-approve'), h1 = $('h1'), h1turn = $('h1 .k-turn');
   var headTitle = $('h2', card.firstElementChild), replayBtn = $('[data-kq-replay]');
   var insts = $$('.aq-inst'), ORDER = ['bank', 'payments_fx', 'emoney', 'investment'];
   var msg = $('.k-ticket__msg', approve), codeRow = $$('.k-row', approve)[1], btnRow = $$('.k-row', approve)[2];
   var editBtn = $('.k-btn--text', btnRow), sendBtn = $('.k-btn--primary', btnRow);
   sendBtn.removeAttribute('data-k-approve');
 
-  var inst = KF.inst(), data = null, standing = {}, cursor = 0, shown = [], rfi = null;
+  var inst = KF.inst(), all = null, data = null, standing = {}, cursor = 0, shown = [], rfi = null, filter = 'ALL';
 
-  // Next six, beside Replay
+  // the reading animation plays once per visit: after the first queue in this tab, rows arrive still
+  var seen = false;
+  try { seen = sessionStorage.getItem('kf-queue-seen') === '1'; sessionStorage.setItem('kf-queue-seen', '1'); } catch (e) {}
+  function still() { list.classList.add('kf-still'); }
+  if (seen) still();
+
+  // the bots in the header say who they are
+  $$('header [data-k-bot]').forEach(function (b) {
+    var name = b.getAttribute('data-name'), x = KF.BOTS[name];
+    if (x) { b.title = name + ' ' + x.does; b.setAttribute('aria-label', name); }
+  });
+
+  // filters by verdict, then Next six, where Replay was
+  var bar = replayBtn.parentNode;
+  var seg = document.createElement('div');
+  seg.className = 'k-seg kf-filter'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Show');
+  seg.innerHTML = [['ALL', 'All'], ['CLOSE', '✓ Close'], ['RFI', '? RFI'], ['ESCALATE', '↑ Escalate']].map(function (f) {
+    return '<button type="button" data-f="' + f[0] + '" aria-pressed="' + (f[0] === filter) + '">' + f[1] + '</button>';
+  }).join('');
   var nextBtn = document.createElement('button');
   nextBtn.type = 'button'; nextBtn.className = 'k-btn k-btn--sm'; nextBtn.textContent = 'Next six';
-  replayBtn.parentNode.insertBefore(nextBtn, replayBtn);
-  replayBtn.parentNode.style.gap = '8px';
+  bar.replaceChild(seg, replayBtn); bar.appendChild(nextBtn);
+  bar.style.gap = '8px';
 
   function pick(d, from) {
-    var want = { CLOSE: 3, RFI: 1, ESCALATE: 2 }, out = [], n = d.decisions.length;
+    var want = filter === 'ALL' ? { CLOSE: 3, RFI: 1, ESCALATE: 2 } : {}, out = [], n = d.decisions.length;
+    if (filter !== 'ALL') want[filter] = 6;
     for (var k = 0; k < n && out.length < 6; k++) {
       var c = d.decisions[(from + k) % n];
       if (standing[c.case_id] || !want[c.verdict]) continue;
@@ -35,16 +56,14 @@
     for (var k = 0; k < n; k++) { var c = d.decisions[(from + k) % n]; if (c.verdict === 'RFI' && !standing[c.case_id]) return c; }
     return null;
   }
-  function occ(cases) {
-    return cases.map(function (c) { return '<i' + (c.verdict === 'RFI' ? ' class="is-ask"' : c.verdict === 'ESCALATE' ? ' class="is-bad"' : '') + '></i>'; }).join('');
-  }
-  function occLabel(cases) {
-    var t = tally(cases); return t.CLOSE + ' closed, ' + t.RFI + ' asked, ' + t.ESCALATE + ' escalated';
-  }
   function tally(cases) {
     var t = { CLOSE: 0, RFI: 0, ESCALATE: 0 }; cases.forEach(function (c) { t[c.verdict]++; }); return t;
   }
+  function decided(id) {
+    return Object.keys(standing).filter(function (k) { return KF.instOf(k) === id; }).length;
+  }
   function href(c) { return 'app.html?inst=' + inst + '&case=' + encodeURIComponent(c.case_id); }
+  function n(x) { return Number(x).toLocaleString('en-GB'); }
 
   function row(c) {
     var st = standing[c.case_id];
@@ -59,9 +78,12 @@
 
   function renderList() {
     var t = tally(shown), run = data.run;
-    list.innerHTML = shown.map(row).join('') +
-      '<div class="kq-tally kw-r"><span class="k-chip k-chip--ok">✓ ' + t.CLOSE + ' closed</span><span class="k-chip k-chip--ask">? ' + t.RFI + ' asked</span>' +
-      '<span class="k-chip k-chip--bad">↑ ' + t.ESCALATE + ' escalated</span>' + repeat(run) + '</div>';
+    var chips = [['CLOSE', 'ok', '✓', 'closed'], ['RFI', 'ask', '?', 'asked'], ['ESCALATE', 'bad', '↑', 'escalated']]
+      .filter(function (x) { return t[x[0]]; })
+      .map(function (x) { return '<span class="k-chip k-chip--' + x[1] + '">' + x[2] + ' ' + t[x[0]] + ' ' + x[3] + '</span>'; }).join('');
+    list.innerHTML = shown.length
+      ? shown.map(row).join('') + '<div class="kq-tally kw-r">' + chips + repeat(run) + '</div>'
+      : '<p class="k-meta kf-empty">Every case here has been decided.</p>';
     headTitle.textContent = KF.instInfo(inst).name + ' · queue';
   }
 
@@ -81,16 +103,19 @@
     if (h1turn) h1turn.textContent = 'One question to send.';
   }
 
-  function renderInsts(all) {
+  // each institution: its real split of verdicts, the counts beside it, and how many are decided
+  function renderInsts() {
     insts.forEach(function (el, i) {
-      var id = ORDER[i], d = all[i];
+      var id = ORDER[i], r = all[i].run, done = decided(id);
       el.setAttribute('role', 'button'); el.tabIndex = 0;
       el.setAttribute('aria-current', id === inst ? 'true' : 'false');
-      var cases = id === inst ? shown : pick(d, 0), o = $('.k-occ', el), small = $('small', el);
-      if (o) { o.innerHTML = occ(cases); o.setAttribute('aria-label', occLabel(cases)); }
-      if (small) small.textContent = d.run.cases.toLocaleString('en-GB') + ' cases';
-      if (small) small.title = d.run.closes + ' closed, ' + d.run.rfis + ' asked, ' + d.run.escalations + ' escalated';
+      el.innerHTML = '<span><b>' + KF.esc(KF.instInfo(id).long) + '</b><small class="kf-left">' + n(r.cases) + ' cases' + (done ? ' · ' + n(done) + ' decided' : '') + '</small></span>' +
+        '<div class="k-occ kf-split" role="img" aria-label="' + n(r.closes) + ' closed, ' + n(r.rfis) + ' asked, ' + n(r.escalations) + ' escalated">' +
+        '<i style="flex: ' + r.closes + '"></i><i class="is-ask" style="flex: ' + r.rfis + '"></i><i class="is-bad" style="flex: ' + r.escalations + '"></i></div>' +
+        '<small class="kf-n" aria-hidden="true"><span><i class="ok">✓</i>' + n(r.closes) + '</span><span><i class="ask">?</i>' + n(r.rfis) + '</span><span><i class="bad">↑</i>' + n(r.escalations) + '</span></small>';
     });
+    var left = data.run.cases - decided(inst);
+    if (h1 && h1.firstChild && h1.firstChild.nodeType === 3) h1.firstChild.nodeValue = left ? n(left) + ' cases to review. ' : 'Every case reviewed. ';
   }
 
   // only what the export proves: identical runs, runs that differed, or nothing when it was not re-run
@@ -104,26 +129,31 @@
   function show(id, keepCursor) {
     inst = id; KF.setInst(id);
     return Promise.all([Promise.all(ORDER.map(KF.load)), KF.store.list()]).then(function (r) {
-      var all = r[0]; standing = KF.standing(r[1]);
+      all = r[0]; standing = KF.standing(r[1]);
       data = all[ORDER.indexOf(id)];
       if (!keepCursor) cursor = 0;
       shown = pick(data, cursor);
-      renderList(); renderApprove(); renderInsts(all);
+      renderList(); renderApprove(); renderInsts();
       KF.ready(); replay();
       var u = new URL(location.href); u.searchParams.set('inst', id); history.replaceState(null, '', u);
     });
   }
 
   insts.forEach(function (el, i) {
-    function go() { if (ORDER[i] !== inst) show(ORDER[i]).catch(function (e) { KF.fail(list, e); }); }
+    function go() { if (ORDER[i] !== inst) { still(); show(ORDER[i]).catch(function (e) { KF.fail(list, e); }); } }
     el.addEventListener('click', go);
     el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
   });
-  replayBtn.addEventListener('click', replay);
+  seg.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-f]'); if (!b || !data) return;
+    filter = b.getAttribute('data-f');
+    $$('[data-f]', seg).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    still(); cursor = 0; shown = pick(data, cursor); renderList();
+  });
   nextBtn.addEventListener('click', function () {
     if (!shown.length) return;
     cursor = (shown[shown.length - 1].i + 1) % data.decisions.length;
-    shown = pick(data, cursor); renderList(); renderApprove(); replay();
+    still(); shown = pick(data, cursor); renderList(); renderApprove();
   });
 
   editBtn.addEventListener('click', function () {
@@ -147,15 +177,15 @@
           KF.act(data.run, c, 'undone').then(function () {
             delete standing[c.case_id];
             var done = list.querySelector('[data-case="' + c.case_id + '"] .kq-done'); if (done) done.remove();
-            renderApprove();
+            renderApprove(); renderInsts();
           });
         }
       });
-      renderApprove();
+      renderApprove(); renderInsts();
     }).catch(function (e) { K.toast('Not sent: ' + e.message, { mark: 'bad' }); }).then(function () { sendBtn.disabled = false; });
   });
 
   show(inst).catch(function (e) { KF.fail(list, e); });
-  K.whenVisible(list, replay);
-  setTimeout(function () { $$('header [data-k-bot][data-state="working"]').forEach(function (b) { if (b._kbot) b._kbot.set('done'); }); }, 13500);
+  K.whenVisible(list, function () { if (!list.classList.contains('kf-still')) replay(); });
+  setTimeout(function () { $$('header [data-k-bot][data-state="working"]').forEach(function (b) { if (b._kbot) b._kbot.set('done'); }); }, seen ? 400 : 13500);
 })();

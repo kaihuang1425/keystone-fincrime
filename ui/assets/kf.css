@@ -49,6 +49,28 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
 .kw-verdict .kf-what { font-weight: 500; font-size: 15px; color: var(--ink); }
 .kw-verdict .kf-code { margin-left: auto; font-size: 11px; color: var(--ink-3); }
 
+/* the queue: each institution's real split, with its counts beside the bar */
+.aq-inst .kf-left { display: block; margin-top: 2px; }
+.aq-inst .kf-split i { min-width: 2px; }
+.aq-inst .kf-n { display: flex; gap: 10px; font-variant-numeric: tabular-nums; }
+.aq-inst .kf-n i { margin-right: 3px; font-style: normal; font-weight: 600; }
+.aq-inst .kf-n .ok { color: var(--ok); }
+.aq-inst .kf-n .ask { color: var(--ask); }
+.aq-inst .kf-n .bad { color: var(--bad); }
+.kf-filter { flex: none; }
+.kf-filter button { white-space: nowrap; }
+.kf-empty { padding: 18px 0 6px; }
+@media (max-width: 560px) {
+  .aq-inst { grid-template-columns: minmax(0, 1fr) auto !important; }
+  .aq-inst .kf-split { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  .kf-filter { flex: 1 1 100%; order: 2; }
+  .kf-filter button { flex: 1; padding: 0 6px; }
+}
+
+/* after the first visit in a tab, queue rows arrive still: the verdict and the reason, no reading */
+.kq-list.kf-still .kw-r, .kq-list.kf-still .kq-end, .kq-list.kf-still .kq-line .b, .kq-list.kf-still .kw-swap .k-mk { opacity: 1; animation: none; }
+.kq-list.kf-still .kq-line .q, .kq-list.kf-still .kq-line .a, .kq-list.kf-still .kw-dots { opacity: 0; animation: none; }
+
 /* Case Lead's reply on the phone */
 .kf-reply { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .kf-reply b { color: var(--ink); }
