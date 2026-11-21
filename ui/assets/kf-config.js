@@ -3,4 +3,4 @@
      window.KF_SUPABASE = { url: 'https://<project>.supabase.co', anonKey: '<anon public key>' };
    The anon key is public by design: row level security lets it read and insert only.
    Never put the service role key here; this folder is published. */
-window.KF_SUPABASE = null;
+window.KF_SUPABASE = { url: 'https://nlqkpqkeptnhlzholtrm.supabase.co', anonKey: 'sb_publishable_hj54VTAIxToi3RLSIHW0Qw_GM4MPMLZ' };
