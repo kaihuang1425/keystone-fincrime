@@ -2,7 +2,7 @@
 
    The hero's live line shows the bank's first two closes, first RFI and first escalation, one at a time,
    in the order the system wrote them (the way the queue page picks). The reason under the five runs is the
-   first close's own. Nothing is random, so every visit shows the same cases in the same words, and each
+   first close's own, as numbered steps, with a link to that case. Nothing is random, so every visit shows the same cases in the same words, and each
    line opens its case. The page ships the same four cases as a fallback, so a slow load shows them too. */
 (function () {
   var KF = window.KF;
@@ -25,13 +25,16 @@
     return '<a class="lp-live__row' + (k === 0 ? ' is-on' : '') + '" href="app.html?inst=' + INST + '&amp;case=' + encodeURIComponent(c.case_id) + '">' +
       KF.chip(c.verdict) + '<b>' + KF.esc(KF.title(c.reason_code)) + '</b><code>' + KF.esc(c.case_id) + '</code></a>';
   }
-  // the reason, with each record it cites and each amount lit in turn
+  // the reason as numbered steps, one sentence each: each record it cites and each amount lit in turn
+  // across the steps, and the records each step names beside it
   function lit(c) {
     var ids = c.evidence.map(function (e) { return KF.esc(e).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
     var re = new RegExp('(' + ids.concat(['£[\\d,]+\\.\\d{2}']).join('|') + ')', 'g'), n = 0;
-    return KF.esc(c.reason).replace(re, function (m) {
-      return n < 6 ? '<span class="kw-hl" style="--d: ' + (0.2 + 0.4 * n++).toFixed(1) + 's;">' + m + '</span>' : m;
-    });
+    return KF.stepItems(c, { text: function (x) {
+      return KF.esc(x).replace(re, function (m) {
+        return n < 6 ? '<span class="kw-hl" style="--d: ' + (0.2 + 0.4 * n++).toFixed(1) + 's;">' + m + '</span>' : m;
+      });
+    } });
   }
   // one line at a time; it holds while the pointer or focus is on it, so it can be clicked
   var at = 0, held = false;
@@ -54,7 +57,11 @@
     live.innerHTML = cases.map(row).join('');
     live.setAttribute('aria-label', KF.instInfo(INST).name + ': the first four decisions, in the order the system wrote them');
     var close = cases.filter(function (c) { return c.verdict === 'CLOSE'; })[0];
-    if (reason && close) reason.innerHTML = lit(close);
+    if (reason && close) {
+      reason.innerHTML = lit(close);
+      var open = document.querySelector('.kl-open');
+      if (open) { open.href = 'app.html?inst=' + INST + '&case=' + encodeURIComponent(close.case_id); open.hidden = false; }
+    }
   }).catch(function (e) {
     console.error(e); // the shipped lines stay
   }).then(function () {

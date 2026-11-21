@@ -45,15 +45,31 @@
       botStates(); return;
     }
     why.style.display = ''; approve.style.display = '';
-    var s = KF.sentences(c.reason), n = list.indexOf(c) + 1;
-    ticket.innerHTML = '<small>' + KF.esc(c.case_id) + ' · ' + KF.alerts(c) + ' · ' + (n || 1) + ' of ' + list.length + '</small>' + KF.amounts(KF.clip(s[0], 200));
+    var n = list.indexOf(c) + 1, href = 'app.html?inst=' + inst + '&amp;case=' + encodeURIComponent(c.case_id);
+    // the reason as numbered steps: the first two, each held to three lines, and the rest in the case view;
+    // one step when two would run under the toast or off the frame
+    var head = '<small>' + KF.esc(c.case_id) + ' · ' + KF.alerts(c) + ' · ' + (n || 1) + ' of ' + list.length + '</small>';
+    var stepped = function (max) {
+      ticket.innerHTML = head + KF.steps(c, { max: max, cls: 'kf-steps--compact', text: KF.amounts,
+        more: function (k) { return '<a href="' + href + '">and ' + k + ' more</a>'; } });
+    };
+    stepped(2);
     var pick = c.evidence.slice(0, 3);
     why.children[1].innerHTML ='<b>' + c.evidence.length + ' records support it</b><small>' +
       pick.map(function (id) { return KF.cite(c, id); }).join(' ') + (c.evidence.length > 3 ? ' and ' + (c.evidence.length - 3) + ' more' : '') + '</small>';
     headB.textContent = KF.title(c.reason_code);
     headSmall.textContent = c.reason_code; headSmall.title = KF.describe(c.reason_code);
+    if (!fits()) stepped(1);
     botStates();
     var u = new URL(location.href); u.searchParams.set('inst', inst); u.searchParams.set('case', c.case_id); history.replaceState(null, '', u);
+  }
+
+  // the column's last line ends above the toast and inside the frame
+  function fits() {
+    var last = body.lastElementChild, limit = body.getBoundingClientRect().bottom;
+    if (!last) return true;
+    if (toastBox.style.display !== 'none') limit = Math.min(limit, toast.getBoundingClientRect().top - 6);
+    return last.getBoundingClientRect().bottom <= limit;
   }
 
   // the in-frame toast: the latest action on any page, with Undo
