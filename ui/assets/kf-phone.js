@@ -51,7 +51,7 @@
     why.children[1].innerHTML ='<b>' + c.evidence.length + ' records support it</b><small>' +
       pick.map(function (id) { return KF.cite(c, id); }).join(' ') + (c.evidence.length > 3 ? ' and ' + (c.evidence.length - 3) + ' more' : '') + '</small>';
     headB.textContent = KF.title(c.reason_code);
-    headSmall.textContent = c.reason_code;
+    headSmall.textContent = c.reason_code; headSmall.title = KF.describe(c.reason_code);
     botStates();
     var u = new URL(location.href); u.searchParams.set('inst', inst); u.searchParams.set('case', c.case_id); history.replaceState(null, '', u);
   }

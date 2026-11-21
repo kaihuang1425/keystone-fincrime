@@ -60,10 +60,43 @@
   };
   KF.chip = function (v) { var x = KF.V[v]; return '<span class="k-chip k-chip--' + x.cls + '">' + x.mk + ' ' + x.word + '</span>'; };
   KF.mark = function (v) { var x = KF.V[v]; return '<span class="k-mk k-mk--' + x.cls + '">' + x.mk + '</span>'; };
+  // each reason code in plain words: a short name, and the brief's own one-line description
+  KF.CODES = {
+    COLLECTION_DOCUMENTED: ['Documented group collection', 'A documented collection made on behalf of named people explains the payments'],
+    BUSINESS_RECORDS_RECONCILE: ['Business records add up', 'Business records, such as takings or collection reports, reconcile to the activity'],
+    DOCUMENTED_EVENT: ['Documented one-off event', 'A documented one-off event, such as a sale, an inheritance or a payout, explains the funds'],
+    INVOICE_MATCHES: ['Invoice matches the payment', 'An invoice, contract or payment file matches the amount, payee and date'],
+    OWN_ACCOUNT: ['Between the customer’s own accounts', 'The money moved between accounts the customer is shown to hold'],
+    GROUP_COMPANY: ['Company in the same group', 'The counterparty is a verified company in the same group'],
+    THIRD_PARTY_DOCUMENTED: ['Third-party payer explained', 'A documented relationship explains a third-party payer'],
+    REFUND_OF_EARLIER_PAYMENT: ['Refund of an earlier payment', 'The money is a refund of an earlier payment'],
+    RETURNING_CUSTOMER: ['Verified customer is back', 'A verified customer resumed using a dormant account'],
+    LIST_MATCH_DIFFERENT_PARTY: ['Not the listed party', 'The evidence shows the counterparty is not the listed party'],
+    WITHIN_PROFILE: ['Fits the customer’s profile', 'The activity fits the customer’s declared profile or instructions'],
+    RFI_PURPOSE_DOCUMENTS: ['Ask what the money was for', 'Ask for documents showing what the payments were for'],
+    RFI_BUSINESS_RECORDS: ['Ask for business records', 'Ask for the business records behind the activity'],
+    RFI_SOURCE_OF_FUNDS: ['Ask where the money came from', 'Ask for proof of where the money came from'],
+    RFI_COUNTERPARTY_DETAILS: ['Ask who the other party is', 'Ask who the counterparty is and what the payment was for'],
+    RFI_UPDATED_PROFILE: ['Ask for updated income', 'Ask for an updated expected income or volume'],
+    ESC_MULE_ACTIVITY: ['Money mule activity', 'The account receives and passes on other people’s money for someone else'],
+    ESC_STRUCTURING: ['Split to stay under a limit', 'Transactions were split to stay under a threshold'],
+    ESC_UNEXPLAINED_FUNDS: ['Unexplained money moved on', 'The money has no credible explanation and was moved on'],
+    ESC_PASS_THROUGH: ['Money passing straight through', 'Money passes through with no credible purpose, often to linked parties'],
+    ESC_INVOICE_MISMATCH: ['Invoices don’t support it', 'The invoices do not support the payments'],
+    ESC_HIGH_RISK_CORRIDOR: ['Higher-risk country', 'Unexplained payments to or from a higher-risk country'],
+    ESC_ACCOUNT_MISUSE: ['Someone else uses the account', 'Someone other than the customer appears to control or use the account'],
+    ESC_THIRD_PARTY_FUNDING: ['Unrelated third parties', 'Unrelated third parties fund the account or receive money from it'],
+    ESC_EARLY_REDEMPTION: ['Bought and quickly sold back', 'Fund units are bought and quickly sold back to move money'],
+    ESC_LISTED_PARTY: ['Linked to a listed party', 'The counterparty is the listed party or is controlled by it']
+  };
   KF.title = function (code) {
+    if (KF.CODES[code]) return KF.CODES[code][0];
     var t = code.replace(/^(RFI|ESC)_/, '').toLowerCase().replace(/_/g, ' ');
     return t.charAt(0).toUpperCase() + t.slice(1);
   };
+  KF.describe = function (code) { return KF.CODES[code] ? KF.CODES[code][1] + '.' : ''; };
+  // the reason code itself, kept on screen but quiet, with the brief's description on hover
+  KF.code = function (code) { return '<code class="kf-code" title="' + KF.esc(KF.describe(code)) + '">' + KF.esc(code) + '</code>'; };
   KF.sentences = function (text) {
     return String(text).split(/(?<=[.!?]["”’]?)\s+(?=[A-Z£"“‘])/).filter(Boolean);
   };

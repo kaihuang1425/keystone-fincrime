@@ -18,6 +18,12 @@
 
   // only what works stays: no attachments, dictation or voice
   $$('.k-iconbtn, .k-voice', form).forEach(function (b) { b.remove(); });
+  // the Trace tab repeated the Records tab, so it goes; the theme switch says what it does
+  tabs = tabs.filter(function (t) {
+    if (t.getAttribute('data-k-tab') !== 'trace') return true;
+    var p = panel('trace'); if (p) p.remove(); t.remove(); return false;
+  });
+  $$('[data-k-theme]').forEach(function (b) { b.textContent = b.getAttribute('data-k-theme') === 'dark' ? 'Dark' : 'Light'; });
 
   var inst = KF.inst(), c = null, run = null, data = null, standing = {};
   var cid = KF.param('case');
@@ -107,11 +113,11 @@
     col.innerHTML =
       '<div class="k-msg k-msg--me">' + KF.esc(KF.V[c.verdict].q.replace('%s', c.case_id)) + '</div>' +
       '<div class="k-handrow">' + KF.botHTML('Case Lead') + ARROW + KF.botHTML(lead) +
-      '<span><b>' + KF.esc(KF.title(c.reason_code)) + '</b> · ' + KF.esc(c.alert_ids.join(', ')) + '</span><a href="#case" data-kf-open>Open</a></div>' +
+      '<span><b>' + KF.esc(KF.alerts(c)) + '</b> · ' + KF.esc(c.alert_ids.join(', ')) + '</span><a href="#case" data-kf-open>Open</a></div>' +
       '<div class="k-msgrow">' + KF.botHTML(lead) + '<div><div class="k-msgrow__body"><div class="kf-recs">' +
       c.evidence.map(rec).join('') + '</div></div></div></div>' +
       '<div class="k-msgrow">' + KF.botHTML('Case Lead') + '<div><div class="k-msgrow__body">' +
-      '<div class="kw-verdict kw-r">' + KF.chip(c.verdict) + '<code>' + KF.esc(c.reason_code) + '</code></div>' +
+      '<div class="kw-verdict kw-r">' + KF.chip(c.verdict) + '<b class="kf-what">' + KF.esc(KF.title(c.reason_code)) + '</b>' + KF.code(c.reason_code) + '</div>' +
       '<p class="kw-reason kw-r">' + KF.withCites(c, c.reason) + '</p></div></div></div>';
     KF.mountBots(col);
   }
@@ -130,9 +136,9 @@
   }
 
   function evidence() {
-    var labels = { src: 'Records', abs: 'Reason', trace: 'Trace' };
+    var labels = { src: 'Records', abs: 'Reason' };
     tabs.forEach(function (t) { var k = t.getAttribute('data-k-tab'); if (labels[k]) t.textContent = labels[k]; });
-    var src = panel('src'), abs = panel('abs'), tr = panel('trace');
+    var src = panel('src'), abs = panel('abs');
     src.setAttribute('aria-label', 'Records');
     src.innerHTML = c.evidence.map(function (id) {
       var s = KF.citing(c, id);
@@ -141,20 +147,9 @@
           : '<p>Listed in the evidence. The reason does not quote it.</p>') + '</article>';
     }).join('') + '<p class="k-meta">The site shows each record’s id and the sentences that cite it, not the record itself.</p>';
     abs.setAttribute('aria-label', 'Reason');
-    abs.innerHTML = '<article class="k-doc"><div class="k-doc__head"><span>Reason</span><span>' + KF.esc(c.reason_code) + '</span></div>' +
+    abs.innerHTML = '<article class="k-doc"><div class="k-doc__head"><span>' + KF.esc(KF.title(c.reason_code)) + '</span>' + KF.code(c.reason_code) + '</div>' +
       KF.sentences(c.reason).map(function (x) { return '<p>' + KF.withCites(c, x) + '</p>'; }).join('') + '</article>' +
       '<p class="k-meta">Written by the system from the facts its checks used.' + (run.repeat_identical === true ? ' Run ' + run.repeat_runs + ' times, it wrote the same words each time.' : '') + '</p>';
-    function step(bot, title, small, tool) {
-      return '<div class="k-trace__step"><div class="k-row">' + KF.botHTML(bot) + '<b>' + KF.esc(title) + '</b>' + '' + '</div><small>' + small + '</small></div>';
-    }
-    tr.innerHTML = '<div class="k-trace is-on"><span class="k-trace__line"></span>' +
-      '<div class="k-trace__step is-claim"><b>' + KF.esc(c.verdict + ' · ' + c.reason_code) + '</b></div>' +
-      c.alert_ids.map(function (id) { return step('Payments Bot', 'Alert', 'Raised on this case ' + KF.cite(c, id)); }).join('') +
-      c.evidence.map(function (id) {
-        var s = KF.citing(c, id);
-        return step(KF.owner(id), KF.kind(id), KF.esc(s.length ? KF.clip(s[0], 90) : 'In the evidence') + ' ' + KF.cite(c, id));
-      }).join('') +
-      step('Case Lead', 'Decided', KF.esc(c.verdict) + ' from ' + c.evidence.length + ' records', true) + '</div>';
     KF.mountBots(aside);
   }
 

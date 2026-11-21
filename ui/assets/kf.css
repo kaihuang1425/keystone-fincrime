@@ -43,6 +43,12 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
   .kf-decide .k-approve__actions .k-btn--primary { flex: 1 0 100%; margin-left: 0; order: -1; }
 }
 
+/* plain words before codes: the reason in words leads, the code follows quietly with the brief's
+   description on hover */
+.kf-code { cursor: help; }
+.kw-verdict .kf-what { font-weight: 500; font-size: 15px; color: var(--ink); }
+.kw-verdict .kf-code { margin-left: auto; font-size: 11px; color: var(--ink-3); }
+
 /* Case Lead's reply on the phone */
 .kf-reply { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .kf-reply b { color: var(--ink); }

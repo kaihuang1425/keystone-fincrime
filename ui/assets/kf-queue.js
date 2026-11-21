@@ -54,7 +54,7 @@
       (st ? '<span class="kq-done"> · ' + KF.DID[st.action] + '</span>' : '') + '</span>' +
       '<span class="kq-line"><span class="q">Queued</span><span class="a">Reading ' + c.evidence.length + ' records</span>' +
       '<span class="b">' + KF.esc(KF.clip(KF.sentences(c.reason)[0], 118)) + '</span></span></span>' +
-      '<span class="kq-end">' + KF.chip(c.verdict) + '<code>' + KF.esc(c.reason_code) + '</code></span></a>';
+      '<span class="kq-end">' + KF.chip(c.verdict) + KF.code(c.reason_code) + '</span></a>';
   }
 
   function renderList() {
@@ -75,7 +75,7 @@
     }
     var s = KF.sentences(rfi.reason), ask = s.filter(function (x) { return /^Ask\b/.test(x); });
     msg.innerHTML = '<small>What to ask · <a href="' + href(rfi) + '">' + KF.esc(rfi.case_id) + '</a></small><span class="kf-draft">' + KF.esc((ask.length ? ask : s.slice(-1)).join(' ')) + '</span>';
-    codeRow.innerHTML = KF.chip('RFI') + '<span class="kq-id">' + KF.esc(rfi.reason_code) + '</span>';
+    codeRow.innerHTML = KF.chip('RFI') + '<span class="kq-id" title="' + KF.esc(KF.describe(rfi.reason_code)) + '">' + KF.esc(rfi.reason_code) + '</span>';
     codeRow.style.display = ''; btnRow.style.display = '';
     editBtn.textContent = 'Edit';
     if (h1turn) h1turn.textContent = 'One question to send.';
