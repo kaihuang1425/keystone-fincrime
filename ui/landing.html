@@ -13,33 +13,42 @@
 body{margin:0}
 a{color:var(--ink)}a:hover{color:var(--ink-2)}
 .lp-in{max-width:1200px;margin:0 auto;box-sizing:border-box}
-.lp-hero{position:relative;overflow:hidden}
-.lp-bots{display:flex;align-items:flex-end}
-.lp-out{display:grid}
-.lp-out > div{display:flex;flex-direction:column;gap:10px;padding:22px 0;border-top:1px solid var(--line)}
-.lp-out b{font-weight:500;font-size:19px}
-.lp-cmp{padding:6px 18px 16px;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline)}
+.lp-sec{display:grid;align-items:start}
+.lp-copy{display:flex;flex-direction:column;gap:14px;min-width:0}
+.lp-copy .lead{color:var(--ink-2)}
+.lp-who{display:flex;align-items:center;gap:10px}
+.lp-proof{display:grid}
+.lp-proof > div{display:flex;flex-direction:column;gap:6px;padding:18px 0;border-top:1px solid var(--line)}
+.lp-proof b{font-size:40px;font-weight:300;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.lp-proof span{font-size:14px;color:var(--ink-2)}
+.lp-proof b.is-bad{color:var(--bad)}
+.lp-why{margin:0;font-size:20px;line-height:1.4;font-weight:400;letter-spacing:-.01em;color:var(--ink);max-width:46ch}
+.lp-why .k-cite{vertical-align:2px;margin-left:4px}
+@media (max-width:1099px){.lp-proof > :first-child{grid-column:1/-1}}
+@media (min-width:1100px){.lp-proof{grid-template-columns:repeat(5,minmax(0,1fr)) !important;gap:24px}}
+.lp-case{display:grid;gap:10px;padding:18px 20px;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline)}
+.lp-case dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:14.5px}
+.lp-case dt{color:var(--ink-3)}
+.lp-case dd{margin:0}
+.lp-q{padding:6px 18px 14px;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline)}
 @media (min-width:761px){
 .lp-in{padding-left:24px;padding-right:24px}
-.lp-in--hero{padding-top:88px;padding-bottom:72px}
-.lp-in--sec{padding-top:76px;padding-bottom:76px}
-.lp-in--close{padding-top:88px;padding-bottom:88px}
-.lp-bots{flex-wrap:wrap;gap:28px;margin-top:36px}
-.lp-out{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.lp-in--hero{padding-top:72px;padding-bottom:64px}
+.lp-in--sec{padding-top:72px;padding-bottom:72px}
+.lp-in--close{padding-top:80px;padding-bottom:80px}
+.lp-sec{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px}
+.lp-sec--hero{grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:48px;align-items:center}
+.lp-proof{grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
 }
-@media (min-width:761px) and (max-width:1099px){.k-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (min-width:1100px){.k-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:760px){
 .lp-in{padding-left:16px;padding-right:16px}
-.lp-in--hero{padding-top:40px;padding-bottom:40px}
-.lp-in--sec{padding-top:56px;padding-bottom:56px}
-.lp-in--close{padding-top:72px;padding-bottom:72px}
+.lp-in--hero{padding-top:36px;padding-bottom:40px}
+.lp-in--sec{padding-top:48px;padding-bottom:48px}
+.lp-in--close{padding-top:56px;padding-bottom:56px}
 .lp-nav{display:none !important}
-.lp-bots{flex-wrap:nowrap;gap:14px;margin:4px -16px 0;padding:0 16px 4px;overflow-x:auto;scrollbar-width:none}
-.lp-bots::-webkit-scrollbar{display:none}
-.lp-bots > div{flex:none}
-.lp-bots .k-bot{--size:64px !important}
-.lp-out{grid-template-columns:minmax(0,1fr);gap:0}
+.lp-sec,.lp-sec--hero{grid-template-columns:minmax(0,1fr);gap:28px}
+.lp-proof{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+.lp-proof b{font-size:32px}
 }
 </style>
 <style>body{margin:0}</style>
@@ -51,100 +60,146 @@ a{color:var(--ink)}a:hover{color:var(--ink-2)}
 <div class="lp-in" style="padding-top: 14px; padding-bottom: 14px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
 <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 17px; font-weight: 600;"><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>Keystone</a>
 <nav class="lp-nav" style="display: flex; gap: 22px; flex-wrap: wrap; font-size: 14.5px; margin-right: auto;" aria-label="Sections">
-<a href="#how" style="text-decoration: none; color: var(--ink-2);">How it decides</a>
-<a href="#evidence" style="text-decoration: none; color: var(--ink-2);">Evidence</a>
-<a href="#trust" style="text-decoration: none; color: var(--ink-2);">Trust</a>
+<a href="#order" style="text-decoration: none; color: var(--ink-2);">How it decides</a>
+<a href="#facts" style="text-decoration: none; color: var(--ink-2);">What counts as proof</a>
+<a href="#runs" style="text-decoration: none; color: var(--ink-2);">Every run the same</a>
 </nav>
-<a class="k-btn k-btn--primary" href="app.html" style="margin-left: auto;">Try the demo <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--primary" href="walk-monitoring.html" style="margin-left: auto;">Watch one case <span class="k-arr">→</span></a>
 </div>
 </header>
 
-<section id="top" class="lp-hero" style="border-bottom: 1px solid var(--line);">
-<div class="lp-in lp-in--hero" style="position: relative; display: flex; flex-direction: column; gap: 28px;">
-<h1 class="display" style="max-width: 15ch;">Every alert, closed safely. <span class="k-turn">Every reason cited.</span></h1>
-<p class="lead" style="color: var(--ink-2);">Grok Bots that work a transaction-monitoring queue the way a careful analyst would.</p>
+<section id="top" style="border-bottom: 1px solid var(--line);">
+<div class="lp-in lp-in--hero lp-sec lp-sec--hero">
+<div class="lp-copy" style="gap: 24px;">
+<span class="k-label">Track 1 · Transaction monitoring</span>
+<h1 class="display" style="max-width: 13ch;">Every alert, closed safely. <span class="k-turn">Every reason cited.</span></h1>
+<p class="lead" style="max-width: 46ch;">Keystone works a transaction-monitoring queue the way a careful analyst does. It looks for crime first, closes only what a document proves, and names the one document it needs when it can’t.</p>
 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-<a class="k-btn k-btn--primary k-btn--lg" href="app.html">Try the demo <span class="k-arr">→</span></a>
-<a class="k-btn k-btn--ghost k-btn--lg" href="walk-monitoring.html">Watch one case</a>
-<span class="k-honest k-honest--synthetic">Prototype on invented data</span>
+<a class="k-btn k-btn--primary k-btn--lg" href="walk-monitoring.html">Watch one case <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--ghost k-btn--lg" href="queue.html">Open the queue</a>
 </div>
-<div class="lp-bots" aria-label="Case Lead, Payments Bot, Document Bot, Screening Bot and Match Bot">
-<div><span data-k-bot data-shape="shield" data-color="chief" data-state="idle" data-name="Case Lead" style="--size: 120px"></span></div>
-<div><span data-k-bot data-shape="card" data-color="pink" data-state="working" data-name="Payments Bot" style="--size: 96px"></span></div>
-<div><span data-k-bot data-shape="doc" data-color="blue" data-state="thinking" data-name="Document Bot" style="--size: 96px"></span></div>
-<div><span data-k-bot data-shape="lens" data-color="green" data-state="idle" data-name="Screening Bot" style="--size: 96px"></span></div>
-<div><span data-k-bot data-shape="venn" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 96px"></span></div>
+<span class="k-honest k-honest--synthetic" style="align-self: flex-start;">Invented data</span>
+</div>
+<div class="lp-q" aria-label="The bank's queue, worked one case at a time">
+<div class="kq-row kw-r" style="--d: .3s; --w: .9s; --m: 2.3s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>£41,500 from a solicitors’ client account</b><span class="kq-line"><span class="q">Queued</span><span class="a">Matching the estate letter to the payment</span><span class="b">Same payer, same amount, dated before it</span></span></span><span class="kq-end"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>DOCUMENTED_EVENT</code></span></div>
+<div class="kq-row kw-r" style="--d: .45s; --w: 2.6s; --m: 4s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span><span><b>14 payers in two days, paid out within the hour</b><span class="kq-line"><span class="q">Queued</span><span class="a">Checking for signs of crime first</span><span class="b">A sending bank reports a scam. Nothing is asked</span></span></span><span class="kq-end"><span class="k-chip k-chip--bad">↑ ESCALATE</span><code>ESC_MULE_ACTIVITY</code></span></div>
+<div class="kq-row kw-r" style="--d: .6s; --w: 4.3s; --m: 5.7s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ask">?</span></span><span><b>£30,000 in from a private person</b><span class="kq-line"><span class="q">Queued</span><span class="a">Looking for a document that explains it</span><span class="b">Nothing suspicious, nothing on file. Ask for one</span></span></span><span class="kq-end"><span class="k-chip k-chip--ask">? RFI</span><code>RFI_SOURCE_OF_FUNDS</code></span></div>
+<div class="kq-row kw-r" style="--d: .75s; --w: 6s; --m: 7.4s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>A payment to a name on the internal list</b><span class="kq-line"><span class="q">Queued</span><span class="a">Comparing every identity fact on file</span><span class="b">The register gives a different date of birth</span></span></span><span class="kq-end"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>LIST_MATCH_DIFFERENT_PARTY</code></span></div>
 </div>
 </div>
 </section>
 
 <section style="background: var(--ground-2);">
-<div class="lp-in lp-in--sec" style="display: flex; flex-direction: column; gap: 40px;">
-<h2 class="h1" style="max-width: 20ch;">Most alerts have an ordinary explanation. <span class="k-turn">Every one still needs an analyst.</span></h2>
-<div class="k-metrics">
-<div class="k-metric"><span class="k-metric__label">Spent on compliance by UK financial firms in 2023</span><span class="k-metric__val is-bad">£38.3bn</span><div class="k-row"><button type="button" class="k-cite">LexisNexis survey<span class="k-cite__pop">UK financial firms spent £38.3 billion on compliance in 2023, 12% more than the year before. A vendor’s survey of 254 regulated UK firms.<small>LexisNexis Risk Solutions, True Cost of Compliance, July 2024</small></span></button></div></div>
-<div class="k-metric"><span class="k-metric__label">Wrongly closed, of [n] checked by hand</span><span class="k-metric__val is-bad">[n]</span></div>
-<div class="k-metric"><span class="k-metric__label">Same verdict and reason code, five runs</span><span class="k-metric__val">5 of 5</span><div class="k-row"><button type="button" class="k-cite">Our check, 21 Nov<span class="k-cite__pop">Five runs on each institution’s 1,000 development cases gave the same output every time, 20 runs in all.<small>Our own check · 21 Nov 2026, 12:02</small></span></button></div></div>
-<div class="k-metric"><span class="k-metric__label">Unseen cases it is tested on</span><span class="k-metric__val is-ok">800</span><div class="k-row"><button type="button" class="k-cite">Track 1 brief<span class="k-cite__pop">The system is run five times on 800 unseen cases, 200 from each institution.<small>Diligent, transaction monitoring brief</small></span></button></div></div>
+<div class="lp-in" style="padding-top: 24px; padding-bottom: 24px; display: flex; flex-direction: column; gap: 18px;">
+<p class="lp-why kw-r" style="--d: 0s;">At most banks, more than 90% of transaction-monitoring alerts turn out to be false positives. <button type="button" class="k-cite">McKinsey<span class="k-cite__pop">At most banks, more than 90 percent of transaction-monitoring alerts turn out to be false positives.<small>McKinsey & Company, The investigator-centered approach to financial crime</small></span></button></p>
+<div class="lp-proof">
+<div class="kw-r" style="--d: .05s;"><b class="is-bad">£38.3bn</b><span>spent on compliance by UK financial firms in 2023</span><button type="button" class="k-cite">LexisNexis survey<span class="k-cite__pop">UK financial firms spent £38.3 billion on compliance in 2023, 12% more than the year before. A vendor’s survey of 254 regulated UK firms.<small>LexisNexis Risk Solutions, True Cost of Compliance, July 2024</small></span></button></div>
+<div class="kw-r" style="--d: .2s;"><b>5 of 5</b><span>runs give the same bytes, in all four institutions</span><button type="button" class="k-cite">Our check, 21 Nov<span class="k-cite__pop">Five runs on each institution’s 1,000 development cases gave the same output every time, 20 runs in all.<small>Our own check · 21 Nov 2026, 12:02</small></span></button></div>
+<div class="kw-r" style="--d: .35s;"><b>3.8 s</b><span>to decide 1,000 of the bank’s cases</span><button type="button" class="k-cite">tools/verify.py<span class="k-cite__pop">Runs each institution five times under five different hash seeds, from inside system/. All five output files were identical in all four institutions; the bank's 1,000 cases took 3.8 s a run.<small>Track 1 system, checked at 12:06 on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .5s;"><b>19 of 19</b><span>tests pass that change one fact and expect the verdict to move</span><button type="button" class="k-cite">tools/mutation_test.py<span class="k-cite__pop">Changes one fact in a real case (an amount, an account holder, a date of birth, a date) and checks the verdict moves as the SOP requires. 19 of 19 passed.<small>Track 1 system, checked at 12:06 on 21 Nov</small></span></button></div>
+<div class="kw-r" style="--d: .65s;"><b>£0</b><span>a run: no language model, no network</span><button type="button" class="k-cite">system/README.md<span class="k-cite__pop">Plain Python with fixed rules. It calls no language model and uses no network, so a run costs nothing.<small>Track 1 system README</small></span></button></div>
+</div>
+<p class="k-meta">Our figures were measured on the 4,000 development cases on 21 November. There is no accuracy figure: the development cases carry no answers.</p>
+</div>
+</section>
+
+<section id="order">
+<div class="lp-in lp-in--sec lp-sec">
+<div class="lp-copy">
+<div class="lp-who"><span data-k-bot data-shape="lens" data-color="green" data-state="working" data-name="Screening Bot" style="--size: 40px"></span><span class="k-tool">Rules, not AI</span></div>
+<h2 class="h1">Crime is checked first. <span class="k-turn">A suspect is never asked a question.</span></h2>
+<p class="lead">Three questions, always in this order. Once there is suspicion the SOP forbids asking the customer anything, so suspicion comes before any request. Closing has the strictest test, because a wrongful close is the costliest mistake.</p>
+</div>
+<div class="kl-gates">
+<div class="kl-case" aria-hidden="true"><span><b>Case A</b> · a sending bank’s fraud report is on file</span><span><b>Case B</b> · a solicitor’s letter matches the payment</span><span><b>Case C</b> · £30,000 in, nothing on file</span></div>
+<div class="kl-gate g1"><span class="kl-gate__n">1</span><span><b>Does anything on file point to crime?</b><small>Fraud reports, shared devices, structuring, a dissolved payer</small></span><span class="k-chip k-chip--bad">↑ ESCALATE</span></div>
+<div class="kl-gate g2"><span class="kl-gate__n">2</span><span><b>Does a document explain every alert?</b><small>Its amount, party and date must match the payment</small></span><span class="k-chip k-chip--ok">✓ CLOSE</span></div>
+<div class="kl-gate g3"><span class="kl-gate__n">3</span><span><b>Otherwise, which one document would settle it?</b><small>Named in the reason, so the analyst can send it</small></span><span class="k-chip k-chip--ask">? RFI</span></div>
 </div>
 </div>
 </section>
 
-<section id="how">
-<div class="lp-in lp-in--sec" style="display: flex; flex-direction: column; gap: 48px;">
-<h2 class="h1" style="max-width: 22ch;">Each bot checks one thing. <span class="k-turn">The case gets one verdict.</span></h2>
-<div class="k-relay" style="--n: 4;" role="img" aria-label="Payments Bot reads the alert, Document Bot reads the documents on file, Match Bot applies the bank's SOP, and Case Lead gives the case one verdict.">
-<span class="k-relay__track"></span>
-<div class="k-relay__node is-on"><span data-k-bot data-shape="card" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 56px"></span><b>Payments Bot</b></div>
-<div class="k-relay__node is-on"><span data-k-bot data-shape="doc" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 56px"></span><b>Document Bot</b></div>
-<div class="k-relay__node is-on"><span data-k-bot data-shape="venn" data-color="teal" data-state="working" data-name="Match Bot" style="--size: 56px"></span><b>Match Bot</b></div>
-<div class="k-relay__node"><span data-k-bot data-shape="shield" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 56px"></span><b>Case Lead</b></div>
+<section id="facts" style="background: var(--ground-2);">
+<div class="lp-in lp-in--sec lp-sec">
+<div class="lp-copy">
+<div class="lp-who"><span data-k-bot data-shape="doc" data-color="blue" data-state="working" data-name="Document Bot" style="--size: 40px"></span><span class="k-tool">Rules, not AI</span></div>
+<h2 class="h1">A letter on file proves nothing. <span class="k-turn">Its facts have to match.</span></h2>
+<p class="lead">A document explains a payment only when it states the amount to the penny, names the party and is dated before the money moved. Then the alert is tested again without that money.</p>
+<div class="lp-case">
+<dl>
+<dt>Customer</dt><dd>Sam Field, a nurse, declares £2,800 a month</dd>
+<dt>Alert</dt><dd>TM01 · £44,300 received in March, over 3 times the declared income</dd>
+<dt>Payment</dt><dd>£41,500 from Hale &amp; Co Solicitors client account, “ESTATE OF R FIELD”</dd>
+</dl>
 </div>
-<div class="lp-out">
-<div><span class="k-chip k-chip--ok" style="align-self: flex-start;">✓ CLOSE</span><b>The evidence explains every alert.</b></div>
-<div><span class="k-chip k-chip--ask" style="align-self: flex-start;">? RFI</span><b>One document would settle it.</b></div>
-<div><span class="k-chip k-chip--bad" style="align-self: flex-start;">↑ ESCALATE</span><b>It goes to the MLRO, and nothing is asked.</b></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+<div class="kl-files" aria-hidden="true"><span class="kl-file">Letter for £41,500</span><span class="kl-file">No letter</span><span class="kl-file">Letter for £35,000</span><span class="kl-file">A fraud report</span></div>
+<div class="kl-stack">
+<div class="kl-panel">
+<article class="k-doc"><div class="k-doc__head"><span>Letter from Hale &amp; Co Solicitors</span><span>dated before the payment</span></div><p>Distribution from the estate of R. Field: £41,500.00</p></article>
+<div class="kw-cmp"><span>Amount</span><span class="kw-cmp__word">Agrees</span><span>£41,500.00</span></div>
+<div class="kw-cmp"><span>Payer</span><span class="kw-cmp__word">Agrees</span><span>Hale &amp; Co Solicitors</span></div>
+<div class="k-meter kl-meter" style="--t: 18.7%; margin-top: 10px;"><div class="k-meter__top"><span>Received without the documented £41,500</span><span class="k-meter__val"><span class="v1">£44,300</span><span class="v2">£2,800</span></span></div><div class="k-meter__bar"><span class="k-meter__fill"></span><span class="k-meter__line" data-label="limit £8,400"></span></div></div>
+<div class="kw-verdict"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>DOCUMENTED_EVENT</code></div>
+</div>
+<div class="kl-panel">
+<article class="k-doc"><div class="k-doc__head"><span>On file</span><span>nothing about this payment</span></div><p>No letter, statement or agreement explains the £41,500.</p></article>
+<p class="kl-why">Nothing looks criminal, and the solicitor’s letter would settle it.</p>
+<div class="kw-verdict"><span class="k-chip k-chip--ask">? RFI</span><code>RFI_SOURCE_OF_FUNDS</code></div>
+</div>
+<div class="kl-panel">
+<article class="k-doc"><div class="k-doc__head"><span>Letter from Hale &amp; Co Solicitors</span><span>dated before the payment</span></div><p>Distribution from the estate of R. Field: £35,000.00</p></article>
+<div class="kw-cmp is-key"><span>Amount</span><span class="kw-cmp__word">Contradicts</span><span>£41,500.00</span></div>
+<div class="kw-cmp"><span>Payer</span><span class="kw-cmp__word">Agrees</span><span>Hale &amp; Co Solicitors</span></div>
+<p class="kl-why">The letter does not account for the payment, so it cannot close the case.</p>
+<div class="kw-verdict"><span class="k-chip k-chip--ask">? RFI</span><code>RFI_SOURCE_OF_FUNDS</code></div>
+</div>
+<div class="kl-panel">
+<article class="k-doc"><div class="k-doc__head"><span>Fraud report from a sending bank</span><span>about a payment into this account</span></div><p>The payer’s bank reports that its customer was scammed.</p></article>
+<p class="kl-why">A sign of crime outranks any explanation, and nothing is asked of the customer.</p>
+<div class="kw-verdict"><span class="k-chip k-chip--bad">↑ ESCALATE</span><code>ESC_MULE_ACTIVITY</code></div>
+</div>
+</div>
 </div>
 </div>
 </section>
 
-<section id="evidence" style="background: var(--ground-2);">
-<div class="lp-in lp-in--sec" style="display: flex; flex-wrap: wrap; gap: 48px; align-items: center;">
-<h2 class="h1" style="flex: 1 1 360px; min-width: 0;">Every verdict names its records. <span class="k-turn">Every doubt becomes one question.</span></h2>
-<div style="flex: 1 1 480px; min-width: 0;">
-<div class="lp-cmp" role="table" aria-label="The list entry against the payee's director">
-<div class="kw-cmp kw-cmp__head" role="row" style="padding-top: 12px;"><span role="columnheader"><button type="button" class="k-cite">BK-L20417<span class="k-cite__pop">Internal list entry. A person with the same name as the director, born 1968.<small>Internal list · synthetic</small></span></button></span><span role="columnheader"><span class="k-sr">Agrees</span></span><span role="columnheader"><button type="button" class="k-cite">REG-5102<span class="k-cite__pop">Hale Shopfitting Ltd. Active since 2017. Director D. H., born March 1991.<small>Register extract · synthetic</small></span></button></span></div>
-<div class="kw-cmp" role="row"><span role="cell">D. H.</span><span role="cell" class="kw-cmp__word">Agrees</span><span role="cell">D. H.</span></div>
-<div class="kw-cmp is-key" role="row"><span role="cell">Born 1968</span><span role="cell" class="kw-cmp__word">Contradicts</span><span role="cell">Born 1991</span></div>
-<div class="kw-verdict"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>LIST_MATCH_DIFFERENT_PARTY</code></div>
+<section id="runs">
+<div class="lp-in lp-in--sec lp-sec">
+<div class="lp-copy">
+<div class="lp-who"><span data-k-bot data-shape="venn" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 40px"></span><span class="k-tool">Rules, not AI</span></div>
+<h2 class="h1">No model in the loop. <span class="k-turn">The same answer every run.</span></h2>
+<p class="lead">Plain rules read typed facts: amounts, dates, accounts, names. Every decision traces to a line of code and a fact in the file, and the reason is written only from the facts the check used.</p>
 </div>
+<div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
+<div class="kl-runs" aria-label="Five runs on the bank's 1,000 cases give the same output">
+<div class="kl-run"><span>Run 1</span><span>bank · 1,000 lines</span><b>232dd470…79cc6</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 2</span><span>bank · 1,000 lines</span><b>232dd470…79cc6</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 3</span><span>bank · 1,000 lines</span><b>232dd470…79cc6</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 4</span><span>bank · 1,000 lines</span><b>232dd470…79cc6</b><span class="k-mk k-mk--ok">✓</span></div>
+<div class="kl-run"><span>Run 5</span><span>bank · 1,000 lines</span><b>232dd470…79cc6</b><span class="k-mk k-mk--ok">✓</span></div>
 </div>
-</div>
-</section>
-
-<section id="trust">
-<div class="lp-in lp-in--sec" style="display: flex; flex-direction: column; gap: 40px;">
-<h2 class="h1" style="max-width: 20ch;">Built to be audited. <span class="k-turn">The same answer every run.</span></h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-<div class="k-card" style="display: flex; flex-direction: column; gap: 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg><b style="font-weight: 500; font-size: 17px;">Nothing closed on a guess</b></div>
-<div class="k-card" style="display: flex; flex-direction: column; gap: 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg><b style="font-weight: 500; font-size: 17px;">Every verdict has its records</b></div>
-<div class="k-card" style="display: flex; flex-direction: column; gap: 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg><b style="font-weight: 500; font-size: 17px;">Each firm’s own SOP</b></div>
-<div class="k-card" style="display: flex; flex-direction: column; gap: 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"></path></svg><b style="font-weight: 500; font-size: 17px;">Rules decide, a model only reads</b></div>
+<p class="kl-reason"><span class="kw-hl" style="--d: .2s;">SOL-4102</span> from <span class="kw-hl" style="--d: .6s;">Hale &amp; Co Solicitors</span>, dated <span class="kw-hl" style="--d: 1s;">2 March 2026</span>, confirms a distribution of <span class="kw-hl" style="--d: 1.4s;">£41,500.00</span> from the estate of R. Field. The same amount arrived on 6 March 2026. The rest of the money received in the window, <span class="kw-hl" style="--d: 1.8s;">£2,800.00</span>, is within 3 times the declared £2,800.00.</p>
+<p class="k-meta">An invented reason in the system’s own wording. The hash is the bank output’s SHA-256.</p>
 </div>
 </div>
 </section>
 
-<section id="demo" class="lp-hero" style="background: var(--ground-2);">
-<div class="lp-in lp-in--close" style="position: relative; display: flex; flex-direction: column; gap: 32px; align-items: center; text-align: center;">
-<span data-k-bot data-shape="shield" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 96px"></span>
+<section id="demo" style="background: var(--ground-2);">
+<div class="lp-in lp-in--close" style="display: flex; flex-direction: column; gap: 28px; align-items: center; text-align: center;">
+<span data-k-bot data-shape="shield" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 88px"></span>
 <h2 class="display" style="max-width: 16ch;">Closed on evidence. <span class="k-turn">Never on a guess.</span></h2>
-<a class="k-btn k-btn--primary k-btn--lg" href="app.html">Try the demo <span class="k-arr">→</span></a>
+<div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+<a class="k-btn k-btn--primary k-btn--lg" href="walk-monitoring.html">Watch one case <span class="k-arr">→</span></a>
+<a class="k-btn k-btn--ghost k-btn--lg" href="app.html">Open a case</a>
+</div>
 </div>
 </section>
 
 <footer style="border-top: 1px solid var(--line);">
 <div class="lp-in" style="padding-top: 28px; padding-bottom: 40px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;">
-<span class="k-meta">Keystone · Grok Bot Financial Crime Hack, London, 21 Nov 2026 · Track 1</span>
+<span class="k-meta">Keystone · Track 1 · Grok Bot Financial Crime Hack, London, 21 Nov 2026 · every case and document shown is invented</span>
 </div>
 </footer>
 

@@ -151,3 +151,90 @@
   .kw-src, .kw-con { padding: 14px 14px 16px; }
   .kw-cmp { font-size: 14px; gap: 8px; }
 }
+
+/* ---------- landing: three looping explanations, CSS only, so the canvas and the site play the same frames ----------
+   Every loop rests on a readable frame, and with motion off every row, panel and verdict still shows. */
+
+/* the three questions, asked in order: three cases walk down them and leave at their verdict (12 s) */
+.kl-gates { display: grid; gap: 8px; }
+.kl-case { display: grid; min-height: 22px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.kl-case > span { grid-area: 1 / 1; }
+.kl-case b { color: var(--ink); font-weight: 500; }
+.kl-gate { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 18px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.kl-gate__n { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; background: var(--surface-2); font-family: var(--font-mono); font-size: 13px; color: var(--ink-2); }
+.kl-gate b { display: block; font-weight: 500; font-size: 16.5px; }
+.kl-gate small { display: block; margin-top: 2px; font-size: 13.5px; color: var(--ink-3); }
+.kl-gate .k-chip { font-size: 13.5px; }
+.kl-case > span { opacity: 0; animation: kl-cap 12s linear infinite; }
+.kl-case > span:nth-child(2) { animation-delay: -8s; }
+.kl-case > span:nth-child(3) { animation-delay: -4s; }
+.kl-gate { animation: 12s linear infinite; }
+.kl-gate.g1 { animation-name: kl-g1; }
+.kl-gate.g2 { animation-name: kl-g2; }
+.kl-gate.g3 { animation-name: kl-g3; }
+.kl-gate .k-chip { animation: 12s var(--ease-out) infinite; }
+.kl-gate.g1 .k-chip { animation-name: kl-x1; }
+.kl-gate.g2 .k-chip { animation-name: kl-x2; }
+.kl-gate.g3 .k-chip { animation-name: kl-x3; 
+}
+@keyframes kl-cap { 0%, 31% { opacity: 1; } 33%, 100% { opacity: 0; } }
+@keyframes kl-g1 { 0%, 2%, 30%, 35%, 43%, 68%, 75%, 100% { background: var(--surface); } 4%, 28% { background: var(--surface-3); } 37%, 41%, 70%, 73% { background: var(--surface-2); } }
+@keyframes kl-g2 { 0%, 43%, 64%, 76%, 83%, 100% { background: var(--surface); } 46%, 62% { background: var(--surface-3); } 78%, 81% { background: var(--surface-2); } }
+@keyframes kl-g3 { 0%, 84%, 99%, 100% { background: var(--surface); } 87%, 97% { background: var(--surface-3); } }
+@keyframes kl-x1 { 0%, 6%, 31%, 100% { opacity: .38; transform: none; } 9% { opacity: 1; transform: scale(1.08); } 12%, 28% { opacity: 1; transform: none; } }
+@keyframes kl-x2 { 0%, 49%, 64%, 100% { opacity: .38; transform: none; } 52% { opacity: 1; transform: scale(1.08); } 55%, 62% { opacity: 1; transform: none; } }
+@keyframes kl-x3 { 0%, 88%, 99%, 100% { opacity: .38; transform: none; } 91% { opacity: 1; transform: scale(1.08); } 93%, 97% { opacity: 1; transform: none; } }
+
+/* one case, four files on file, four verdicts: the panels take turns, 4 s each (16 s) */
+.kl-files { display: flex; gap: 6px; flex-wrap: wrap; }
+.kl-file { padding: 6px 12px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); font-size: 13px; animation: kl-pill 16s linear infinite; }
+.kl-stack { display: grid; }
+.kl-stack > .kl-panel { grid-area: 1 / 1; animation: kl-turn 16s linear infinite; }
+.kl-files > :nth-child(2), .kl-stack > :nth-child(2) { animation-delay: -12s; }
+.kl-files > :nth-child(3), .kl-stack > :nth-child(3) { animation-delay: -8s; }
+.kl-files > :nth-child(4), .kl-stack > :nth-child(4) { animation-delay: -4s; }
+.kl-panel { display: grid; gap: 4px; align-content: start; padding: 18px 20px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.kl-panel .k-doc { box-shadow: none; background: var(--surface-2); margin-bottom: 6px; }
+.kl-panel .kw-verdict { margin-top: 10px; }
+.kl-why { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-2); }
+@keyframes kl-turn { 0% { opacity: 0; transform: translateY(6px); } 2%, 23% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; transform: none; } }
+@keyframes kl-pill { 0%, 24.5% { background: var(--ink); color: var(--on-primary); } 25%, 100% { background: var(--surface-2); color: var(--ink-3); } }
+
+/* the re-test: the money left once the letter explains £41,500 falls under the line (inside the first panel) */
+.kl-meter .k-meter__fill { width: 6.2%; animation: kl-drop 16s var(--ease-out) infinite; }
+.kl-meter .k-meter__val { display: grid; justify-items: end; }
+.kl-meter .k-meter__val > span { grid-area: 1 / 1; }
+.kl-meter .k-meter__val .v1 { opacity: 0; animation: kl-v1 16s linear infinite; }
+.kl-meter .k-meter__val .v2 { animation: kl-v2 16s linear infinite; }
+@keyframes kl-drop { 0%, 6% { width: 98.4%; background: var(--bad); } 14%, 100% { width: 6.2%; background: var(--ok); } }
+@keyframes kl-v1 { 0%, 9% { opacity: 1; } 11%, 100% { opacity: 0; } }
+@keyframes kl-v2 { 0%, 9% { opacity: 0; } 11%, 100% { opacity: 1; } }
+
+/* the same answer every run: five runs land one after another and agree (10 s) */
+.kl-runs { display: grid; gap: 2px; padding: 10px 16px; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.kl-run { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto 18px; gap: 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2); animation: kl-run 10s var(--ease-out) infinite; }
+.kl-run:first-child { border-top: 0; }
+.kl-run b { font-weight: 500; color: var(--ink); }
+.kl-run:nth-child(2) { animation-delay: .5s; } .kl-run:nth-child(3) { animation-delay: 1s; } .kl-run:nth-child(4) { animation-delay: 1.5s; } .kl-run:nth-child(5) { animation-delay: 2s; }
+@keyframes kl-run { 0% { opacity: 0; transform: translateY(6px); } 6%, 92% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+
+/* the reason is built from the facts the check used: each fact lights in turn (8 s) */
+.kl-reason { margin: 0; padding: 16px 18px; border-radius: var(--radius-lg); background: var(--surface-2); font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+.kl-reason .kw-hl { animation: kl-fact 8s var(--ease-glance) infinite; animation-delay: var(--d, 0s); }
+@keyframes kl-fact { 0% { background-size: 0% 100%; } 10%, 88% { background-size: 100% 100%; } 96%, 100% { background-size: 0% 100%; } }
+
+@media (max-width: 760px) {
+  .kl-gate { grid-template-columns: 28px minmax(0, 1fr); padding: 14px; gap: 10px; }
+  .kl-gate .k-chip { grid-column: 2; justify-self: start; }
+  .kl-gate__n { width: 28px; height: 28px; }
+  .kl-run { grid-template-columns: 48px minmax(0, 1fr) 18px; }
+  .kl-run > :nth-child(3) { display: none; }
+}
+
+/* with the OS motion setting honoured (data-k-motion="system"), every loop shows its first, readable frame */
+:root[data-k-motion="system"] .kl-case > span, :root[data-k-motion="system"] .kl-stack > .kl-panel { animation: none; opacity: 0; }
+:root[data-k-motion="system"] .kl-case > span:first-child, :root[data-k-motion="system"] .kl-stack > .kl-panel:first-child { opacity: 1; }
+:root[data-k-motion="system"] .kl-file, :root[data-k-motion="system"] .kl-gate, :root[data-k-motion="system"] .kl-gate .k-chip,
+:root[data-k-motion="system"] .kl-run, :root[data-k-motion="system"] .kl-meter .k-meter__fill, :root[data-k-motion="system"] .kl-meter .k-meter__val > span { animation: none; }
+:root[data-k-motion="system"] .kl-meter .k-meter__val .v1 { opacity: 0; }
+:root[data-k-motion="system"] .kl-reason .kw-hl { animation: none; background-size: 100% 100%; }
