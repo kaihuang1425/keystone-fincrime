@@ -36,10 +36,12 @@ create index if not exists triage_decisions_verdict on triage_decisions (institu
 create table if not exists mlro_context (
   topic      text primary key,                -- for example "country:Lebanon"
   fetched_at timestamptz not null default now(),
+  list_date  date,                            -- publication date of the newest FATF list among the sources
   query      text not null,
-  sources    jsonb not null,                  -- [{"title": ..., "url": ..., "snippet": ...}]
+  sources    jsonb not null,                  -- [{"list", "title", "url", "list_date", "snippet", "names_country"}]
   note       text not null
 );
+alter table mlro_context add column if not exists list_date date;
 
 -- What the analyst did with a decision in the UI. History is never rewritten:
 -- an undo is a new 'undone' row.

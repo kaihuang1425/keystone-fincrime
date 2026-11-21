@@ -37,7 +37,7 @@ The brief requires a system that reads only its input folder and gives the same 
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... python tools/publish_supabase.py --rerun <path to institutions>
 ```
 
-**Tavily** answers the MLRO's first question on a corridor escalation, which is the official position on that country today. The tool searches FATF and GOV.UK and saves each source with its URL. It sends a country name and nothing else. The verdict never uses the result, and every saved row says so.
+**Tavily** answers the MLRO's first question on a corridor escalation, which is what the FATF says about that country now. The tool finds the FATF's newest dated lists and keeps only those, because an old list shown beside the current one can contradict it. Each saved source carries its list date and its URL. The tool does not rule on a country's status. It records whether the passage returned from the newest list names the country. It sends a country name and nothing else. The verdict never uses the result, and every saved row says so.
 
 ```
 python tools/mlro_context.py <path to institutions>

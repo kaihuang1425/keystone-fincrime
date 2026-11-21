@@ -1,101 +1,77 @@
 [
   {
     "topic": "country:Haiti",
-    "query": "Haiti FATF high-risk or increased monitoring jurisdiction current status",
+    "list_date": "2026-10-30",
+    "query": "Haiti on the FATF's newest lists",
     "sources": [
       {
-        "title": "Jurisdictions under Increased Monitoring - 13 June 2025",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2025.html",
-        "snippet": "The FATF provides some flexibility to jurisdictions not facing immediate deadlines to report progress on a voluntary basis. The following countries had their progress reviewed by the FATF since February 2025: Angola, Bulgaria; Burkina Faso, Cameroon, Côte d’Ivoire, Croatia, Democratic Republic of th"
+        "list": "call for action",
+        "title": "High-Risk Jurisdictions subject to a Call for Action - 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/call-for-action-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "",
+        "names_country": null
       },
       {
-        "title": "Jurisdictions under Increased Monitoring - 19 June 2026",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2026.html",
-        "snippet": "The FATF provides some flexibility to jurisdictions not facing immediate deadlines to report progress on a voluntary basis. The following countries had their progress reviewed by the FATF since February 2026: Algeria, Angola, Bolivia, Bulgaria, Cameroon, Côte d’Ivoire, Democratic Republic of the Con"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 21 February 2025",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-february-2025.html",
-        "snippet": "The FATF provides some flexibility to jurisdictions not facing immediate deadlines to report progress on a voluntary basis. The following countries had their progress reviewed by the FATF since October 2024: Bulgaria; Burkina Faso, Cameroon, Croatia, Democratic Republic of Congo, Kenya, Mali, Mozamb"
-      },
-      {
-        "title": "Haiti",
-        "url": "https://www.fatf-gafi.org/en/countries/detail/Haiti.html",
-        "snippet": "Jurisdictions under Increased Monitoring - 13 June 2025\n  Jurisdictions under increased monitoring are actively working with the FATF to address strategic deficiencies in their regimes to counter money laundering, terrorist financing, and proliferation financing.\n  Croatia, Mali and the Republic of "
-      },
-      {
-        "title": "CFATF Public Statement on Haiti",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/Cfatf-public-statement-haiti-nov2017.html",
-        "snippet": "Recent statements. Jurisdictions under Increased Monitoring – 30 October 2026 · High-Risk Jurisdictions subject to a Call for Action - 30 October 2026. Current"
+        "list": "increased monitoring",
+        "title": "Jurisdictions under Increased Monitoring – 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "Jurisdictions under Increased Monitoring – 30 October 2026 · angola · Bolivia · BOsnia and Herzegovina · Cameroon · haiti · Iraq · kenya.",
+        "names_country": true
       }
     ],
-    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this.",
-    "fetched_at": "2026-11-21T12:15:03+00:00"
+    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this. Read the list itself before relying on it.",
+    "fetched_at": "2026-11-21T12:33:24+00:00"
   },
   {
     "topic": "country:Iraq",
-    "query": "Iraq FATF high-risk or increased monitoring jurisdiction current status",
+    "list_date": "2026-10-30",
+    "query": "Iraq on the FATF's newest lists",
     "sources": [
       {
-        "title": "High-risk and other monitored jurisdictions",
-        "url": "https://fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions.html",
-        "snippet": "Title: High-risk and other monitored jurisdictions\n# High-risk and other monitored jurisdictions. ## Current \"black and grey lists\". The FATF identifies jurisdictions with weak measures to combat money laundering and terrorist financing (AML/CFT) in two FATF public documents that are issued three ti"
+        "list": "call for action",
+        "title": "High-Risk Jurisdictions subject to a Call for Action - 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/call-for-action-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "",
+        "names_country": null
       },
       {
-        "title": "Outcomes FATF Plenary, 17-19 June 2026",
-        "url": "https://www.fatf-gafi.org/en/publications/Fatfgeneral/outcomes-fatf-plenary-june-2026.html",
-        "snippet": "At this Plenary, the FATF added Bosnia and Herzegovina and Iraq to the list of jurisdictions under increased monitoring. Jurisdictions no longer"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 19 June 2026",
-        "url": "https://www.fatf-gafi.org/content/fatf-gafi/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2026.html",
-        "snippet": "Title: Jurisdictions under Increased Monitoring - 19 June 2026\nAngola, Bolivia, Bosnia and Herzegovina, Bulgaria,  Cameroon, Côte d'Ivoire, Democratic Republic of the Congo, Haiti, Iraq, Kenya, Kuwait, Lao PDR, Lebanon, Monaco, Nepal, Papua New Guinea South Sudan, Syria, Venezuela, Vietnam, Virgin I"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 19 June 2026",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2026.html",
-        "snippet": "In June 2026, Iraq made a high-level political commitment to work with the FATF and MENAFATF to strengthen the effectiveness of its AML/CFT regime. Since the adoption of its MER in November 2024, Iraq has made progress on its MER’s recommended actions, including through applying market entry control"
-      },
-      {
-        "title": "High-risk and other monitored jurisdictions",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions.html",
-        "snippet": "Jurisdictions under increased monitoring are actively working with the FATF to address strategic deficiencies in their regimes to counter money laundering, terrorist financing, and proliferation financing.\n  The FATF now also identifies Bosnia and Herzegovina and Iraq.\n\n  Publication date :\n  18 Jun"
+        "list": "increased monitoring",
+        "title": "Jurisdictions under Increased Monitoring – 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "Jurisdictions under Increased Monitoring – 30 October 2026 · angola · Bolivia · BOsnia and Herzegovina · Cameroon · haiti · Iraq · kenya.",
+        "names_country": true
       }
     ],
-    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this.",
-    "fetched_at": "2026-11-21T12:15:09+00:00"
+    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this. Read the list itself before relying on it.",
+    "fetched_at": "2026-11-21T12:33:33+00:00"
   },
   {
     "topic": "country:Lebanon",
-    "query": "Lebanon FATF high-risk or increased monitoring jurisdiction current status",
+    "list_date": "2026-10-30",
+    "query": "Lebanon on the FATF's newest lists",
     "sources": [
       {
-        "title": "Lebanon",
-        "url": "https://fatf-gafi.org/en/countries/detail/Lebanon.html",
-        "snippet": "* Public Consultation on AML/CFT and Financial Inclusion - Updated FATF Guidance on AML/CFT Measures and Financial Inclusion. Jurisdictions under Increased Monitoring - 24 October 2025 Jurisdictions under increased monitoring are actively working with the FATF to address strategic deficiencies in th"
+        "list": "call for action",
+        "title": "High-Risk Jurisdictions subject to a Call for Action - 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/call-for-action-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "",
+        "names_country": null
       },
       {
-        "title": "Jurisdictions under Increased Monitoring - 13 June 2025",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2025.html",
-        "snippet": "The FATF provides some flexibility to jurisdictions not facing immediate deadlines to report progress on a voluntary basis. The following countries had their progress reviewed by the FATF since February 2025: Angola, Bulgaria; Burkina Faso, Cameroon, Côte d’Ivoire, Croatia, Democratic Republic of th"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 19 June 2026",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2026.html",
-        "snippet": "The FATF provides some flexibility to jurisdictions not facing immediate deadlines to report progress on a voluntary basis. The following countries had their progress reviewed by the FATF since February 2026: Algeria, Angola, Bolivia, Bulgaria, Cameroon, Côte d’Ivoire, Democratic Republic of the Con"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 21 February 2025",
-        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-february-2025.html",
-        "snippet": "Lebanon will continue to work with the FATF to implement its FATF action plan by: (1) conducting assessments of specific terrorist financing and money laundering risks identified in the MER and ensuring that policies and measures are in place to mitigate these risks; (2) enhancing mechanisms to ensu"
-      },
-      {
-        "title": "Jurisdictions under Increased Monitoring - 19 June 2026",
-        "url": "https://www.fatf-gafi.org/content/fatf-gafi/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-june-2026.html",
-        "snippet": "Title: Jurisdictions under Increased Monitoring - 19 June 2026\nAngola, Bolivia, Bosnia and Herzegovina, Bulgaria,  Cameroon, Côte d'Ivoire, Democratic Republic of the Congo, Haiti, Iraq, Kenya, Kuwait, Lao PDR, Lebanon, Monaco, Nepal, Papua New Guinea South Sudan, Syria, Venezuela, Vietnam, Virgin I"
+        "list": "increased monitoring",
+        "title": "Jurisdictions under Increased Monitoring – 30 October 2026",
+        "url": "https://www.fatf-gafi.org/en/publications/High-risk-and-other-monitored-jurisdictions/increased-monitoring-october-2026.html",
+        "list_date": "2026-10-30",
+        "snippet": "26 Angola, Bolivia, Bosnia and Herzegovina, Bulgaria, Cameroon, Côte d'Ivoire, Democratic Republic of the Congo, Haiti, Iraq, Kenya, Kuwait, Lao PDR, Lebanon, Monaco, Nepal, Papua New Guinea South Sudan, Syria, Venezuela, Vietnam, Virgin Islands (UK), Yemen. Jurisdictions under increased monitoring ",
+        "names_country": true
       }
     ],
-    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this.",
-    "fetched_at": "2026-11-21T12:15:14+00:00"
+    "note": "Public-source context fetched after the decision. The verdict was reached from the institution's own files and did not use this. Read the list itself before relying on it.",
+    "fetched_at": "2026-11-21T12:33:45+00:00"
   }
 ]
