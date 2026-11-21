@@ -70,6 +70,19 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
   .kf-filter button { flex: 1; padding: 0 6px; }
 }
 
+/* queue rows: the reason in words leads, the system's sentence follows in a quieter tone, and the
+   case facts sit underneath as small tags; the verdict stays on the right */
+.kq-row { align-items: start; }
+.kq-main { display: block; min-width: 0; }
+.kq-main > b { display: block; font-size: 15.5px; line-height: 1.3; }
+.kq-main .kq-line { margin-top: 3px; font-size: 13px; line-height: 1.45; }
+.kq-main .kq-line .b { color: var(--ink-3); }
+.kq-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.kq-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; background: var(--surface-2); color: var(--ink-3); font-size: 11.5px; line-height: 1; white-space: nowrap; }
+.kq-tag--id { background: transparent; box-shadow: inset 0 0 0 1px var(--line); font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); }
+.kq-tag--done { background: var(--info-soft, var(--surface-3)); color: var(--ink); }
+.kq-end { padding-top: 1px; }
+
 /* after the first visit in a tab, queue rows arrive still: the verdict and the reason, no reading */
 .kq-list.kf-still .kw-r, .kq-list.kf-still .kq-end, .kq-list.kf-still .kq-line .b, .kq-list.kf-still .kw-swap .k-mk { opacity: 1; animation: none; }
 .kq-list.kf-still .kq-line .q, .kq-list.kf-still .kq-line .a, .kq-list.kf-still .kw-dots { opacity: 0; animation: none; }

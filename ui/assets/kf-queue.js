@@ -69,10 +69,13 @@
   function row(c) {
     var st = standing[c.case_id];
     return '<a class="kq-row kw-r" href="' + href(c) + '" data-case="' + KF.esc(c.case_id) + '">' +
-      '<span><b>' + KF.esc(KF.title(c.reason_code)) + '</b><span class="kq-id">' + KF.esc(c.case_id) + ' · ' + KF.alerts(c) +
-      (st ? '<span class="kq-done"> · ' + KF.DID[st.action] + '</span>' : '') + '</span>' +
+      // the reason in words leads; the system's sentence follows in a quieter tone; the case facts
+      // sit underneath as small tags, so each kind of detail looks different
+      '<span class="kq-main"><b>' + KF.esc(KF.title(c.reason_code)) + '</b>' +
       '<span class="kq-line"><span class="q">Queued</span><span class="a">Reading ' + c.evidence.length + ' records</span>' +
-      '<span class="b">' + KF.esc(KF.sentences(c.reason)[0]) + '</span></span></span>' +
+      '<span class="b">' + KF.esc(KF.sentences(c.reason)[0]) + '</span></span>' +
+      '<span class="kq-meta"><span class="kq-tag kq-tag--id">' + KF.esc(c.case_id) + '</span><span class="kq-tag">' + KF.alerts(c) + '</span>' +
+      (st ? '<span class="kq-tag kq-tag--done kq-done">' + KF.DID[st.action] + '</span>' : '') + '</span></span>' +
       '<span class="kq-end" title="' + KF.esc(c.reason_code + ': ' + KF.describe(c.reason_code)) + '">' + KF.chip(c.verdict) + '</span></a>';
   }
 
@@ -163,8 +166,8 @@
     sendBtn.disabled = true;
     KF.act(data.run, c, 'rfi_sent', note).then(function () {
       standing[c.case_id] = { action: 'rfi_sent' };
-      var r = list.querySelector('[data-case="' + c.case_id + '"] .kq-id');
-      if (r) r.insertAdjacentHTML('beforeend', '<span class="kq-done"> · RFI sent</span>');
+      var r = list.querySelector('[data-case="' + c.case_id + '"] .kq-meta');
+      if (r) r.insertAdjacentHTML('beforeend', '<span class="kq-tag kq-tag--done kq-done">RFI sent</span>');
       K.toast('RFI sent for ' + c.case_id + '. Saved in ' + KF.store.where + '.', {
         undo: function () {
           KF.act(data.run, c, 'undone').then(function () {

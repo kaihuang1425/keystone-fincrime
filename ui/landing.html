@@ -192,7 +192,7 @@ html.kf-theming *,html.kf-theming *::before,html.kf-theming *::after{transition:
 .lp-proof.lp-proof--tests{gap:10px !important}
 .lp-proof.lp-proof--tests > div{padding:14px}
 }
-/* the hero: photo 01 full bleed, kept dark in both themes because the photo is a night scene */
+/* the hero: photo 01, full bleed in dark mode; in light mode it becomes a rounded plate in the right column */
 .lp-hero.lp-hero--photo{overflow:hidden;background:var(--ground);color:var(--ink)}
 .lp-hero__ph{position:absolute;top:0;right:0;bottom:0;left:36%;margin:0}
 .lp-hero__ph img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 58%}
@@ -216,6 +216,18 @@ html.kf-theming *,html.kf-theming *::before,html.kf-theming *::after{transition:
 .lp-live{top:16px;bottom:auto;left:16px;right:16px}
 .lp-live__row{justify-self:start;font-size:13px}
 .lp-live__row code{display:none}
+}
+/* light mode: the page is light, and the night photo sits in the right column as a dark rounded plate */
+[data-theme="light"] .lp-hero.lp-hero--photo{background:var(--ground);border-bottom:0}
+@media (min-width:761px){
+[data-theme="light"] .lp-hero__ph{top:48px;bottom:48px;left:auto;right:max(24px,calc((100vw - 1200px) / 2 + 24px));width:calc((min(100vw,1200px) - 96px) / 2);border-radius:20px;overflow:hidden;background:var(--ground);box-shadow:0 24px 60px #0b0b0c24}
+[data-theme="light"] .lp-hero__ph::after{background:linear-gradient(180deg,transparent 58%,color-mix(in srgb,var(--ground) 82%,transparent) 100%)}
+[data-theme="light"] .lp-live{right:calc(max(24px,calc((100vw - 1200px) / 2 + 24px)) + 20px);bottom:68px}
+}
+@media (max-width:760px){
+[data-theme="light"] .lp-hero__ph{margin:16px 16px 0;height:260px;border-radius:16px;overflow:hidden;background:var(--ground)}
+[data-theme="light"] .lp-hero--photo .lp-in--hero{margin-top:0;padding-top:28px}
+[data-theme="light"] .lp-live{top:32px;left:32px;right:32px}
 }
 /* false alarms, counted: a hundred alerts, the false ones grey */
 .lp-fa{display:flex;flex-direction:column;gap:18px;min-width:0}
@@ -260,8 +272,8 @@ html.kf-theming *,html.kf-theming *::before,html.kf-theming *::after{transition:
 </div>
 </header>
 
-<section id="top" class="lp-hero lp-hero--photo" data-theme="dark">
-<figure class="lp-hero__ph" aria-hidden="true"><img alt="" fetchpriority="high" decoding="async" src="assets/hero-desk-night-1600.jpg" srcset="assets/hero-desk-night-900.jpg 900w, assets/hero-desk-night-1600.jpg 1600w, assets/hero-desk-night-2400.jpg 2400w" sizes="(max-width: 760px) 100vw, 64vw"></figure>
+<section id="top" class="lp-hero lp-hero--photo">
+<figure class="lp-hero__ph" data-theme="dark" aria-hidden="true"><img alt="" fetchpriority="high" decoding="async" src="assets/hero-desk-night-1600.jpg" srcset="assets/hero-desk-night-900.jpg 900w, assets/hero-desk-night-1600.jpg 1600w, assets/hero-desk-night-2400.jpg 2400w" sizes="(max-width: 760px) 100vw, 64vw"></figure>
 <div class="lp-in lp-in--hero lp-sec lp-sec--hero">
 <div class="lp-copy" style="gap: 24px;">
 <span class="k-label">For bank alert analysts</span>
@@ -278,7 +290,7 @@ html.kf-theming *,html.kf-theming *::before,html.kf-theming *::after{transition:
 </ul>
 </div>
 </div>
-<div class="lp-live" aria-label="The sample bank: the first four decisions, in the order the system wrote them">
+<div class="lp-live" data-theme="dark" aria-label="The sample bank: the first four decisions, in the order the system wrote them">
 <a class="lp-live__row is-on" href="app.html?inst=bank&amp;case=BK-CS100112"><span class="k-chip k-chip--ok">✓ CLOSE</span><b>Refund of an earlier payment</b><code>BK-CS100112</code></a>
 <a class="lp-live__row" href="app.html?inst=bank&amp;case=BK-CS100162"><span class="k-chip k-chip--ok">✓ CLOSE</span><b>Fits the customer’s profile</b><code>BK-CS100162</code></a>
 <a class="lp-live__row" href="app.html?inst=bank&amp;case=BK-CS103088"><span class="k-chip k-chip--ask">? RFI</span><b>Ask who the other party is</b><code>BK-CS103088</code></a>
