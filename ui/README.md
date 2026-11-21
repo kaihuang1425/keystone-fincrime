@@ -28,10 +28,10 @@ Then go to http://localhost:8080/queue.html.
 `queue.html`, `app.html` and `phone.html` show the system's verdicts on the development cases. They read `data/<institution>.json`, which `tools/export_ui.py` writes from `output/`:
 
 ```bash
-python tools/export_ui.py --rerun bank emoney investment payments_fx --out ui/data
+python tools/export_ui.py --rerun <path to the kit's institutions folder> --out ui/data
 ```
 
-Run it again whenever `output/` changes. The files hold the system's own words only: verdict, reason code, reason, alert IDs and evidence IDs. No record text from the kit is on the site, so a citation chip shows its ID and the sentence of the reason that cites it. The reasons do name the kit's invented people and amounts, as `output/` does.
+Run it from the repo root whenever `output/` changes. `--rerun` runs the system five more times on the kit's cases to record whether every run gave the same output and how long it took; without it those facts are empty, and the pages leave the claim out. The files hold the system's own words only: verdict, reason code, reason, alert IDs and evidence IDs. No record text from the kit is on the site, so a citation chip shows its ID and the sentence of the reason that cites it. The reasons do name the kit's invented people and amounts, as `output/` does.
 
 `walk-monitoring.html`, `landing.html` and the video cards use invented examples to explain the rules, and say so.
 

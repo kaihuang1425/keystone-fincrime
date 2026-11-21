@@ -61,8 +61,7 @@
     var t = tally(shown), run = data.run;
     list.innerHTML = shown.map(row).join('') +
       '<div class="kq-tally kw-r"><span class="k-chip k-chip--ok">✓ ' + t.CLOSE + ' closed</span><span class="k-chip k-chip--ask">? ' + t.RFI + ' asked</span>' +
-      '<span class="k-chip k-chip--bad">↑ ' + t.ESCALATE + ' escalated</span><span class="k-meta">Run ' + run.repeat_runs + ' times: the same in ' +
-      (run.repeat_identical ? run.repeat_runs : 'fewer than ' + run.repeat_runs) + ' of ' + run.repeat_runs + '.</span></div>';
+      '<span class="k-chip k-chip--bad">↑ ' + t.ESCALATE + ' escalated</span>' + repeat(run) + '</div>';
     headTitle.textContent = KF.instInfo(inst).name + ' · queue';
   }
 
@@ -94,6 +93,12 @@
     });
   }
 
+  // only what the export proves: identical runs, runs that differed, or nothing when it was not re-run
+  function repeat(run) {
+    if (run.repeat_identical === true) return '<span class="k-meta">Run ' + run.repeat_runs + ' times: the same in ' + run.repeat_runs + ' of ' + run.repeat_runs + '.</span>';
+    if (run.repeat_identical === false) return '<span class="k-meta">Run ' + run.repeat_runs + ' times: the runs did not all match.</span>';
+    return '';
+  }
   function replay() { list.style.display = 'none'; void list.offsetWidth; list.style.display = ''; }
 
   function show(id, keepCursor) {
