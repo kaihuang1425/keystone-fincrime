@@ -51,9 +51,10 @@ def _addressed_to_another(doc, case):
     m = re.search(r"^\W*Dear\s+([^,\n:]+)", doc.text, re.M | re.I)
     if not m:
         return False
-    words = set(re.findall(r"[a-z]+", m.group(1).lower()))
+    suffixes = {"ltd", "limited", "llp", "plc", "co", "company", "inc"}  # shared by unrelated companies
+    words = set(re.findall(r"[a-z]+", m.group(1).lower())) - suffixes
     named = words - _GENERIC_SALUTATION
-    return bool(named) and not (named & set(re.findall(r"[a-z]+", case.name.lower())))
+    return bool(named) and not (named & (set(re.findall(r"[a-z]+", case.name.lower())) - suffixes))
 
 
 def _customer_is_buyer(doc, case):
@@ -165,8 +166,9 @@ def cash_redeposit(case):
                    if w.get("direction") == "out" and w.get("channel") == "cash_withdrawal"
                    and tf.close(w["amount_gbp"], t["amount_gbp"])
                    and (w.get("booked_at") or "") < (t.get("booked_at") or "")]
-        chat = next((c for c in chats if any(tf.close(t["amount_gbp"], m) for m in c.money)), None) or (
-            chats[0] if chats else None)
+        chat = next((c for c in chats if any(tf.close(t["amount_gbp"], m) for m in c.money)), None)
+        if chat is None and chats and not any(c.money for c in chats):
+            chat = chats[0]  # the customer gave no figure, so nothing contradicts the records
         review = next((r for r in case.reviews
                        if r.get("rule_id") == "TM05" and "withdraw" in (r.get("note") or "").lower()
                        and earlier and (r.get("reviewed_on") or "") >= (earlier[-1].get("booked_at") or "")[:10]), None)
@@ -243,9 +245,10 @@ def own_accounts(case):
         for t in hits:
             covers = [t["transaction_id"]]
             chain = ""
-            if t["direction"] == "out":
-                # money the customer paid in from their own name and moved straight on
-                # to this documented account is part of the same own-account transfer
+            if t["direction"] == "out" and case.is_business:
+                # a business client funds its account from its own bank as a matter of course, so
+                # funding that was moved straight on to this documented account is the same transfer.
+                # A personal customer's other account needs its own statement.
                 for f in case.inbound():
                     gap = (tx_date(t) - tx_date(f)).days if tx_date(t) and tx_date(f) else 99
                     if (case.is_self(f) and f.get("counterparty_account") and 0 <= gap <= 5
@@ -428,6 +431,10 @@ def business_records(case):
     """Each cash deposit equals one line of the customer's own takings records."""
     out = []
     for doc in case.docs_of("cash_collection_reports", "cash_reconciliation", "takings_book"):
+        heading = doc.text.strip().splitlines()[0] if doc.text.strip() else ""
+        named = re.search(r"\b(?:from|by|of)\s+(.+?(?:Ltd|Limited|LLP|plc|PLC))\b", heading)
+        if named and not tf.mentions(named.group(1), case.name):
+            continue  # the records are headed with another company's name
         rows = doc.rows()
         cash = [t for t in case.inbound() if t.get("channel") in ("cash_deposit", "cash_topup")]
         used, matched = set(), []
@@ -606,6 +613,8 @@ def funded_orders(case):
         return []
     if _for_someone_else(invoice, case, ("buyer", "customer", "bill to")):
         return []
+    if _addressed_to_another(order, case):
+        return []
     ref = re.search(r"\bPO\s*\d+", order.text)
     if not (ref and tf.norm(ref.group(0)) in tf.norm(invoice.text)):
         return []
@@ -715,7 +724,9 @@ def documented_redemption(case):
             % (letter.id, employer or "the employer", tf.nice_date(letter.dated), email.id,
                tf.nice_date(email.dated), day(sells[-1]), gbp(sells[-1]["amount_gbp"])))
     return [Finding("explain", "DOCUMENTED_EVENT", text, docs=[letter.id, email.id],
-                    txs=ids(case.alert_txs("TM10"))[:4], covers=ids(case.alert_txs("TM10")),
+                    txs=ids(case.alert_txs("TM10"))[:4],
+                    covers=ids(t for t in case.alert_txs("TM10")
+                               if t.get("channel") in ("fund_subscription", "fund_redemption")),
                     rules=("TM10",), rank=30)]
 
 

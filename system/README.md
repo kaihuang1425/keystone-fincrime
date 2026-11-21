@@ -65,6 +65,8 @@ The second check applies at the payments firm. A held payment of £10,000 or mor
 
 The third check asks whose document it is. A letter that opens "Dear" followed by another person's name is set aside. So is a sale receipt that puts the customer on the buying side. The same holds for an invoice or credit note made out to another party. A generic opening such as "Dear Tenant" proves nothing either way, so it is not held against the document.
 
+Two rules for own accounts follow from the same idea. A personal customer who moves money between two of their own accounts needs a statement for each one. And when own money arrives in a dormant account, a statement is not enough. The statement shows whose account the money came from. Only a re-verification record shows that the person now using the dormant account is the customer.
+
 ## Signs of crime
 
 Each escalation rests on evidence in the file. The system never escalates on a hunch or on the size of a payment.
@@ -112,7 +114,7 @@ This choice makes the five scored runs identical, and a run costs nothing. Every
 
 The development cases carry no labels, so we cannot report an accuracy figure. We tested the reasoning instead.
 
-**Mutation tests.** A system can reach the right verdict for the wrong reason. It might close whenever a document of the right type is present. `tools/mutation_test.py` guards against that. It takes real cases, changes one fact in memory and checks that the verdict moves as the SOP requires. A letter stating a different amount no longer closes a case. A statement in another person's name no longer proves an own account. A gift letter whose date of birth matches the list entry escalates, and the same letter with a different date of birth closes. A fully documented case with one extra £5,000 payment from a stranger no longer closes. A sale receipt with the seller and buyer swapped no longer closes. All 27 tests pass.
+**Mutation tests.** A system can reach the right verdict for the wrong reason. It might close whenever a document of the right type is present. `tools/mutation_test.py` guards against that. It takes real cases, changes one fact in memory and checks that the verdict moves as the SOP requires. A letter stating a different amount no longer closes a case. A statement in another person's name no longer proves an own account. A gift letter whose date of birth matches the list entry escalates, and the same letter with a different date of birth closes. A fully documented case with one extra £5,000 payment from a stranger no longer closes. A sale receipt with the seller and buyer swapped no longer closes. A dormant account with a statement but no re-verification no longer closes. All 33 tests pass.
 
 **Repeat runs.** `tools/verify.py` runs each institution five times under five different hash seeds from inside `system/`. The five output files are identical.
 

@@ -54,6 +54,11 @@ def resolved(alert, case, explains, covered):
         reverified = any(f.code == "RETURNING_CUSTOMER" for f in able)
         left = [t for t in txs if not case.is_spending(t) and is_open(t)
                 and not (reverified and case.is_business and case.is_self(t))]
+        # a statement shows whose account the money came from. Only a re-verification shows
+        # that the person now using the dormant account is the customer.
+        own_money = [t for t in txs if case.is_self(t) and not case.is_spending(t)]
+        if own_money and not reverified:
+            return False
         return not left and any(not is_open(t) for t in txs)
     # TM03, TM05, TM06, TM08, TM10: every alerted transaction must be documented
     return bool(txs) and all(not is_open(t) for t in txs)
@@ -197,7 +202,15 @@ def gap(case, open_alerts, covered):
 
     if "TM07" in rules:
         m = case.alerts_of("TM07")[0].get("measured") or {}
-        t = big_in or big_out or _largest(pool)
+        moved = [x for x in case.alert_txs("TM07") if not case.is_spending(x)]
+        t = big_in or big_out or _largest(pool) or _largest(moved) or case.alert_tx[0]
+        if t["transaction_id"] in covered and not case.is_business:
+            text = ("The account was unused for %s days, then %s arrived on %s from an account in the "
+                    "customer's own name. A statement on file shows the customer holds that account, but "
+                    "identity has not been re-verified since the account went quiet. Nothing else is concerning."
+                    % (m.get("dormant_days"), gbp(t["amount_gbp"]), day(t)))
+            ask = "Ask the customer to complete identity re-verification before the account is used again."
+            return finding("RFI_SOURCE_OF_FUNDS", text, ask, [t])
         if case.is_business:
             pay = " and %s was paid to %s on %s (reference %s)" % (gbp(big_out["amount_gbp"]), big_out["counterparty_name"], day(big_out), big_out.get("reference") or "none") if big_out else ""
             text = ("The account was unused for %s days, then %s came in from the client's own bank on %s%s. "

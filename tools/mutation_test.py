@@ -308,5 +308,62 @@ ok = len(chats) >= 2 and cited[:2] == [chats[0].id, chats[1].id]
 results.append(ok)
 print("%s %-58s %s: chats cited %s, dated order %s" % ("PASS" if ok else "FAIL", "two cash stories are given in date order", row["case_id"], cited[:2], [c.id for c in chats[:2]]))
 
+# 25. a personal customer moves money between two own accounts, but only one statement is on file
+I = inst("bank")
+row, r0 = find_case(I, "TM02", ["bank_statement"], "CLOSE", "OWN_ACCOUNT")
+first = sorted(d.id for d in I.docs_for(row["customer_id"]) if d.type == "bank_statement")[0]
+r1 = safe_decide(Mutant(I, edit_doc=lambda d, t: "" if d.id == first else t), row)
+ok = r1["verdict"] == "RFI"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "two own accounts, one statement missing", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 26. own money arrives in a dormant account with a statement on file but no identity re-verification
+check("dormant account, statement but no re-verification", "bank", "TM07", ["bank_statement", "reverification_record"],
+      ("CLOSE", "RETURNING_CUSTOMER"), ("RFI", "RFI_SOURCE_OF_FUNDS"),
+      drop_types=("reverification_record",))
+
+# 27. cash paid back in, but the customer's own figure in the chat differs from the deposit
+check("cash paid back in, chat gives a different figure", "bank", "TM01+TM05", ["support_chat"],
+      ("CLOSE", "WITHIN_PROFILE"), ("RFI", "RFI_SOURCE_OF_FUNDS"),
+      edit_doc=only("support_chat", bump_money))
+
+# 28. a documented reason for selling a fund does not cover a stranger's payment in the same alert
+I = inst("investment")
+row, r0 = find_case(I, "TM10", ["redundancy_letter"], "CLOSE", "DOCUMENTED_EVENT")
+a = I.alerts[row["alert_ids"][0]]
+real = I.tx[a["transaction_ids"][-1]]
+I.tx["TEST-STRANGER-2"] = dict(real, transaction_id="TEST-STRANGER-2", direction="in", channel="faster_payment",
+                               amount_gbp=5000.0, amount=5000.0, counterparty_name="Unknown Example Party",
+                               counterparty_account="00-00-00 22222222", reference="PAYMENT")
+a["transaction_ids"].append("TEST-STRANGER-2")
+r1 = safe_decide(I, row)
+a["transaction_ids"].remove("TEST-STRANGER-2")
+del I.tx["TEST-STRANGER-2"]
+ok = r1["verdict"] == "RFI"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "fund sale documented, plus a stranger's £5,000", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 29. a customer order that is addressed to another company
+I = inst("payments_fx")
+for row in I.cases:
+    name = I.customers[row["customer_id"]]["name"]
+    orders = [d for d in I.docs_for(row["customer_id"]) if d.type == "purchase_order"]
+    if orders and re.search(r"Dear\s+%s" % re.escape(name), orders[0].text):
+        break
+r0 = safe_decide(I, row)
+r1 = safe_decide(Mutant(I, edit_doc=only("purchase_order", lambda t: t.replace(name, "Other Example Ltd"))), row)
+ok = r0["verdict"] == "CLOSE" and r1["verdict"] == "RFI"
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "customer order addressed to another company", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
+# 30. takings records headed with another company's name
+I = inst("bank")
+row, r0 = find_case(I, "TM03", ["cash_collection_reports"], "CLOSE", "BUSINESS_RECORDS_RECONCILE")
+name = I.customers[row["customer_id"]]["name"]
+r1 = safe_decide(Mutant(I, edit_doc=only("cash_collection_reports", lambda t: t.replace(name, "Other Example Ltd"))), row)
+ok = (r1["verdict"], r1["reason_code"]) == ("RFI", "RFI_BUSINESS_RECORDS")
+results.append(ok)
+print("%s %-58s %s: %s/%s -> %s/%s" % ("PASS" if ok else "FAIL", "collection reports headed with another company", row["case_id"], r0["verdict"], r0["reason_code"], r1["verdict"], r1["reason_code"]))
+
 print("\n%d of %d mutation tests passed" % (sum(results), len(results)))
 sys.exit(0 if all(results) else 1)
