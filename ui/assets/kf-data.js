@@ -5,7 +5,7 @@
    text from the kit is on the site, so a citation shows its id and the sentence of the reason that
    cites it.
 
-   What the analyst does (send an RFI, take or send back an escalation, undo) goes to Supabase's
+   What the analyst does (close, send an RFI, escalate, take or send back an escalation, undo) goes to Supabase's
    analyst_actions table when assets/kf-config.js names a project, and to this browser's storage until
    then. Undo adds an 'undone' row; nothing is ever edited or deleted. */
 (function () {
@@ -214,7 +214,7 @@
     Object.keys(by).forEach(function (k) { if (by[k].length) out[k] = by[k][by[k].length - 1]; });
     return out;
   };
-  KF.DID = { rfi_sent: 'RFI sent', escalation_taken: 'Taken by the MLRO', sent_back: 'Sent back' };
+  KF.DID = { closed: 'Closed', rfi_sent: 'RFI sent', escalated: 'Escalated to the MLRO', escalation_taken: 'Taken by the MLRO', sent_back: 'Sent back' };
 
   KF.fail = function (where, e) {
     console.error(e);

@@ -27,6 +27,22 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
 .kf-recs { display: flex; flex-direction: column; gap: 6px; }
 .kf-recs .k-event { margin: 0; }
 
+/* the case view: back to the queue, and the analyst's decision above the message box */
+.kf-back { flex: none; }
+@media (min-width: 761px) { .k-app__head .kf-back { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); } }
+.kf-decide { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 14px; border-radius: var(--radius-lg, 16px); }
+.kf-decide [data-k-bot] { --size: 28px; flex: none; }
+.kf-decide .k-approve__actions { flex: 1; justify-content: flex-end; gap: 6px; }
+.kf-decide .k-approve__actions .k-chip { margin-right: auto; }
+.kf-decide .k-approve__actions .k-btn--primary { margin-left: 4px; }
+.kf-decide a.k-btn--primary, .kf-decide a.k-btn--primary:hover { color: var(--on-primary); }
+.kf-decide.is-busy { pointer-events: none; }
+@media (max-width: 560px) {
+  .kf-decide { align-items: flex-start; }
+  .kf-decide .k-approve__actions { flex-wrap: wrap; }
+  .kf-decide .k-approve__actions .k-btn--primary { flex: 1 0 100%; margin-left: 0; order: -1; }
+}
+
 /* Case Lead's reply on the phone */
 .kf-reply { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .kf-reply b { color: var(--ink); }

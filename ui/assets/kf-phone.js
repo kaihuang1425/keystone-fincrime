@@ -18,7 +18,13 @@
   var cid = KF.param('case');
   if (cid && KF.instOf(cid)) inst = KF.instOf(cid);
 
-  function waiting() { return data.decisions.filter(function (x) { return x.verdict === 'ESCALATE' && !standing[x.case_id]; }); }
+  // Keystone's escalations no analyst has changed, and any case an analyst escalated
+  function waiting() {
+    return data.decisions.filter(function (x) {
+      var st = standing[x.case_id];
+      return st ? st.action === 'escalated' : x.verdict === 'ESCALATE';
+    });
+  }
 
   function botStates() {
     $$('[data-k-bot]', botsRow).forEach(function (b) {
@@ -31,7 +37,7 @@
 
   function render() {
     var list = waiting();
-    if (!c || standing[c.case_id]) c = list[0] || null;
+    if (!c || list.indexOf(c) < 0) c = list[0] || null;
     var reply = $('.kf-reply', frame); if (reply) reply.remove();
     if (!c) {
       ticket.innerHTML = '<small>' + KF.esc(KF.instInfo(inst).name) + '</small>No escalations are waiting.';
@@ -93,7 +99,7 @@
 
   Promise.all([KF.load(inst), showLatest()]).then(function (r) {
     data = r[0];
-    if (cid && data.byId[cid] && data.byId[cid].verdict === 'ESCALATE') c = data.byId[cid];
+    if (cid && data.byId[cid] && waiting().indexOf(data.byId[cid]) > -1) c = data.byId[cid];
     render(); KF.ready();
   }).catch(function (e) { KF.fail(ticket, e); });
 })();

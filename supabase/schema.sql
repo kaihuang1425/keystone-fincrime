@@ -49,7 +49,7 @@ create table if not exists analyst_actions (
   id         bigint generated always as identity primary key,
   run_id     text not null references triage_runs (run_id),
   case_id    text not null,
-  action     text not null check (action in ('rfi_sent', 'escalation_taken', 'sent_back', 'undone')),
+  action     text not null check (action in ('closed', 'rfi_sent', 'escalated', 'escalation_taken', 'sent_back', 'undone')),
   note       text,
   created_at timestamptz not null default now()
 );

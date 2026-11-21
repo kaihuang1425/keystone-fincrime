@@ -1,7 +1,8 @@
 /* The case view, on one real verdict: app.html?inst=bank&case=BK-CS100112 (the queue links here).
    Case Lead explains the decision in the system's own words; each bot shows the records it owns;
    the evidence panel lists the records, the reason sentence by sentence, and the trace. The message
-   box answers from this case's reason and records only. */
+   box answers from this case's reason and records only. Above it the analyst decides: agree with
+   Keystone's verdict or pick another, then go to the next undecided case. */
 (function () {
   var K = window.Keystone, KF = window.KF;
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -18,9 +19,85 @@
   // only what works stays: no attachments, dictation or voice
   $$('.k-iconbtn, .k-voice', form).forEach(function (b) { b.remove(); });
 
-  var inst = KF.inst(), c = null, run = null;
+  var inst = KF.inst(), c = null, run = null, data = null, standing = {};
   var cid = KF.param('case');
   if (cid && KF.instOf(cid)) inst = KF.instOf(cid);
+
+  // back to the queue, top left
+  var back = document.createElement('a');
+  back.className = 'k-btn k-btn--sm k-btn--text kf-back';
+  back.innerHTML = '<span aria-hidden="true">←</span> Queue';
+  $('.k-app__head').insertBefore(back, $('.k-app__head').firstChild);
+
+  // the analyst's decision, above the message box: Keystone's verdict is the one primary button, and
+  // text buttons beside it change it only towards more caution. A close can become an RFI or an
+  // escalation, an RFI an escalation. An escalation is never turned into a question to the customer
+  // (that could tip off a suspect) and is never closed here; the MLRO's Send back covers that.
+  var bar = document.createElement('section');
+  bar.className = 'k-approve kf-decide'; bar.setAttribute('aria-label', 'Your decision');
+  if (form) form.parentNode.insertBefore(bar, form);
+  var DO = {
+    CLOSE: { act: 'closed', main: 'Close the case', alt: 'Close', did: 'Closed' },
+    RFI: { act: 'rfi_sent', main: 'Send the request', alt: 'Send an RFI', did: 'RFI sent for' },
+    ESCALATE: { act: 'escalated', main: 'Escalate to the MLRO', alt: 'Escalate', did: 'Escalated' }
+  };
+  var SAFER = { CLOSE: ['ESCALATE', 'RFI'], RFI: ['ESCALATE'], ESCALATE: [] };
+  var VERDICT_OF = { closed: 'CLOSE', rfi_sent: 'RFI', escalated: 'ESCALATE', escalation_taken: 'ESCALATE', sent_back: 'ESCALATE' };
+  var TICK = (K.icons && K.icons.tick) || '';
+
+  function caseHref(x) { return 'app.html?inst=' + inst + '&case=' + encodeURIComponent(x.case_id); }
+  function nextCase() {
+    var n = data.decisions.length;
+    for (var k = 1; k < n; k++) { var x = data.decisions[(c.i + k) % n]; if (!standing[x.case_id]) return x; }
+    return null;
+  }
+  function showBar() {
+    var st = standing[c.case_id];
+    bar.classList.remove('is-busy');
+    if (!st) {
+      bar.innerHTML = KF.botHTML('Case Lead', 'waiting') + '<div class="k-approve__actions">' +
+        SAFER[c.verdict].map(function (v) {
+          return '<button type="button" class="k-btn k-btn--text" data-kf-do="' + v + '"><span>' + DO[v].alt + '</span>' + TICK + '</button>';
+        }).join('') +
+        '<button type="button" class="k-btn k-btn--primary" data-kf-do="' + c.verdict + '"><span>' + DO[c.verdict].main + '</span>' + TICK + '</button></div>';
+    } else {
+      var v = VERDICT_OF[st.action] || c.verdict, nx = nextCase();
+      bar.innerHTML = KF.botHTML('Case Lead', 'done') + '<div class="k-approve__actions">' +
+        '<span class="k-chip k-chip--' + KF.V[v].cls + '">' + KF.V[v].mk + ' ' + KF.esc(KF.DID[st.action] || st.action) + '</span>' +
+        '<button type="button" class="k-btn k-btn--text" data-kf-change>Change</button>' +
+        (nx ? '<a class="k-btn k-btn--primary" href="' + caseHref(nx) + '">Next case <span class="k-arr">→</span></a>'
+            : '<a class="k-btn k-btn--primary" href="queue.html?inst=' + inst + '">Back to the queue <span class="k-arr">→</span></a>') + '</div>';
+    }
+    KF.mountBots(bar);
+  }
+  function refresh() {
+    return KF.store.list().then(function (rows) { standing = KF.standing(rows); });
+  }
+  function decide(v, btn) {
+    var x = c, ask = KF.sentences(x.reason).filter(function (t) { return /^Ask\b/.test(t); });
+    var note = v !== x.verdict ? 'Keystone said ' + x.verdict : (v === 'RFI' && ask.length ? ask.join(' ') : null);
+    bar.classList.add('is-busy');
+    KF.act(run, x, DO[v].act, note).then(function () {
+      btn.style.width = btn.offsetWidth + 'px'; void btn.offsetWidth; btn.classList.add('is-done');
+      return refresh().then(function () {
+        setTimeout(function () {
+          if (c !== x) return;
+          showBar();
+          K.toast(DO[v].did + ' ' + x.case_id + '. Saved in ' + KF.store.where + '.', { undo: function () { undo(x); } });
+        }, 520);
+      });
+    }).catch(function (e) { bar.classList.remove('is-busy'); K.toast('Not saved: ' + e.message, { mark: 'bad' }); });
+  }
+  function undo(x) {
+    if (!standing[x.case_id]) return;
+    KF.act(run, x, 'undone').then(refresh).then(function () { if (c === x) showBar(); });
+  }
+  bar.addEventListener('click', function (e) {
+    if (bar.classList.contains('is-busy')) return;
+    var b = e.target.closest('[data-kf-do]');
+    if (b) return decide(b.getAttribute('data-kf-do'), b);
+    if (e.target.closest('[data-kf-change]')) undo(c);
+  });
 
   function rec(id) {
     return '<div class="k-event kw-r">' + DOT + '<span><b>' + KF.esc(KF.kind(id)) + '</b> ' + KF.cite(c, id) + '</span></div>';
@@ -92,7 +169,8 @@
 
   function render() {
     instBtn.firstChild.nodeValue = KF.instInfo(inst).name;
-    caseView(); evidence(); rosterState('Case Lead');
+    caseView(); evidence(); rosterState('Case Lead'); showBar();
+    back.href = 'queue.html?inst=' + inst;
     document.title = c.case_id + ' · Keystone';
     var u = new URL(location.href); u.searchParams.set('inst', inst); u.searchParams.set('case', c.case_id); history.replaceState(null, '', u);
     KF.ready();
@@ -147,9 +225,9 @@
     scroller.scrollTop = scroller.scrollHeight;
   });
 
-  KF.load(inst).then(function (d) {
-    run = d.run;
-    c = (cid && d.byId[cid]) || d.decisions[0];
+  Promise.all([KF.load(inst), refresh()]).then(function (r) {
+    data = r[0]; run = data.run;
+    c = (cid && data.byId[cid]) || data.decisions[0];
     render();
   }).catch(function (e) { KF.fail(col, e); });
 })();
