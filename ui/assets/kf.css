@@ -90,3 +90,40 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
 /* Case Lead's reply on the phone */
 .kf-reply { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .kf-reply b { color: var(--ink); }
+
+/* the case view: a one-line summary, then the SOP's checks as a table, each marked passed, failed or
+   not reached, with the reason's own sentences beside the check they belong to */
+.kf-sum { margin-top: 8px; }
+.kf-tally { display: inline-block; margin-left: 4px; font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kf-checks { margin-top: 12px; }
+.kf-checks .k-table th[scope="row"] { text-align: left; font-size: 14px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink); white-space: normal; border-bottom: 1px solid var(--line); vertical-align: top; }
+.kf-checks .k-table th[scope="row"] b { font-weight: 500; }
+.kf-checks .k-table tr:last-child th { border-bottom: 0; }
+.kf-checks .k-table td { vertical-align: top; }
+.kf-checks .k-table td:first-child { white-space: normal; }
+.kf-ck__res { font-size: 13.5px; color: var(--ink); }
+.kf-ck__in { display: flex; align-items: flex-start; gap: 8px; }
+.kf-ck__in > span:last-child { padding-top: 1px; }
+.kf-ck--ok .kf-ck__res { color: var(--ok); }
+.kf-ck--bad .kf-ck__res { color: var(--bad); }
+.kf-ck--off .kf-ck__res { color: var(--ink-3); }
+.kf-ck--bad td, .kf-ck--bad th { background: var(--bad-soft); }
+.kf-ck--verdict td, .kf-ck--verdict th { background: var(--ground-2); }
+.kf-mk--off { background: var(--surface-2); color: var(--ink-3); }
+.kf-ck__facts { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.kf-ck__facts p { margin: 0; }
+.kf-ck__facts p + p { margin-top: 6px; }
+.kf-ck__none { color: var(--ink-3); }
+@media (min-width: 761px) {
+  .kf-checks .k-table th[scope="row"] { width: 30%; }
+  .kf-checks .kf-ck__res { width: 22%; }
+}
+@media (max-width: 760px) {
+  .kf-checks .k-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .kf-checks .k-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; border-bottom: 1px solid var(--line); }
+  .kf-checks .k-table tr:last-child { border-bottom: 0; }
+  .kf-checks .k-table th[scope="row"], .kf-checks .k-table td { display: block; border-bottom: 0; padding: 10px 12px 0; }
+  .kf-checks .k-table .kf-ck__res { text-align: right; }
+  .kf-checks .kf-ck__in { justify-content: flex-end; }
+  .kf-checks .k-table .kf-ck__facts { grid-column: 1 / -1; padding-bottom: 10px; }
+}
