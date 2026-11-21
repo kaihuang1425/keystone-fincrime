@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video title card · Keystone</title>
+<link rel="stylesheet" href="assets/keystone.css">
+<script src="assets/keystone.js"></script>
+<link rel="stylesheet" href="assets/fincrime.css">
+<link rel="stylesheet" href="assets/keystone-walk.css">
+<script src="assets/keystone-walk.js" defer></script>
+<style>
+body{margin:0}
+</style>
+
+<style>
+  html, body { min-height: 100%; }
+  body { margin: 0; background: var(--ground-2); }
+  .ks-stage { min-height: 100vh; display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); box-sizing: border-box; overflow: hidden; }
+  .ks-fit { transform-origin: top left; }
+  .ks-raw .ks-stage { padding: 0; display: block; min-height: 0; }
+  /* mobile: no shrunken board; the artboard's own mobile layout fills the screen */
+  @media (max-width: 760px) {
+    html:not(.ks-raw) .ks-stage { padding: 0; display: block; min-height: 0; }
+    html:not(.ks-raw) .ks-box { width: auto !important; height: auto !important; }
+    html:not(.ks-raw) .ks-fit { transform: none !important; width: 100% !important; height: auto !important; }
+    html:not(.ks-raw) .ks-fit > * { width: 100% !important; height: auto !important; min-height: 100vh; min-height: 100svh; }
+  }
+</style>
+</head>
+<body>
+<div class="ks-stage"><div class="ks-box"><div class="ks-fit" data-w="1920" data-h="1080">
+<section class="k-titlecard" data-color="blue" style="width: 100%; height: 100vh; border-radius: 0;" aria-label="Video title card">
+<div class="k-titlecard__face"><span data-k-bot data-shape="squircle" data-color="blue" data-state="idle" data-name="Document Bot" style="--size: 1766px"></span></div>
+<div class="k-titlecard__words">
+<span class="k-tc-meta">Track 1 · Transaction monitoring · London · 21 Nov 2026</span>
+<h1 class="k-tc-title">Every alert, closed safely.
+Every reason cited.</h1>
+<p class="k-tc-sub">[Team name]</p>
+</div>
+</section>
+</div></div></div>
+
+<script>
+(function () {
+  // Scales the fixed-size artboard to fit the window. Add ?raw for 1:1 (screen recording at its native size).
+  var raw = location.search.indexOf('raw') > -1;
+  if (raw) document.documentElement.classList.add('ks-raw');
+  var fit = document.querySelector('.ks-fit'), W = +fit.dataset.w, H = +fit.dataset.h, box = fit.parentNode;
+  fit.style.width = W + 'px'; fit.style.height = H + 'px';
+  function size() {
+    if (raw || window.innerWidth <= 760) { fit.style.transform = ''; box.style.width = ''; box.style.height = ''; return; }
+    var s = Math.min(1, (window.innerWidth - 32) / W, (window.innerHeight - 96) / H);
+    fit.style.transform = 'scale(' + s + ')';
+    box.style.width = (W * s) + 'px'; box.style.height = (H * s) + 'px';
+  }
+  window.addEventListener('resize', size); size();
+})();
+</script>
+
+<script>
+(function () {
+  // The title card's motion: the field wipes in and the words land (CSS); the bot hops once, then glances and blinks.
+  setTimeout(function () { var b = document.querySelector('.k-titlecard__face [data-k-bot]'); if (b && b._kbot) { b._kbot.ack(); b._kbot.set('working'); setTimeout(function () { b._kbot.set('idle'); }, 1600); } }, 900);
+})();
+</script>
+</body>
+</html>

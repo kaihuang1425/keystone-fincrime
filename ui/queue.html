@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alert queue · Keystone</title>
+<link rel="stylesheet" href="assets/keystone.css">
+<script src="assets/keystone.js"></script>
+<link rel="stylesheet" href="assets/fincrime.css">
+<link rel="stylesheet" href="assets/keystone-walk.css">
+<script src="assets/keystone-walk.js" defer></script>
+<style>
+body{margin:0}
+a{color:var(--info)}a:hover{color:var(--ink)}
+.aq-inst{display:grid;grid-template-columns:minmax(0,1fr) 96px auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line);font-size:15px}
+.aq-inst:first-of-type{border-top:0}
+.aq-inst .k-occ{margin-top:0}
+.aq-inst small{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3)}
+.aq-inst[aria-current="true"] b{font-weight:600}
+.aq-inst b{font-weight:500}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<div data-theme="light" style="min-height: 1080px; background: var(--ground); color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<header style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--surface);">
+<span data-k-bot data-shape="house" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>
+<span style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">Keystone</span>
+<span class="k-honest k-honest--synthetic">Synthetic data</span>
+<span style="flex-grow: 1;"></span>
+<div style="display: flex; align-items: center; gap: 6px;" aria-label="Bots on this queue">
+<span data-k-bot data-shape="cloud" data-color="pink" data-state="working" data-name="Payments Bot" style="--size: 26px"></span>
+<span data-k-bot data-shape="squircle" data-color="blue" data-state="working" data-name="Document Bot" style="--size: 26px"></span>
+<span data-k-bot data-shape="triangle" data-color="teal" data-state="working" data-name="Match Bot" style="--size: 26px"></span>
+</div>
+<span role="img" aria-label="Priya S., analyst" style="width: 34px; height: 34px; border-radius: 999px; background: var(--surface-3); display: grid; place-items: center; font-size: 13px; font-weight: 600;">PS</span>
+</header>
+
+<div style="padding: 28px 24px 8px;">
+<h1 class="h1">Six cases worked. <span class="k-turn">One question to send.</span></h1>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; padding: 20px 24px 32px; align-items: flex-start;">
+
+<div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<div class="k-card" style="display: flex; flex-direction: column; gap: 6px;">
+<h2 class="h3" style="margin-bottom: 6px;">Institutions</h2>
+<div class="aq-inst" aria-current="true"><b>Bank</b><div class="k-occ" role="img" aria-label="3 closed, 1 asked, 2 escalated"><i></i><i></i><i></i><i class="is-ask"></i><i class="is-bad"></i><i class="is-bad"></i></div><small>8 rules</small></div>
+<div class="aq-inst"><b>Payments and FX firm</b><div class="k-occ" role="img" aria-label="Not run yet"><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i></div><small>8 rules</small></div>
+<div class="aq-inst"><b>E-money firm</b><div class="k-occ" role="img" aria-label="Not run yet"><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i></div><small>8 rules</small></div>
+<div class="aq-inst"><b>Investment firm</b><div class="k-occ" role="img" aria-label="Not run yet"><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i><i class="is-void"></i></div><small>7 rules</small></div>
+</div>
+
+<section class="k-approve" aria-label="One question to send">
+<div class="k-row"><h2 class="h3" style="margin-right: auto;">One question to send</h2><span data-k-bot data-shape="house" data-color="chief" data-state="waiting" data-name="Case Lead" style="--size: 30px"></span></div>
+<div class="k-ticket__msg"><small>Draft to the customer · BK-CS204813</small>On 16 September your account received £30,000 from M. R. Please send a document that shows where this money came from, such as a loan agreement.</div>
+<div class="k-row"><span class="k-chip k-chip--ask">? RFI</span><span class="kq-id" style="margin-left: 0;">RFI_SOURCE_OF_FUNDS</span></div>
+<div class="k-row"><button class="k-btn k-btn--text" type="button">Edit</button><button class="k-btn k-btn--primary" type="button" style="margin-left: auto;">Send the request</button></div>
+</section>
+</div>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<div class="k-card" data-kq>
+<div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+<h2 class="h3" style="margin-right: auto;">Bank · queue</h2>
+<button class="k-btn k-btn--sm" type="button" data-kq-replay>Replay</button>
+</div>
+
+<div class="kq-list">
+<div class="kq-row kw-r" style="--d: .2s; --w: 1s; --m: 2.6s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Hale Shopfitting Ltd</b><span class="kq-id">BK-CS204811 · TM22</span><span class="kq-line"><span class="q">Queued</span><span class="a">Comparing the director with the list entry</span><span class="b">Director born 1991; the listed person, 1968</span></span></span><span class="kq-end"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>LIST_MATCH_DIFFERENT_PARTY</code></span></div>
+<div class="kq-row kw-r" style="--d: .35s; --w: 2.9s; --m: 4.4s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Cash deposit, £26,400</b><span class="kq-id">BK-CS204812 · TM05</span><span class="kq-line"><span class="q">Queued</span><span class="a">Matching the deposit to the cash collection reports</span><span class="b">The cash collection reports total £26,400</span></span></span><span class="kq-end"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>BUSINESS_RECORDS_RECONCILE</code></span></div>
+<div class="kq-row kw-r" style="--d: .5s; --w: 4.7s; --m: 6.3s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ask">?</span></span><span><b>£30,000 in from a private person</b><span class="kq-id">BK-CS204813 · TM01</span><span class="kq-line"><span class="q">Queued</span><span class="a">Looking for a document that explains it</span><span class="b">Nothing on file, and no sign of crime. One document would settle it</span></span></span><span class="kq-end"><span class="k-chip k-chip--ask">? RFI</span><code>RFI_SOURCE_OF_FUNDS</code></span></div>
+<div class="kq-row kw-r" style="--d: .65s; --w: 6.6s; --m: 8.4s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span><span><b>14 payers in two days, paid out within the hour</b><span class="kq-id">BK-CS204814 · TM04 · TM02</span><span class="kq-line"><span class="q">Queued</span><span class="a">Tracing the senders and where the money went</span><span class="b">Other people’s money, passed straight on. Nothing is asked of the customer</span></span></span><span class="kq-end"><span class="k-chip k-chip--bad">↑ ESCALATE</span><code>ESC_MULE_ACTIVITY</code></span></div>
+<div class="kq-row kw-r" style="--d: .8s; --w: 8.7s; --m: 10.1s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Dormant account, £6,200 paid in</b><span class="kq-id">BK-CS204815 · TM07</span><span class="kq-line"><span class="q">Queued</span><span class="a">Checking who is using the account</span><span class="b">A verified customer, back after 14 months abroad</span></span></span><span class="kq-end"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>RETURNING_CUSTOMER</code></span></div>
+<div class="kq-row kw-r" style="--d: .95s; --w: 10.4s; --m: 12s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--bad">↑</span></span><span><b>Four cash deposits of £9,800 in ten days</b><span class="kq-id">BK-CS204816 · TM03</span><span class="kq-line"><span class="q">Queued</span><span class="a">Adding up the deposits against the limit</span><span class="b">Split to stay under £10,000, with nothing to explain it</span></span></span><span class="kq-end"><span class="k-chip k-chip--bad">↑ ESCALATE</span><code>ESC_STRUCTURING</code></span></div>
+<div class="kq-tally kw-r" style="--d: 13s; padding-top: 14px; border-top: 1px solid var(--line);"><span class="k-chip k-chip--ok">✓ 3 closed</span><span class="k-chip k-chip--ask">? 1 asked</span><span class="k-chip k-chip--bad">↑ 2 escalated</span><span class="k-meta" style="margin-left: auto;">Run five times: the same in [n] of 5.</span></div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+(function () {
+  var K = window.Keystone;
+  document.querySelectorAll('.k-approve .k-btn--primary').forEach(function (b) { b.setAttribute('data-k-approve', 'RFI sent. BK-CS204813 waits for one document.'); });
+  // the queue works itself in CSS; Replay runs it again, and it first plays when it scrolls into view
+  var list = document.querySelector('.kq-list'), btn = document.querySelector('[data-kq-replay]');
+  function replay() { list.style.display = 'none'; void list.offsetWidth; list.style.display = ''; }
+  if (btn) btn.addEventListener('click', replay);
+  K.whenVisible(list, replay);
+  setTimeout(function () { document.querySelectorAll('header [data-k-bot][data-state="working"]').forEach(function (b) { if (b._kbot) b._kbot.set('done'); }); }, 13500);
+})();
+</script>
+</body>
+</html>

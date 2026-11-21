@@ -1,0 +1,102 @@
+/* Keystone · Financial Crime. A theme layer loaded after Keystone's tokens and components.
+   It changes values, never roles: every Keystone rule still holds. Cool bank-grade grounds
+   and the pieces a financial-crime screen needs (identity match,
+   passport page, entity link, risk ladder, shopfront). */
+
+:root, [data-theme="dark"] {
+  --ground: #07090d;
+  --ground-2: #0c1016;
+  --surface: #11161e;
+  --surface-2: #18202a;
+  --surface-3: #222b37;
+  --hover: #2b3543;
+  --hairline: #ffffff14;
+  --line: #ffffff21;
+  --line-strong: #717d8c;
+  --ink: #eef2f6;
+  --ink-2: #b4bdc8;
+  --ink-3: #8e99a6;
+  --ink-4: #626d7a;
+  --on-primary: #07090d;
+  --bot-chief: #eef2f6;
+  --bot-chief-eye: #07090d;
+}
+[data-theme="light"] {
+  --ground: #f1f3f6;
+  --ground-2: #e8ecf1;
+  --surface: #ffffff;
+  --surface-2: #edf0f4;
+  --surface-3: #e0e5eb;
+  --hover: #d4dae2;
+  --hairline: #0a0e1414;
+  --line: #0a0e141f;
+  --line-strong: #717c89;
+  --ink: #0a0e14;
+  --ink-2: #3a4451;
+  --ink-3: #55606e;
+  --ink-4: #7b8592;
+  --on-primary: #ffffff;
+  --ok: #0c703b;
+  --ok-soft: #0c703b14;
+  --bot-chief: #0a0e14;
+  --bot-chief-eye: #ffffff;
+}
+/* identity match: list entry against the person's document, one row per identifier */
+.fc-match { display: grid; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); overflow: hidden; }
+.fc-match__row { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); align-items: center; gap: 10px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 15px; font-variant-numeric: tabular-nums; animation: k-rise var(--dur-reveal) var(--ease-out) both; }
+.fc-match__row > :last-child { text-align: right; }
+.fc-match__row .k-mk { justify-self: center; animation: k-pop-in .4s var(--ease-spring) both; animation-delay: inherit; }
+.fc-match__row.is-bad { background: var(--bad-soft); }
+.fc-match__row.is-ask { color: var(--ink-3); }
+.fc-match__head { border-top: 0; padding-top: 12px; padding-bottom: 10px; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); animation: none; }
+.fc-match__row:nth-child(2) { animation-delay: .1s; } .fc-match__row:nth-child(3) { animation-delay: .2s; } .fc-match__row:nth-child(4) { animation-delay: .3s; } .fc-match__row:nth-child(5) { animation-delay: .4s; } .fc-match__row:nth-child(6) { animation-delay: .5s; }
+.fc-match__foot { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--surface-2); }
+.fc-match__foot .figure { font-variant-numeric: tabular-nums; }
+.fc-match__foot .figure { margin-right: auto; }
+
+/* passport data page, drawn: photo block, fields, machine-readable zone */
+.fc-pass { position: relative; overflow: hidden; display: grid; gap: 14px; padding: 16px 16px 14px; border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.fc-pass__top { position: relative; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; color: var(--ink-3); }
+.fc-pass__body { position: relative; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 14px; align-items: start; }
+.fc-pass__photo { aspect-ratio: 4 / 5; border-radius: 6px; background: radial-gradient(circle at 50% 38%, var(--surface-3) 0 22%, transparent 23%), radial-gradient(ellipse 46% 34% at 50% 100%, var(--surface-3) 0 98%, transparent 100%), var(--surface-2); }
+.fc-pass dl { display: grid; gap: 6px; margin: 0; }
+.fc-pass dt { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.fc-pass dd { margin: 0 0 2px; font-size: 14px; font-weight: 500; color: var(--ink); }
+.fc-mrz { position: relative; margin: 0; padding: 10px 12px; border-radius: 6px; background: var(--surface-2); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6; letter-spacing: .06em; color: var(--ink-2); white-space: pre; overflow-x: auto; scrollbar-width: none; }
+.fc-mrz::-webkit-scrollbar { display: none; }
+.fc-mrz > span { display: block; }
+
+/* entity link: two companies joined by one person */
+.fc-graph { display: grid; grid-template-columns: minmax(0, 1fr) 40px auto 40px minmax(0, 1fr); align-items: center; }
+.fc-graph__node { display: grid; gap: 2px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface-2); min-width: 0; }
+.fc-graph__node b { font-size: 14px; font-weight: 500; }
+.fc-graph__node small { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.fc-graph__node.is-gone { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+.fc-graph__node.is-gone b { color: var(--ink-2); }
+.fc-graph__edge { height: 2px; background: var(--line-strong); transform-origin: left; animation: k-grow .5s var(--ease-out) .2s both; }
+.fc-graph__edge.is-ask { background: none; background-image: linear-gradient(90deg, var(--ask) 50%, transparent 0); background-size: 8px 2px; animation-delay: .5s; }
+.fc-graph__who { width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; background: var(--surface-3); font-size: 13px; font-weight: 600; box-shadow: 0 0 0 2px var(--ask); }
+
+/* risk ladder: the bank's risk bands, the current one outlined */
+.fc-risk { display: grid; gap: 4px; font-size: 12.5px; font-weight: 600; }
+.fc-risk__band { position: relative; display: flex; align-items: center; height: 22px; padding-left: 10px; border-radius: 0 11px 11px 0; background: var(--surface-3); color: var(--ink-2); width: var(--w); transform-origin: left; animation: k-grow .6s var(--ease-out) both; }
+.fc-risk__band:nth-child(1) { --w: 40%; } .fc-risk__band:nth-child(2) { --w: 54%; animation-delay: .05s; } .fc-risk__band:nth-child(3) { --w: 68%; animation-delay: .1s; } .fc-risk__band:nth-child(4) { --w: 82%; animation-delay: .15s; }
+.fc-risk__band.is-now { color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+
+/* shopfront art for a merchant card, in the checking bot's colour */
+.fc-shop { display: flex; flex-direction: column; width: 66%; }
+.fc-shop__awning { display: flex; height: 14px; }
+.fc-shop__awning i { flex: 1; border-radius: 0 0 7px 7px; background: var(--surface-3); transform-origin: top; animation: k-pop-in .5s var(--ease-spring) both; }
+.fc-shop__awning i:nth-child(odd) { background: var(--c); }
+.fc-shop__awning i:nth-child(2) { animation-delay: .05s; } .fc-shop__awning i:nth-child(3) { animation-delay: .1s; } .fc-shop__awning i:nth-child(4) { animation-delay: .15s; } .fc-shop__awning i:nth-child(5) { animation-delay: .2s; }
+.fc-shop__front { display: grid; grid-template-columns: 1fr 30%; gap: 6px; height: 46px; margin-top: 4px; padding: 8px 7px 0; box-sizing: border-box; border-radius: 3px 3px 0 0; background: var(--surface-3); }
+.fc-shop__front i { border-radius: 2px 2px 0 0; background: var(--surface); }
+
+/* a check strip inside a table cell */
+.k-table .k-occ { width: 84px; margin-top: 0; }
+
+@media (max-width: 760px) {
+  .fc-graph { grid-template-columns: minmax(0, 1fr) 24px auto 24px minmax(0, 1fr); }
+  .fc-graph__node { padding: 8px 10px; }
+  .fc-pass__body { grid-template-columns: 60px minmax(0, 1fr); }
+}

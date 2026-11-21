@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Walkthrough · transaction monitoring · Keystone</title>
+<link rel="stylesheet" href="assets/keystone.css">
+<script src="assets/keystone.js"></script>
+<link rel="stylesheet" href="assets/fincrime.css">
+<link rel="stylesheet" href="assets/keystone-walk.css">
+<script src="assets/keystone-walk.js" defer></script>
+<style>
+body{margin:0}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="kw-page" data-theme="dark">
+<div class="kw " data-kw>
+
+<header class="kw__head">
+<div class="kw__top"><span class="k-label">Track 1 · Transaction monitoring</span><span class="k-honest k-honest--synthetic" style="margin-left: auto;">Synthetic case</span></div>
+<h1 class="h1">One case, five steps. <span class="k-turn">One verdict.</span></h1>
+</header>
+
+<div class="kw-phases" aria-hidden="true"><span class="kw-phase"><b>Read</b> · what is on file?</span><span class="kw-phase"><b>Decide</b> · what does the SOP say?</span></div>
+<div class="kw-tabs" role="tablist" aria-label="Steps">
+
+<button class="kw-tab " type="button" role="tab" aria-selected="true" style="--dur: 7s"><small>01</small><b>Alert</b><span class="kw-tab__bar"><i></i></span></button>
+
+<button class="kw-tab " type="button" role="tab" aria-selected="false" style="--dur: 7s"><small>02</small><b>Records</b><span class="kw-tab__bar"><i></i></span></button>
+
+<button class="kw-tab " type="button" role="tab" aria-selected="false" style="--dur: 7.5s"><small>03</small><b>Evidence</b><span class="kw-tab__bar"><i></i></span></button>
+
+<button class="kw-tab " type="button" role="tab" aria-selected="false" style="--dur: 7.5s"><small>04</small><b>Rule</b><span class="kw-tab__bar"><i></i></span></button>
+
+<button class="kw-tab " type="button" role="tab" aria-selected="false" style="--dur: 9s"><small>05</small><b>Verdict</b><span class="kw-tab__bar"><i></i></span></button>
+
+</div>
+<div class="kw-ctl">
+<span class="kw-count">Step 1 of 5 · Alert</span>
+<button class="k-iconbtn" type="button" aria-label="Previous step" data-kw-prev><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button class="k-btn k-btn--sm" type="button" data-kw-play>Pause</button>
+<button class="k-iconbtn" type="button" aria-label="Next step" data-kw-next><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+
+<div class="kw-stage">
+
+
+<section class="kw-panel" role="tabpanel" aria-label="Alert">
+<p class="kw-say">A payment goes to a name on the bank’s internal list.</p>
+<div class="kw-panes">
+<div class="kw-src">
+<div class="kw-src__head"><span>alerts.jsonl</span><span>BK-AL7719355</span></div>
+<ul class="kw-files">
+<li class="kw-r" style="--d: .3s;"><span>rule</span><span>TM22</span></li>
+<li class="kw-r" style="--d: .6s;"><span>amount</span><span>£3,480.00</span></li>
+<li class="kw-r" style="--d: .9s;"><span>to</span><span>Hale Shopfitting Ltd</span></li>
+<li class="kw-r is-used" style="--d: 1.4s;"><span>matched on</span><span>director’s name</span></li>
+</ul>
+</div>
+<div class="kw-con">
+<div class="kw-con__head"><span data-k-bot data-shape="cloud" data-color="pink" data-state="working" data-name="Payments Bot" style="--size: 32px"></span><b>What fired?</b><small>BK-AL7719355</small></div>
+<div class="kw-row kw-r" style="--d: 1.8s; --m: 2.6s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Counterparty on an internal list</b><small>Rule TM22</small></span><span class="kw-row__end">9 Sep</span></div>
+<div class="kw-row kw-r" style="--d: 2.9s; --m: 3.7s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>£3,480.00 to Hale Shopfitting Ltd</b><small>One payment, from the shop’s current account</small></span><span class="kw-row__end">1 payment</span></div>
+<div class="kw-row kw-r" style="--d: 4s; --m: 4.9s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ask">?</span></span><span><b>Its director shares a listed person’s name</b><small>One detail matches. That is not proof.</small></span><span class="kw-row__end">BK-L20417</span></div>
+</div>
+</div>
+</section>
+
+
+
+<section class="kw-panel" role="tabpanel" aria-label="Records" hidden>
+<p class="kw-say">It opens everything the bank holds on the case.</p>
+<div class="kw-panes">
+<div class="kw-src">
+<div class="kw-src__head"><span>institutions/bank/</span><span>the folder it is given</span></div>
+<ul class="kw-files">
+<li class="kw-r is-used" style="--d: .3s;"><span>cases.jsonl</span><em>the case</em></li>
+<li class="kw-r is-used" style="--d: .5s;"><span>customers.jsonl</span><em>who they are</em></li>
+<li class="kw-r is-used" style="--d: .7s;"><span>transactions.jsonl</span><em>what moved</em></li>
+<li class="kw-r is-used" style="--d: .9s;"><span>evidence/</span><em>3 documents</em></li>
+<li class="kw-r" style="--d: 1.1s;"><span>previous_reviews.jsonl</span><em>none for this payee</em></li>
+<li class="kw-r is-used" style="--d: 1.3s;"><span>internal_list.jsonl</span><em>the entry</em></li>
+<li class="kw-r" style="--d: 1.5s;"><span>POLICY.md</span><em>the bank’s SOP</em></li>
+</ul>
+</div>
+<div class="kw-con">
+<div class="kw-con__head"><span data-k-bot data-shape="house" data-color="chief" data-state="working" data-name="Case Lead" style="--size: 32px"></span><b>What do we know?</b><small>BK-CS204811</small></div>
+<div class="kw-row kw-r" style="--d: 2s; --m: 2.7s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Kiln Street Bakery Ltd</b><small>Small business, current account</small></span><span class="kw-row__end">the customer</span></div>
+<div class="kw-row kw-r" style="--d: 3s; --m: 3.7s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>£20,000 a month from the shop</b><small>Pays UK suppliers and staff <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>KYC-6179<span class="k-cite__pop">Due diligence summary. Expects about £20,000 a month from the shop; pays UK suppliers and staff.<small>Kiln Street Bakery Ltd · synthetic</small></span></button></small></span><span class="kw-row__end">declared</span></div>
+<div class="kw-row kw-r" style="--d: 4s; --m: 4.7s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>Three documents on file</b><small><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>INV-3381<span class="k-cite__pop">Fitted shop counter. Total £3,480.00, payable to Hale Shopfitting Ltd. Dated 4 September.<small>Invoice · synthetic</small></span></button> <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>REG-5102<span class="k-cite__pop">Hale Shopfitting Ltd. Active since 2017. Director D. H., born March 1991.<small>Register extract · synthetic</small></span></button> <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>KYC-6179<span class="k-cite__pop">Due diligence summary. Expects about £20,000 a month from the shop; pays UK suppliers and staff.<small>Kiln Street Bakery Ltd · synthetic</small></span></button></small></span><span class="kw-row__end">evidence</span></div>
+</div>
+</div>
+</section>
+
+
+
+<section class="kw-panel" role="tabpanel" aria-label="Evidence" hidden>
+<p class="kw-say">It reads each document for the one fact that matters.</p>
+<div class="kw-panes">
+<div class="kw-src">
+<div class="kw-src__head"><span>evidence/</span><span>2 of 3 read here</span></div>
+<article class="k-doc kw-r" style="--d: .3s;">
+<div class="k-doc__head"><span>REG-5102 · register extract</span></div>
+<p>Hale Shopfitting Ltd. Active since 2017.</p>
+<p>Director: D. H. Born <span class="kw-hl" style="--d: 1.4s;">March 1991</span>.</p>
+</article>
+<article class="k-doc kw-r" style="--d: .7s; margin-top: 8px;">
+<div class="k-doc__head"><span>INV-3381 · invoice</span></div>
+<p>Fitted shop counter, 4 September.</p>
+<p>Total <span class="kw-hl" style="--d: 3.6s;">£3,480.00</span>, payable to <span class="kw-hl" style="--d: 4.1s;">Hale Shopfitting Ltd</span>.</p>
+</article>
+</div>
+<div class="kw-con">
+<div class="kw-con__head"><span data-k-bot data-shape="squircle" data-color="blue" data-state="working" data-name="Document Bot" style="--size: 32px"></span><b>What explains it?</b><small>3 records</small></div>
+<div class="kw-row kw-r" style="--d: 1.6s; --m: 2.3s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>The director was born in 1991</b></span><span class="kw-row__end"><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>REG-5102<span class="k-cite__pop">Hale Shopfitting Ltd. Active since 2017. Director D. H., born March 1991.<small>Register extract · synthetic</small></span></button></span></div>
+<div class="kw-row kw-r" style="--d: 2.6s; --m: 3.3s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>The listed person was born in 1968</b></span><span class="kw-row__end"><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>BK-L20417<span class="k-cite__pop">Internal list entry. A person with the same name as the director, born 1968.<small>Internal list · synthetic</small></span></button></span></div>
+<div class="kw-row kw-r" style="--d: 4.3s; --m: 5s;"><span class="kw-swap"><span class="kw-dots"><i></i><i></i><i></i></span><span class="k-mk k-mk--ok">✓</span></span><span><b>The invoice matches the amount and the payee</b></span><span class="kw-row__end"><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>INV-3381<span class="k-cite__pop">Fitted shop counter. Total £3,480.00, payable to Hale Shopfitting Ltd. Dated 4 September.<small>Invoice · synthetic</small></span></button></span></div>
+</div>
+</div>
+</section>
+
+
+
+<section class="kw-panel" role="tabpanel" aria-label="Rule" hidden>
+<p class="kw-say">It applies the bank’s own SOP, not a guess.</p>
+<div class="kw-panes">
+<div class="kw-src">
+<div class="kw-src__head"><span>POLICY.md</span><span>internal list · paraphrased</span></div>
+<article class="k-doc kw-r" style="--d: .3s;">
+<p>A match on one detail does not prove it is the same party.</p>
+<p><span class="kw-hl" style="--d: 1.5s;">Close a list match only when the evidence shows the counterparty is someone else.</span></p>
+<p>If nothing settles it, send an RFI. If the listed party is the counterparty, escalate.</p>
+</article>
+</div>
+<div class="kw-con">
+<div class="kw-con__head"><span data-k-bot data-shape="triangle" data-color="teal" data-state="working" data-name="Match Bot" style="--size: 32px"></span><b>The same party?</b><small>Rules, not AI</small></div>
+<div class="kw-cmp kw-cmp__head kw-r" style="--d: 2.2s;"><span>list entry BK-L20417</span><span></span><span>the director, REG-5102</span></div>
+<div class="kw-cmp kw-r" style="--d: 2.7s;"><span>D. H.</span><span class="kw-cmp__word">Agrees</span><span>D. H.</span></div>
+<div class="kw-cmp is-key kw-r" style="--d: 3.6s;"><span>Born 1968</span><span class="kw-cmp__word">Contradicts</span><span>Born 1991</span></div>
+<div class="kw-verdict kw-r" style="--d: 5s;"><span class="k-chip k-chip--ok">✓ Someone else</span><span>The list match can close.</span></div>
+</div>
+</div>
+</section>
+
+
+
+<section class="kw-panel" role="tabpanel" aria-label="Verdict" hidden>
+<p class="kw-say">One case, one verdict, with its reason and its records.</p>
+<div class="kw-panes">
+<div class="kw-src">
+<div class="kw-src__head"><span>output/bank.jsonl</span><span>one line per case</span></div>
+<p class="kw-out">
+<span class="kw-r" style="--d: .3s;">"case_id": <b>"BK-CS204811"</b></span>
+<span class="kw-r" style="--d: .6s;">"alert_ids": <b>["BK-AL7719355"]</b></span>
+<span class="kw-r" style="--d: 1.6s;">"verdict": <b>"CLOSE"</b></span>
+<span class="kw-r" style="--d: 2s;">"reason_code": <b>"LIST_MATCH_DIFFERENT_PARTY"</b></span>
+<span class="kw-r" style="--d: 3.4s;">"evidence": <b>["REG-5102", "INV-3381", "BK-L20417"]</b></span>
+</p>
+</div>
+<div class="kw-con">
+<div class="kw-con__head"><span data-k-bot data-shape="house" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 32px"></span><b>How does it close?</b><small>BK-CS204811</small></div>
+<div class="kw-verdict kw-r" style="--d: 1.4s;"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>LIST_MATCH_DIFFERENT_PARTY</code></div>
+<p class="kw-reason kw-r" style="--d: 2.6s;">The shopfitter’s director shares the listed person’s name, but the register gives a birth year of 1991, not 1968. The £3,480.00 payment matches invoice INV-3381 for a fitted counter.</p>
+<div class="kw-runs kw-r" style="--d: 4.2s;">Run five times: the same verdict and reason code in [n] of 5.</div>
+<p class="kw-note kw-r" style="--d: 6s;">What it can’t explain, it never closes: <span class="k-chip k-chip--ask">? RFI</span> asks for one document, <span class="k-chip k-chip--bad">↑ ESCALATE</span> goes to the MLRO.</p>
+</div>
+</div>
+</section>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Case view · Keystone</title>
+<link rel="stylesheet" href="assets/keystone.css">
+<script src="assets/keystone.js"></script>
+<link rel="stylesheet" href="assets/fincrime.css">
+<link rel="stylesheet" href="assets/keystone-walk.css">
+<script src="assets/keystone-walk.js" defer></script>
+<style>
+body{margin:0}
+a{color:var(--info)}a:hover{color:var(--ink)}
+.cv-card{display:grid;gap:0;padding:6px 18px 16px;border-radius:var(--radius-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--hairline)}
+.cv-card .kw-cmp__head{padding-top:12px}
+</style>
+<style>body{margin:0}</style>
+</head>
+<body>
+<div class="k-app " data-theme="dark">
+
+<aside class="k-app__side" aria-label="Bots">
+<div class="k-side__brand"><span data-k-bot data-shape="house" data-color="chief" data-state="idle" data-name="Keystone" style="--size: 28px"></span>Keystone</div>
+<button class="k-btn k-btn--sm" type="button" style="justify-content: space-between; margin: 0 4px;">Bank<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div class="k-side__section">
+<nav class="k-roster" aria-label="Bots">
+<button class="k-roster__item" aria-current="true"><span data-k-bot data-shape="house" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 32px"></span><span class="k-grow"><span class="k-roster__name">Case Lead</span></span></button>
+<button class="k-roster__item"><span data-k-bot data-shape="cloud" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 32px"></span><span class="k-grow"><span class="k-roster__name">Payments Bot</span></span></button>
+<button class="k-roster__item"><span data-k-bot data-shape="squircle" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 32px"></span><span class="k-grow"><span class="k-roster__name">Document Bot</span></span></button>
+<button class="k-roster__item"><span data-k-bot data-shape="flower" data-color="green" data-state="idle" data-name="Screening Bot" style="--size: 32px"></span><span class="k-grow"><span class="k-roster__name">Screening Bot</span></span></button>
+<button class="k-roster__item"><span data-k-bot data-shape="triangle" data-color="teal" data-state="working" data-name="Match Bot" style="--size: 32px"></span><span class="k-grow"><span class="k-roster__name">Match Bot</span></span></button>
+</nav>
+</div>
+<div class="k-side__foot">
+<span class="k-me" role="img" aria-label="Priya S.">PS</span>
+<span class="k-grow"><b>Priya S.</b></span>
+<div class="k-seg" role="group" aria-label="Theme">
+<button type="button" data-k-theme="dark" aria-pressed="true">Stage</button>
+<button type="button" data-k-theme="light" aria-pressed="false">Desk</button>
+</div>
+</div>
+</aside>
+
+<main class="k-app__main">
+<header class="k-app__head">
+<div class="k-chathead"><span data-k-bot data-shape="house" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 32px"></span><b>Case Lead</b></div>
+<div class="k-app__headend">
+<span class="k-honest k-honest--synthetic">Synthetic data</span>
+<button class="k-btn k-btn--sm k-app__evbtn" type="button" data-k-toggle="evidence"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>Evidence</button>
+</div>
+</header>
+
+<div class="k-app__scroll">
+<div class="k-app__col">
+<div class="k-msg k-msg--me">Why did BK-CS204811 close?</div>
+<div class="k-handrow"><span data-k-bot data-shape="house" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 20px"></span><svg class="k-hand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg><span data-k-bot data-shape="triangle" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 20px"></span><span><b>Hale Shopfitting Ltd</b> · TM22</span><a href="#case">Open</a></div>
+
+<div class="k-msgrow">
+<span data-k-bot data-shape="triangle" data-color="teal" data-state="working" data-name="Match Bot" style="--size: 32px"></span>
+<div>
+<div class="k-msgrow__body">
+<div class="cv-card" role="table" aria-label="The list entry against the payee's director">
+<div class="kw-cmp kw-cmp__head kw-r" role="row" style="--d: .5s;"><span role="columnheader"><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>BK-L20417<span class="k-cite__pop">Internal list entry. A person with the same name as the director, born 1968.<small>Internal list · synthetic</small></span></button></span><span role="columnheader"><span class="k-sr">Agrees</span></span><span role="columnheader"><button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>REG-5102<span class="k-cite__pop">Hale Shopfitting Ltd. Active since 2017. Director D. H., born March 1991.<small>Register extract · synthetic</small></span></button></span></div>
+<div class="kw-cmp kw-r" role="row" style="--d: 1s;"><span role="cell">D. H.</span><span role="cell" class="kw-cmp__word">Agrees</span><span role="cell">D. H.</span></div>
+<div class="kw-cmp is-key kw-r" role="row" style="--d: 1.9s;"><span role="cell">Born 1968</span><span role="cell" class="kw-cmp__word">Contradicts</span><span role="cell">Born 1991</span></div>
+</div>
+<div class="k-event kw-r" style="--d: 3s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg><span><b>£3,480.00</b> paid, <b>£3,480.00</b> invoiced <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>INV-3381<span class="k-cite__pop">Fitted shop counter. Total £3,480.00, payable to Hale Shopfitting Ltd. Dated 4 September.<small>Invoice · synthetic</small></span></button></span></div>
+</div>
+</div>
+</div>
+
+<div class="k-msgrow">
+<span data-k-bot data-shape="house" data-color="chief" data-state="done" data-name="Case Lead" style="--size: 32px"></span>
+<div>
+<div class="k-msgrow__body">
+<div class="kw-verdict kw-r" style="--d: 4.2s; margin-top: 0;"><span class="k-chip k-chip--ok">✓ CLOSE</span><code>LIST_MATCH_DIFFERENT_PARTY</code></div>
+<p class="kw-reason kw-r" style="--d: 5s;">The shopfitter’s director shares the listed person’s name, but the register gives a birth year of 1991, not 1968. The £3,480.00 payment matches invoice INV-3381 for a fitted counter.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="k-app__dock">
+<form class="k-ask">
+<div class="k-ask__field">
+<button type="button" class="k-iconbtn" aria-label="Attach a document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<label class="k-sr" for="ask">Message Case Lead</label>
+<input id="ask" placeholder="Message Case Lead">
+<button type="button" class="k-iconbtn" aria-label="Dictate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></button>
+</div>
+<button type="button" class="k-voice" aria-label="Talk to Case Lead"><i></i><i></i><i></i><i></i><i></i></button>
+</form>
+</div>
+</main>
+
+<div class="k-app__scrim" data-k-toggle="evidence"></div>
+<aside id="case" class="k-app__aside" data-k-tabs aria-label="Evidence">
+<div class="k-panelhead"><b>Evidence</b><button class="k-iconbtn" type="button" aria-label="Close evidence" data-k-toggle="evidence"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="k-seg k-seg--fill" role="group" aria-label="Evidence view">
+<button type="button" data-k-tab="src" aria-pressed="true">Register</button>
+<button type="button" data-k-tab="abs" aria-pressed="false">Invoice</button>
+<button type="button" data-k-tab="trace" aria-pressed="false">Trace</button>
+</div>
+
+<section class="k-tabpanel " data-k-panel="src" aria-label="Register extract">
+<article class="k-doc">
+<div class="k-doc__head"><span>Register extract</span><span>REG-5102</span></div>
+<p><b>Hale Shopfitting Ltd</b></p>
+<p>Active since 2017</p>
+<p>Director D. H. Born <span class="k-hl is-on">March 1991</span></p>
+</article>
+<article class="k-doc">
+<div class="k-doc__head"><span>Internal list</span><span>BK-L20417</span></div>
+<p><b>D. H.</b></p>
+<p>Born <span class="k-hl is-on">1968</span></p>
+</article>
+</section>
+
+<section class="k-tabpanel is-off" data-k-panel="abs" aria-label="Invoice">
+<article class="k-doc">
+<div class="k-doc__head"><span>Invoice</span><span>INV-3381</span></div>
+<p><b>Hale Shopfitting Ltd</b></p>
+<p>Fitted shop counter, 4 September</p>
+<p>Total <span class="k-hl is-on">£3,480.00</span></p>
+</article>
+</section>
+
+<section class="k-tabpanel is-off" data-k-panel="trace" aria-label="Trace">
+<div class="k-trace is-on">
+<span class="k-trace__line"></span>
+<div class="k-trace__step is-claim"><b>CLOSE · LIST_MATCH_DIFFERENT_PARTY</b></div>
+<div class="k-trace__step"><div class="k-row"><span data-k-bot data-shape="cloud" data-color="pink" data-state="done" data-name="Payments Bot" style="--size: 20px"></span><b>Alert</b></div><small>TM22, £3,480.00 on 9 Sep <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>BK-AL7719355<span class="k-cite__pop">Rule TM22, counterparty on an internal list. £3,480.00 to Hale Shopfitting Ltd on 9 September.<small>Alert · synthetic</small></span></button></small></div>
+<div class="k-trace__step"><div class="k-row"><span data-k-bot data-shape="squircle" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 20px"></span><b>Register</b></div><small>Director born March 1991 <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>REG-5102<span class="k-cite__pop">Hale Shopfitting Ltd. Active since 2017. Director D. H., born March 1991.<small>Register extract · synthetic</small></span></button></small></div>
+<div class="k-trace__step"><div class="k-row"><span data-k-bot data-shape="squircle" data-color="blue" data-state="done" data-name="Document Bot" style="--size: 20px"></span><b>Invoice</b></div><small>Same amount, same payee <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>INV-3381<span class="k-cite__pop">Fitted shop counter. Total £3,480.00, payable to Hale Shopfitting Ltd. Dated 4 September.<small>Invoice · synthetic</small></span></button></small></div>
+<div class="k-trace__step"><div class="k-row"><span data-k-bot data-shape="triangle" data-color="teal" data-state="done" data-name="Match Bot" style="--size: 20px"></span><b>Different party</b><span class="k-tool">Rules, not AI</span></div><small>1968 against 1991 <button type="button" class="k-cite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path></svg>BK-L20417<span class="k-cite__pop">Internal list entry. A person with the same name as the director, born 1968.<small>Internal list · synthetic</small></span></button></small></div>
+</div>
+</section>
+</aside>
+
+</div>
+
+<style>.k-loader__cap{display:none}</style>
+<script>
+(function () {
+  var K = window.Keystone, $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  $('.k-ask').addEventListener('submit', function (e) { e.preventDefault(); var i = this.querySelector('input'); if (i.value) { K.toast('Sent to Case Lead.', { mark: false, ms: 2500 }); i.value = ''; } });
+  // the answer plays once the loader lifts: the comparison row by row, then the verdict as the last beat
+  var col = $('.k-app__col');
+  function start() {
+    col.style.display = 'none'; void col.offsetWidth; col.style.display = '';
+    var rows = $$('.k-msgrow');
+    rows.forEach(function (r, i) { var b = r.querySelector('[data-k-bot]'); setTimeout(function () { if (b && b._kbot) b._kbot.ack(); }, i === 0 ? 500 : 4200); });
+    setTimeout(function () { $$('[data-k-bot][data-color="teal"][data-state="working"]').forEach(function (b) { if (b._kbot) b._kbot.set('done'); }); }, 3600);
+  }
+  K.loader({ steps: [['Reading 200 cases', 'bank'], ['Applying the bank’s SOP'], ['Citing every reason']], after: 1400, onDone: start });
+})();
+</script>
+</body>
+</html>

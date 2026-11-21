@@ -1,0 +1,153 @@
+/* Keystone · walkthrough and staged motion. Loaded after Keystone and theme/fincrime.css.
+   One story in numbered steps. Each step has two panes: the source on the left, what the system
+   concludes on the right. Everything inside a step arrives in reading order, and the verdict lands last.
+   Only transform, opacity, filter and background-size move. */
+
+.kw-page { min-height: 100vh; box-sizing: border-box; background: var(--ground); color: var(--ink); font-family: var(--font-sans); }
+.kw { display: flex; flex-direction: column; max-width: 1240px; margin: 0 auto; box-sizing: border-box; }
+.kw__head { display: flex; flex-direction: column; gap: 10px; }
+.kw__top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* stepper: each tab carries its own progress line */
+.kw-phases { display: grid; grid-template-columns: 3fr 2fr; }
+.kw-phase { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.kw-phase b { font-weight: 500; color: var(--ink); }
+.kw-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.kw-tab { position: relative; display: grid; gap: 3px; min-height: 64px; box-sizing: border-box; padding: 10px 12px 16px; border: 0; border-radius: var(--radius-sm); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); color: var(--ink-3); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--dur-flip) var(--ease-out), color var(--dur-flip) var(--ease-out), transform var(--dur-tap) var(--ease-out); }
+.kw-tab:active { transform: scale(.98); }
+.kw-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.kw-tab small { font-family: var(--font-mono); font-size: 11px; }
+.kw-tab b { font-weight: 500; font-size: 14.5px; }
+.kw-tab.is-done { color: var(--ink-2); }
+.kw-tab[aria-selected="true"] { background: var(--surface-2); color: var(--ink); }
+.kw-tab__bar { position: absolute; left: 12px; right: 12px; bottom: 8px; height: 2px; border-radius: 1px; background: var(--line); overflow: hidden; }
+.kw-tab__bar i { position: absolute; inset: 0; transform: scaleX(0); transform-origin: left; background: var(--ink-3); }
+.kw-tab.is-done .kw-tab__bar i { transform: none; }
+.kw-tab[aria-selected="true"] .kw-tab__bar i { background: linear-gradient(90deg, var(--spectrum-1), var(--spectrum-2), var(--spectrum-3), var(--spectrum-4), var(--spectrum-5)); animation: kw-fill var(--dur, 7s) linear forwards; }
+.kw.is-paused .kw-tab[aria-selected="true"] .kw-tab__bar i { animation-play-state: paused; }
+@keyframes kw-fill { to { transform: none; } }
+
+.kw-ctl { display: flex; align-items: center; gap: 8px; }
+.kw-count { margin-right: auto; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+
+/* the stage */
+.kw-stage { border-radius: var(--radius-xl); background: var(--ground-2); box-shadow: inset 0 0 0 1px var(--hairline); box-sizing: border-box; }
+.kw-panel[hidden] { display: none; }
+.kw-say { margin: 0 auto; max-width: 34ch; text-align: center; font-weight: 500; letter-spacing: -.02em; text-wrap: balance; animation: kw-in .5s var(--ease-out) both; }
+.kw-panes { display: grid; align-items: start; }
+.kw-src, .kw-con { display: grid; gap: 4px; align-content: start; min-width: 0; box-sizing: border-box; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.kw-src__head { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.kw-con__head { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; }
+.kw-con__head b { font-weight: 500; font-size: 16px; }
+.kw-con__head small { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.kw-src .k-doc { box-shadow: none; background: var(--surface-2); }
+.kw-note { margin: 8px 0 0; font-size: 14px; color: var(--ink-3); }
+
+/* staged reveal: set --d on each piece, in reading order */
+.kw-r { opacity: 0; animation: kw-in .45s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
+@keyframes kw-in { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* a row whose mark resolves: working dots, then the mark pops in */
+.kw-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.kw-row b { font-weight: 500; }
+.kw-row small { display: block; margin-top: 1px; font-size: 13px; color: var(--ink-3); }
+.kw-row__end { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); text-align: right; }
+.kw-swap { display: grid; place-items: center; width: 18px; height: 18px; }
+.kw-swap > * { grid-area: 1 / 1; }
+.kw-dots { display: flex; gap: 2px; animation: kw-out .25s var(--ease-exit) forwards; animation-delay: var(--m, 1s); }
+.kw-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); animation: kw-dot 1.1s var(--ease-out) infinite; }
+.kw-dots i:nth-child(2) { animation-delay: .15s; }
+.kw-dots i:nth-child(3) { animation-delay: .3s; }
+.kw-swap .k-mk { opacity: 0; animation: kw-pop .45s var(--ease-spring) forwards; animation-delay: var(--m, 1s); }
+@keyframes kw-dot { 0%, 55%, 100% { opacity: .5; transform: none; } 25% { opacity: 1; transform: translateY(-3px); } }
+@keyframes kw-out { to { opacity: 0; transform: scale(.5); } }
+@keyframes kw-pop { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+
+/* a phrase that lights up on cue */
+.kw-hl { padding: 0 2px; margin: 0 -2px; border-radius: 3px; color: var(--ink); background-image: linear-gradient(var(--info-soft), var(--info-soft)); background-repeat: no-repeat; background-size: 0% 100%; animation: kw-sweep .7s var(--ease-glance) forwards; animation-delay: var(--d, 0s); }
+@keyframes kw-sweep { to { background-size: 100% 100%; } }
+
+/* a path through records: dots joined by a line that draws */
+.kw-path__step { position: relative; display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; align-items: center; padding: 9px 0; font-size: 14.5px; }
+.kw-path__step small { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.kw-path__step::before { content: ""; justify-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--surface-3); box-shadow: 0 0 0 2px var(--ink-3); }
+.kw-path__step.is-end::before { background: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
+.kw-path__step i { position: absolute; left: 8.5px; bottom: 50%; width: 1px; height: 100%; background: var(--line-strong); transform: scaleY(0); transform-origin: top; animation: kw-up .35s var(--ease-out) forwards; animation-delay: var(--d, 0s); }
+
+/* files: what the system was given */
+.kw-files { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2); }
+.kw-files li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; }
+.kw-files li.is-used { background: var(--surface-2); color: var(--ink); }
+.kw-files em { font-style: normal; color: var(--ink-3); }
+
+/* two sides and a word between: Agrees, Contradicts, Can't compare */
+.kw-cmp { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; padding: 11px 10px; margin: 0 -10px; border-top: 1px solid var(--line); border-radius: 0; font-size: 15px; font-variant-numeric: tabular-nums; }
+.kw-cmp > :last-child { text-align: right; }
+.kw-cmp small { display: block; font-size: 12px; color: var(--ink-3); }
+.kw-cmp.is-key { border-top-color: transparent; border-radius: var(--radius-sm); background: var(--info-soft); }
+.kw-cmp.is-key + .kw-cmp { border-top-color: transparent; }
+.kw-cmp__word { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.kw-cmp.is-key .kw-cmp__word { color: var(--ink); font-weight: 500; }
+.kw-cmp__head { border-top: 0; padding-top: 0; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+
+/* the record the system writes, field by field */
+.kw-out { display: grid; gap: 2px; margin: 0; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--surface-2); font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55; color: var(--ink-3); overflow-x: auto; }
+.kw-out span { display: block; white-space: nowrap; }
+.kw-out b { font-weight: 500; color: var(--ink); }
+
+/* the verdict: the last beat of a step */
+.kw-verdict { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 16px; margin-top: 8px; border-radius: var(--radius-lg); background: var(--surface-2); }
+.kw-verdict .k-chip { font-size: 14.5px; padding: 6px 12px; }
+.kw-verdict code { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2); }
+.kw-verdict.kw-r { animation: kw-land .6s var(--ease-spring) forwards; animation-delay: var(--d, 0s); }
+@keyframes kw-land { from { opacity: 0; transform: scale(.94); } 60% { opacity: 1; transform: scale(1.02); } to { opacity: 1; transform: none; } }
+.kw-reason { margin: 10px 0 0; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+
+/* a queue that works itself: each case waits, is worked from --w, and gets its verdict at --m */
+.kq-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.kq-row:first-child { border-top: 0; }
+.kq-row b { font-weight: 500; }
+.kq-id { margin-left: 6px; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.kq-line { display: grid; margin-top: 2px; font-size: 13px; }
+.kq-line > * { grid-area: 1 / 1; }
+.kq-line .q { color: var(--ink-3); animation: kq-fade .2s var(--ease-exit) forwards; animation-delay: var(--w, 0s); }
+.kq-line .a { opacity: 0; color: var(--ink-3); animation: kw-in .3s var(--ease-out) forwards, kq-fade .25s var(--ease-exit) forwards; animation-delay: var(--w, 0s), var(--m, 1s); }
+.kq-line .b { opacity: 0; color: var(--ink-2); animation: kw-in .4s var(--ease-out) forwards; animation-delay: var(--m, 1s); }
+.kq-row .kw-dots { opacity: 0; animation: kw-in .2s var(--ease-out) forwards, kw-out .25s var(--ease-exit) forwards; animation-delay: var(--w, 0s), var(--m, 1s); }
+.kq-end { display: grid; justify-items: end; gap: 4px; opacity: 0; animation: kw-pop .45s var(--ease-spring) forwards; animation-delay: var(--m, 1s); }
+.kq-end code { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.kq-tally { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+@keyframes kq-fade { to { opacity: 0; } }
+@media (max-width: 760px) {
+  .kq-row { grid-template-columns: 18px minmax(0, 1fr); }
+  .kq-end { grid-column: 2; justify-items: start; }
+}
+
+/* runs that agree: one mark per run */
+.kw-runs { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+.kw-runs .k-mk { opacity: 0; animation: kw-pop .4s var(--ease-spring) forwards; animation-delay: calc(var(--d, 0s) + var(--i, 0) * 120ms); }
+.kw-runs span { margin-left: 4px; }
+
+@keyframes kw-up { to { transform: none; } }
+
+@media (min-width: 761px) {
+  .kw-page { padding: 44px 40px 56px; }
+  .kw { gap: 16px; }
+  .kw-phases, .kw-tabs { gap: 10px; }
+  .kw-stage { padding: 30px 28px 28px; min-height: 548px; }
+  .kw-say { font-size: 26px; line-height: 1.2; margin-bottom: 26px; }
+  .kw-panes { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; }
+  .kw-src, .kw-con { padding: 18px 20px 20px; min-height: 356px; }
+}
+@media (max-width: 760px) {
+  .kw-page { padding: 24px 16px 40px; }
+  .kw { gap: 12px; }
+  .kw-phases { display: none; }
+  .kw-tabs { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 132px; gap: 8px; margin: 0 -16px; padding: 0 16px 2px; overflow-x: auto; scrollbar-width: none; }
+  .kw-tabs::-webkit-scrollbar { display: none; }
+  .kw-stage { padding: 20px 14px 16px; }
+  .kw-say { font-size: 20px; line-height: 1.25; margin-bottom: 16px; }
+  .kw-panes { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .kw-src, .kw-con { padding: 14px 14px 16px; }
+  .kw-cmp { font-size: 14px; gap: 8px; }
+}
