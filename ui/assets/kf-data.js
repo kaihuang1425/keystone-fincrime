@@ -209,6 +209,53 @@
     return 'I can only answer from this case’s reason and records. Ask why, about the alerts, or about a record such as ' + (c.evidence[0] || c.alert_ids[0]) + '.';
   };
 
+  /* ---------- the checks behind a verdict ---------- */
+  /* The decision as a table: the SOP's checks in the order system/triage/decide.py runs them, each
+     marked passed, failed or not reached, with the reason's own sentences beside the check they
+     belong to. Every mark follows from the verdict and reason code alone: decide.py emits a close
+     only when every check passed, an RFI only when there is no sign of crime, and stops at the first
+     sign of crime. Checks the case never reached say so rather than guess. */
+  KF.MK = {
+    ok: '<span class="k-mk k-mk--ok" aria-hidden="true">✓</span>',
+    bad: '<span class="k-mk k-mk--bad" aria-hidden="true">✕</span>',
+    off: '<span class="k-mk kf-mk--off" aria-hidden="true">–</span>'
+  };
+  KF.checks = function (x) {
+    var s = KF.sentences(x.reason), v = x.verdict, profile = x.reason_code === 'RFI_UPDATED_PROFILE';
+    var unread = /could not read/.test(x.reason);
+    var pick = function (re) { var out = s.filter(function (t) { return re.test(t); }); s = s.filter(function (t) { return !re.test(t); }); return out; };
+    var ask = pick(/^Ask\b/), calm = pick(/^Nothing else (about the account )?is concerning\.?$/i);
+    var rest = v === 'CLOSE' ? pick(/^The rest of the money received in the window/) : [];
+    var over = profile ? pick(/SOP asks for an updated figure/) : [];
+    var times = over.length && /(\d+(?:\.\d+)?) times the declared/.exec(over[0]);
+    var limit = over.length && /at (\d+(?:\.\d+)?) times or more/.exec(over[0]);
+    var rows = [];
+    rows.push(v === 'ESCALATE'
+      ? { name: 'Signs of crime', rule: 'Escalate on any sign of crime on file, and never ask the customer.', st: 'bad', word: unread ? 'Not fully read' : 'Found', facts: s }
+      : { name: 'Signs of crime', rule: 'Escalate on any sign of crime on file, and never ask the customer.', st: 'ok', word: 'None found', facts: calm.length ? calm : ['None of the signs of crime the SOP lists is on file.'] });
+    rows.push(v === 'ESCALATE'
+      ? { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'off', word: 'Not needed', facts: ['A sign of crime outranks any explanation.'] }
+      : v === 'CLOSE' || profile
+        ? { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'ok', word: 'Explained', facts: s }
+        : { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'bad', word: 'Not explained', facts: s });
+    if (rest.length) rows.push({ name: 'Money left over', rule: 'Money with no document must stay within the alert’s limit.', st: 'ok', word: 'Within the limit', facts: rest });
+    var passed = v === 'CLOSE' || profile;
+    rows.push({ name: 'New payments left over', rule: 'No payment of £1,000 or more from a party new to the account may be left without a document.',
+      st: passed ? 'ok' : 'off', word: passed ? 'None left' : 'Not reached', facts: [] });
+    if (KF.instOf(x.case_id) === 'payments_fx') rows.push({ name: 'Held payment', rule: 'A held payment at or above the SOP’s invoice threshold needs a matching invoice or contract before release.',
+      st: passed ? 'ok' : 'off', word: passed ? 'Passed' : 'Not reached', facts: [] });
+    if (profile) rows.push({ name: 'Declared figure', rule: 'Own-account money must not take receipts to ' + (limit ? limit[1] : '5') + ' times the declared figure or more.',
+      st: 'bad', word: times ? times[1] + ' times' : 'Over the limit', facts: over });
+    return { rows: rows, ask: ask };
+  };
+  // the decision in one line, for the queue row and the case view
+  KF.summary = function (x) {
+    return x.verdict === 'CLOSE' ? 'Nothing on file points to crime, and documents explain every alert.'
+      : x.verdict === 'ESCALATE' ? 'A sign of crime is on file, so the MLRO decides and the customer is not asked.'
+      : x.reason_code === 'RFI_UPDATED_PROFILE' ? 'Nothing points to crime, but the customer’s own-account money is far above their declared figure.'
+      : 'Nothing points to crime, but something has no document behind it. One request would settle it.';
+  };
+
   /* ---------- the analyst's actions ---------- */
   var KEY = 'kf-actions-v1', mem = [];
   var local = {

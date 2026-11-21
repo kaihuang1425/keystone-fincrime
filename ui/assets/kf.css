@@ -157,3 +157,16 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
 .kl-open { display: inline-block; margin-left: 4px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .kl-open:hover { color: var(--ink-2); }
 .kl-open[hidden] { display: none; }
+
+/* queue rows: the checks behind the verdict as a strip of cells, each with its mark and result */
+.kq-checks { display: flex; flex-wrap: wrap; gap: 1px; margin-top: 10px;
+  border-radius: var(--radius-sm); overflow: hidden; background: var(--line); box-shadow: inset 0 0 0 1px var(--line);
+  opacity: 0; animation: kw-in .4s var(--ease-out) forwards; animation-delay: var(--m, 1s); }
+.kq-ck { flex: 1 1 140px; display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; background: var(--surface); min-width: 0; }
+.kq-ck__name { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.kq-ck__res { display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 1.3; color: var(--ink); }
+.kq-ck--ok .kq-ck__res { color: var(--ok); }
+.kq-ck--bad { background: linear-gradient(var(--bad-soft), var(--bad-soft)), var(--surface); }
+.kq-ck--bad .kq-ck__res { color: var(--bad); }
+.kq-ck--off .kq-ck__res { color: var(--ink-3); }
+.kq-list.kf-still .kq-checks { opacity: 1; animation: none; }

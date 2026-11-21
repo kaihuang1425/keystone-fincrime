@@ -149,50 +149,12 @@
   function rec(id) {
     return '<div class="k-event kw-r">' + DOT + '<span><b>' + KF.esc(KF.kind(id)) + '</b> ' + KF.cite(c, id) + '</span></div>';
   }
-  /* The decision as a table: the SOP's checks in the order system/triage/decide.py runs them, each
-     marked passed, failed or not reached, with the reason's own sentences beside the check they
-     belong to. Every mark follows from the verdict and reason code alone: decide.py emits a close
-     only when every check passed, an RFI only when there is no sign of crime, and stops at the first
-     sign of crime. Checks the case never reached say so rather than guess. */
-  var MK = {
-    ok: '<span class="k-mk k-mk--ok" aria-hidden="true">✓</span>',
-    bad: '<span class="k-mk k-mk--bad" aria-hidden="true">✕</span>',
-    off: '<span class="k-mk kf-mk--off" aria-hidden="true">–</span>'
-  };
-  function checks(x) {
-    var s = KF.sentences(x.reason), v = x.verdict, profile = x.reason_code === 'RFI_UPDATED_PROFILE';
-    var unread = /could not read/.test(x.reason);
-    var pick = function (re) { var out = s.filter(function (t) { return re.test(t); }); s = s.filter(function (t) { return !re.test(t); }); return out; };
-    var ask = pick(/^Ask\b/), calm = pick(/^Nothing else (about the account )?is concerning\.?$/i);
-    var rest = v === 'CLOSE' ? pick(/^The rest of the money received in the window/) : [];
-    var over = profile ? pick(/SOP asks for an updated figure/) : [];
-    var times = over.length && /(\d+(?:\.\d+)?) times the declared/.exec(over[0]);
-    var limit = over.length && /at (\d+(?:\.\d+)?) times or more/.exec(over[0]);
-    var rows = [];
-    rows.push(v === 'ESCALATE'
-      ? { name: 'Signs of crime', rule: 'Escalate on any sign of crime on file, and never ask the customer.', st: 'bad', word: unread ? 'Not fully read' : 'Found: ' + KF.title(x.reason_code), facts: s }
-      : { name: 'Signs of crime', rule: 'Escalate on any sign of crime on file, and never ask the customer.', st: 'ok', word: 'None found', facts: calm.length ? calm : ['None of the signs of crime the SOP lists is on file.'] });
-    rows.push(v === 'ESCALATE'
-      ? { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'off', word: 'Not needed', facts: ['A sign of crime outranks any explanation.'] }
-      : v === 'CLOSE' || profile
-        ? { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'ok', word: 'Explained', facts: s }
-        : { name: 'Alerts explained', rule: 'A document on file must explain every alert in the case.', st: 'bad', word: 'Not explained', facts: s });
-    if (rest.length) rows.push({ name: 'Money left over', rule: 'Money with no document must stay within the alert’s limit.', st: 'ok', word: 'Within the limit', facts: rest });
-    var passed = v === 'CLOSE' || profile;
-    rows.push({ name: 'New payments left over', rule: 'No payment of £1,000 or more from a party new to the account may be left without a document.',
-      st: passed ? 'ok' : 'off', word: passed ? 'None left' : 'Not reached', facts: [] });
-    if (inst === 'payments_fx') rows.push({ name: 'Held payment', rule: 'A held payment at or above the SOP’s invoice threshold needs a matching invoice or contract before release.',
-      st: passed ? 'ok' : 'off', word: passed ? 'Passed' : 'Not reached', facts: [] });
-    if (profile) rows.push({ name: 'Declared figure', rule: 'Own-account money must not take receipts to ' + (limit ? limit[1] : '5') + ' times the declared figure or more.',
-      st: 'bad', word: times ? times[1] + ' times' : 'Over the limit', facts: over });
-    return { rows: rows, ask: ask };
-  }
   function checksHTML(x) {
-    var r = checks(x), n = { ok: 0, bad: 0, off: 0 }, profile = x.reason_code === 'RFI_UPDATED_PROFILE';
+    var r = KF.checks(x), n = { ok: 0, bad: 0, off: 0 };
     var body = r.rows.map(function (row) {
       n[row.st]++;
       return '<tr class="kf-ck--' + row.st + '"><th scope="row"><b>' + KF.esc(row.name) + '</b><span class="k-why">' + KF.esc(row.rule) + '</span></th>' +
-        '<td class="kf-ck__res"><span class="kf-ck__in">' + MK[row.st] + '<span>' + KF.esc(row.word) + '</span></span></td>' +
+        '<td class="kf-ck__res"><span class="kf-ck__in">' + KF.MK[row.st] + '<span>' + KF.esc(row.word) + '</span></span></td>' +
         '<td class="kf-ck__facts">' + (row.facts.length ? row.facts.map(function (t) { return '<p>' + KF.withCites(x, t) + '</p>'; }).join('') : '<p class="kf-ck__none">–</p>') + '</td></tr>';
     }).join('');
     var next = x.verdict === 'CLOSE' ? 'Close the case. Nothing is sent to the customer.'
@@ -200,12 +162,8 @@
       : (r.ask.length ? r.ask.join(' ') : 'Ask the customer for the document the reason names.');
     body += '<tr class="kf-ck--verdict"><th scope="row"><b>Verdict</b><span class="k-why">The first check that fails decides it.</span></th>' +
       '<td class="kf-ck__res">' + KF.chip(x.verdict) + '</td><td class="kf-ck__facts"><p>' + KF.withCites(x, next) + '</p></td></tr>';
-    var summary = x.verdict === 'CLOSE' ? 'Nothing on file points to crime, and documents explain every alert.'
-      : x.verdict === 'ESCALATE' ? 'A sign of crime is on file, so the MLRO decides and the customer is not asked.'
-      : profile ? 'Nothing points to crime, but the customer’s own-account money is far above their declared figure.'
-      : 'Nothing points to crime, but something has no document behind it. One request would settle it.';
     var tally = [n.ok + ' passed', n.bad + ' failed'].concat(n.off ? [n.off + ' not reached'] : []).join(' · ');
-    return '<p class="kw-reason kw-r kf-sum">' + KF.esc(summary) + ' <span class="kf-tally">' + tally + '</span></p>' +
+    return '<p class="kw-reason kw-r kf-sum">' + KF.esc(KF.summary(x)) + ' <span class="kf-tally">' + tally + '</span></p>' +
       '<div class="k-tablewrap kw-r kf-checks"><table class="k-table"><caption class="k-sr">How Keystone decided ' + KF.esc(x.case_id) + '</caption>' +
       '<thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">What the file shows</th></tr></thead><tbody>' + body + '</tbody></table></div>';
   }

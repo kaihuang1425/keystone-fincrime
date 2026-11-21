@@ -1,6 +1,6 @@
 /* The alert queue, on the system's real verdicts. Twenty cases at a time, in the order the system
    wrote them, or twenty of one verdict when a filter is on. Each row says what was decided once: a
-   plain title, the case ID and alert count, the first sentence of the reason and one chip; the reason
+   plain title, the case ID and alert count, a one-line summary, the SOP's checks marked ✓, ✕ or –, and one chip; the reason
    code sits in the chip's tooltip and in the case view. Each row opens the case. The institutions are
    tabs with their case count and how many people have decided; the heading counts what is left. The RFI card sends the system's request, editable first, and Undo takes
    it back. The rows play their reading animation on the first visit in a tab, and stay still after. */
@@ -66,6 +66,14 @@
   function href(c) { return 'app.html?inst=' + inst + '&case=' + encodeURIComponent(c.case_id); }
   function n(x) { return Number(x).toLocaleString('en-GB'); }
 
+  // the checks behind the verdict, one cell each, marked passed, failed or not reached
+  function checkStrip(c) {
+    return '<span class="kq-checks" role="list" aria-label="Checks">' + KF.checks(c).rows.map(function (r) {
+      return '<span class="kq-ck kq-ck--' + r.st + '" role="listitem"><span class="kq-ck__name">' + KF.esc(r.name) + '</span>' +
+        '<span class="kq-ck__res">' + KF.MK[r.st] + '<span>' + KF.esc(r.word) + '</span></span></span>';
+    }).join('') + '</span>';
+  }
+
   function row(c) {
     var st = standing[c.case_id];
     return '<a class="kq-row kw-r" href="' + href(c) + '" data-case="' + KF.esc(c.case_id) + '">' +
@@ -73,7 +81,7 @@
       // sit underneath as small tags, so each kind of detail looks different
       '<span class="kq-main"><b>' + KF.esc(KF.title(c.reason_code)) + '</b>' +
       '<span class="kq-line"><span class="q">Queued</span><span class="a">Reading ' + c.evidence.length + ' records</span>' +
-      '<span class="b">' + KF.esc(KF.sentences(c.reason)[0]) + '</span></span>' +
+      '<span class="b">' + KF.esc(KF.summary(c)) + '</span></span>' + checkStrip(c) +
       '<span class="kq-meta"><span class="kq-tag kq-tag--id">' + KF.esc(c.case_id) + '</span><span class="kq-tag">' + KF.alerts(c) + '</span>' +
       (st ? '<span class="kq-tag kq-tag--done kq-done">' + KF.DID[st.action] + '</span>' : '') + '</span></span>' +
       '<span class="kq-end" title="' + KF.esc(c.reason_code + ': ' + KF.describe(c.reason_code)) + '">' + KF.chip(c.verdict) + '</span></a>';
