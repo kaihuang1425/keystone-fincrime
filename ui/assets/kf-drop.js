@@ -9,6 +9,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return KF.esc(s == null ? '' : s); };
   var fmt = function (n) { return Number(n).toLocaleString('en-GB'); };
+  var pl = function (n, one, many) { return fmt(n) + ' ' + (n === 1 ? one : (many || one + 's')); };
   var VS = ['CLOSE', 'RFI', 'ESCALATE'];
   var MAX_BYTES = 1500 * 1024 * 1024;
 
@@ -62,7 +63,7 @@
       showFound(m.found);
     } else if (m.type === 'start') {
       var inst = found.institutions[m.index];
-      say('Deciding ' + inst.name + ', ' + fmt(inst.cases) + ' cases', 'working');
+      say('Deciding ' + inst.name + ', ' + pl(inst.cases, 'case'), 'working');
     } else if (m.type === 'progress') {
       var bar = document.querySelector('[data-bar="' + m.index + '"]');
       if (bar) bar.style.setProperty('--p', Math.min(100, 100 * m.done / Math.max(1, found.institutions[m.index].cases)) + '%');
@@ -163,8 +164,8 @@
       return;
     }
     var total = f.institutions.reduce(function (s, x) { return s + x.cases; }, 0);
-    $('kd-found-h').innerHTML = fmt(total) + ' cases in ' + n + ' institution' + (n === 1 ? '' : 's') + '. ' +
-      '<span class="k-turn">' + (f.labels ? fmt(f.labels) + ' right answers to score them on.' : 'No right answers to score them on.') + '</span>';
+    $('kd-found-h').innerHTML = pl(total, 'case') + ' in ' + pl(n, 'institution') + '. ' +
+      '<span class="k-turn">' + (f.labels ? pl(f.labels, 'right answer') + ' to score ' + (total === 1 ? 'it' : 'them') + ' on.' : 'No right answers to score ' + (total === 1 ? 'it' : 'them') + ' on.') + '</span>';
     $('kd-insts').innerHTML = f.institutions.map(function (x, i) {
       return '<tr data-row="' + i + '"><td><b>' + esc(x.name) + '</b><span class="kd-sub">' + esc(x.shown) + '</span></td>' +
         '<td class="kd-num">' + fmt(x.cases) + '</td>' +
@@ -204,7 +205,7 @@
     busy = false;
     $('kd-drop').classList.remove('is-busy');
     var total = results.reduce(function (s, r) { return s + (r ? r.cases : 0); }, 0);
-    say('Decided ' + fmt(total) + ' cases', 'done');
+    say('Decided ' + pl(total, 'case'), 'done');
     renderScore();
     renderCases();
     $('kd-done').hidden = false;
@@ -223,7 +224,7 @@
     var t = score.total, files = found.label_files.join(', ') || 'the dropped answers';
     var how = 'Measured on ' + fmt(t.labelled) + ' dropped case' + (t.labelled === 1 ? '' : 's') + ' with answers from ' + files;
     var head = (t.wrongful_closes ? fmt(t.wrongful_closes) + ' wrongful close' + (t.wrongful_closes === 1 ? '' : 's') + '.' : 'No wrongful closes.') +
-      ' <span class="k-turn">' + fmt(t.closable_closed) + ' of ' + fmt(t.closable) + ' closable cases closed.</span>';
+      ' <span class="k-turn">' + (t.closable ? fmt(t.closable_closed) + ' of ' + pl(t.closable, 'closable case') + ' closed.' : 'None of the answered cases is closable.') + '</span>';
     var tile = function (label, val, cls, sub) {
       return '<div class="k-metric"><span class="k-metric__label">' + label + '</span><span class="k-metric__val' + (cls ? ' ' + cls : '') + '">' + val + '</span>' +
         '<div class="k-row"><span class="k-metric__how">' + sub + '</span></div></div>';
