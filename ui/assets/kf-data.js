@@ -163,7 +163,6 @@
   KF.amounts = function (text) { return KF.esc(text).replace(/£[\d,]+(?:\.\d\d)?/g, '<span class="kw-hl">$&</span>'); };
 
   /* ---------- Case Lead answers from the case's own reason and records, nothing else ---------- */
-  var STOP = 'what which when where with that this have from does were will would about your there their them they case cases please could should tell show give'.split(' ');
   KF.answer = function (c, q) {
     var ql = q.toLowerCase(), s = KF.sentences(c.reason), all = KF.records(c);
     var named = all.filter(function (id) { return ql.indexOf(id.toLowerCase()) > -1; });
@@ -177,13 +176,7 @@
     }
     if (/\b(verdict|decision|outcome|result|code)\b/.test(ql)) return c.verdict + ', ' + c.reason_code + '. ' + s[0];
     if (/\b(why|reason|because|explain)\b/.test(ql)) return c.reason;
-    var words = (ql.match(/[a-z0-9£][a-z0-9£,.']{3,}/g) || []).filter(function (w) { return STOP.indexOf(w) < 0; });
-    var best = 0, picks = [];
-    s.forEach(function (x) {
-      var xl = x.toLowerCase(), n = words.filter(function (w) { return xl.indexOf(w.replace(/[,.]+$/, '')) > -1; }).length;
-      if (n > best) { best = n; picks = [x]; } else if (n && n === best) picks.push(x);
-    });
-    if (best) return picks.join(' ');
+    // no guessing: a sentence that merely shares words with the question can answer the wrong thing
     return 'I can only answer from this case’s reason and records. Ask why, about the alerts, or about a record such as ' + (c.evidence[0] || c.alert_ids[0]) + '.';
   };
 

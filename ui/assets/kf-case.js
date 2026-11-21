@@ -1,8 +1,9 @@
 /* The case view, on one real verdict: app.html?inst=bank&case=BK-CS100112 (the queue links here).
    Case Lead explains the decision in the system's own words; each bot shows the records it owns;
-   the evidence panel lists the records, the reason sentence by sentence, and the trace. The message
-   box answers from this case's reason and records only. Above it the analyst decides: agree with
-   Keystone's verdict or pick another, then go to the next undecided case. */
+   the evidence panel lists the records and the reason sentence by sentence. Question buttons ask
+   Case Lead what this page can answer from the case itself, and the answers stay when a bot is
+   opened and closed. Below them the analyst decides: agree with Keystone's verdict or pick a more
+   cautious one, then go to the next undecided case. */
 (function () {
   var K = window.Keystone, KF = window.KF;
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -14,7 +15,7 @@
   var instBtn = $('.k-app__side > .k-btn'), roster = $$('.k-roster__item');
   var NAMES = roster.map(function (r) { return ($('.k-roster__name', r) || r).textContent.trim(); });
   var tabs = $$('[data-k-tab]', aside), panel = function (k) { return $('[data-k-panel="' + k + '"]', aside); };
-  var form = $('.k-ask'), input = form && $('input', form);
+  var form = $('.k-ask');
 
   // only what works stays: no attachments, dictation or voice
   $$('.k-iconbtn, .k-voice', form).forEach(function (b) { b.remove(); });
@@ -42,6 +43,44 @@
   var bar = document.createElement('section');
   bar.className = 'k-approve kf-decide'; bar.setAttribute('aria-label', 'Your decision');
   if (form) form.parentNode.insertBefore(bar, form);
+
+  // question buttons replace the free-text box: each one asks something this page can answer from
+  // the case's own verdict, reason and records, so there is no guessing at a typed question
+  var asks = document.createElement('div');
+  asks.className = 'k-suggest kf-asks'; asks.setAttribute('role', 'group'); asks.setAttribute('aria-label', 'Ask Case Lead');
+  bar.parentNode.insertBefore(asks, bar);
+  if (form) form.remove();
+  var QS = [['next', 'What happens next?'], ['mean', 'What does it mean?'], ['records', 'Which records decided it?'], ['same', 'Same answer every time?']];
+  var said = [], view = 'Case Lead';
+  function n(x) { return Number(x).toLocaleString('en-GB'); }
+  function answer(k) {
+    if (k === 'mean') return '<b>' + KF.esc(KF.title(c.reason_code)) + '.</b> ' + KF.esc(KF.describe(c.reason_code));
+    if (k === 'records') {
+      return 'It rests on ' + c.evidence.length + (c.evidence.length === 1 ? ' record: ' : ' records: ') +
+        c.evidence.map(function (id) { return KF.esc(KF.kind(id).toLowerCase()) + ' ' + KF.cite(c, id); }).join(', ') + '. Tap one to see where the reason uses it.';
+    }
+    if (k === 'same') return 'Yes. Keystone decided all ' + n(run.cases) + ' cases at this firm ' + run.repeat_runs + ' times, and every run gave the same verdicts in the same words.';
+    var st = standing[c.case_id];
+    if (st) return 'Done: ' + KF.esc(KF.DID[st.action] || st.action) + '. Change takes it back, and Next case opens the next one.';
+    if (c.verdict === 'CLOSE') return 'If you agree, close the case. Nothing is sent to the customer. If something on file doesn’t add up, send an RFI or escalate instead.';
+    if (c.verdict === 'ESCALATE') return 'If you agree, escalate it. The MLRO, the firm’s money laundering reporting officer, decides whether to report it. Nothing is asked of the customer: a question could tip them off.';
+    var ask = KF.sentences(c.reason).filter(function (t) { return /^Ask\b/.test(t); });
+    return 'If you agree, send the request' + (ask.length ? '. It says: ' + KF.withCites(c, ask.join(' ')) : ' for the document the reason names.') +
+      ' If you suspect crime, escalate instead: a question could tip the customer off.';
+  }
+  function showAsks() {
+    asks.innerHTML = QS.filter(function (q) { return q[0] !== 'same' || run.repeat_identical === true; })
+      .map(function (q) { return '<button type="button" data-kf-ask="' + q[0] + '">' + q[1] + '</button>'; }).join('');
+  }
+  asks.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-kf-ask]'); if (!b || !c) return;
+    var html = '<div class="k-msg k-msg--me">' + KF.esc(b.textContent) + '</div>' +
+      '<div class="k-msgrow">' + KF.botHTML('Case Lead') + '<div><div class="k-msgrow__body"><p class="kw-reason">' + answer(b.getAttribute('data-kf-ask')) + '</p></div></div></div>';
+    said.push(html);
+    if (view !== 'Case Lead') { view = 'Case Lead'; caseView(); rosterState('Case Lead'); }
+    else { col.insertAdjacentHTML('beforeend', html); KF.mountBots(col); }
+    scroller.scrollTop = scroller.scrollHeight;
+  });
   var DO = {
     CLOSE: { act: 'closed', main: 'Close the case', alt: 'Close', did: 'Closed' },
     RFI: { act: 'rfi_sent', main: 'Send the request', alt: 'Send an RFI', did: 'RFI sent for' },
@@ -118,7 +157,8 @@
       c.evidence.map(rec).join('') + '</div></div></div></div>' +
       '<div class="k-msgrow">' + KF.botHTML('Case Lead') + '<div><div class="k-msgrow__body">' +
       '<div class="kw-verdict kw-r">' + KF.chip(c.verdict) + '<b class="kf-what">' + KF.esc(KF.title(c.reason_code)) + '</b>' + KF.code(c.reason_code) + '</div>' +
-      '<p class="kw-reason kw-r">' + KF.withCites(c, c.reason) + '</p></div></div></div>';
+      '<p class="kw-reason kw-r">' + KF.withCites(c, c.reason) + '</p></div></div></div>' +
+      said.join('');
     KF.mountBots(col);
   }
   function botView(name) {
@@ -164,7 +204,7 @@
 
   function render() {
     instBtn.firstChild.nodeValue = KF.instInfo(inst).name;
-    caseView(); evidence(); rosterState('Case Lead'); showBar();
+    caseView(); evidence(); rosterState('Case Lead'); showBar(); showAsks();
     back.href = 'queue.html?inst=' + inst;
     document.title = c.case_id + ' · Keystone';
     var u = new URL(location.href); u.searchParams.set('inst', inst); u.searchParams.set('case', c.case_id); history.replaceState(null, '', u);
@@ -195,8 +235,9 @@
   roster.forEach(function (r, i) {
     r.addEventListener('click', function () {
       if (!c) return;
-      if (NAMES[i] === 'Case Lead') caseView(); else botView(NAMES[i]);
-      rosterState(NAMES[i]); scroller.scrollTop = 0;
+      view = NAMES[i];
+      if (view === 'Case Lead') caseView(); else botView(view);
+      rosterState(view); scroller.scrollTop = 0;
     });
   });
 
@@ -208,16 +249,6 @@
     if (ev && getComputedStyle(ev).display !== 'none' && aside.getBoundingClientRect().left >= innerWidth - 1) ev.click();
     if (tabs[0]) tabs[0].click();
     aside.scrollIntoView({ block: 'nearest' });
-  });
-
-  if (form) form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var q = input.value.trim(); if (!q || !c) return;
-    input.value = '';
-    col.insertAdjacentHTML('beforeend', '<div class="k-msg k-msg--me">' + KF.esc(q) + '</div>' +
-      '<div class="k-msgrow">' + KF.botHTML('Case Lead') + '<div><div class="k-msgrow__body"><p class="kw-reason">' + KF.withCites(c, KF.answer(c, q)) + '</p></div></div></div>');
-    KF.mountBots(col);
-    scroller.scrollTop = scroller.scrollHeight;
   });
 
   Promise.all([KF.load(inst), refresh()]).then(function (r) {

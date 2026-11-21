@@ -43,6 +43,9 @@ a.kq-row:focus-visible, .aq-inst:focus-visible { outline: 2px solid var(--ink); 
   .kf-decide .k-approve__actions .k-btn--primary { flex: 1 0 100%; margin-left: 0; order: -1; }
 }
 
+/* the case view's question buttons, above the decision */
+.kf-asks { margin-bottom: 2px; }
+
 /* plain words before codes: the reason in words leads, the code follows quietly with the brief's
    description on hover */
 .kf-code { cursor: help; }
