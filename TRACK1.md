@@ -13,6 +13,7 @@ Start with [system/README.md](system/README.md). It explains the method in plain
 | `tools/verify.py` | Five-run repeatability, output checks and a leak check |
 | `tools/mutation_test.py` | 21 tests that change one fact and check the verdict moves |
 | `tools/export_ui.py` | Writes one JSON per institution for the UI, with the run facts |
+| `tools/run_drop.py` | Runs the system on an archive or folder of cases in any layout and checks the output. Scores it when the right answers come with it |
 | `tools/publish_supabase.py` | Copies finished output into Supabase for the UI and the audit trail |
 | `tools/mlro_context.py` | Fetches official-source context with Tavily for corridor escalations |
 | `supabase/schema.sql` | The tables the two tools above write to |
