@@ -111,11 +111,38 @@ The documents vary in wording, so reading them is the hard part. We handled that
 
 This choice makes the five scored runs identical, and a run costs nothing. Every decision can also be traced to a line of code and a fact in the file.
 
+## The trade-off in one paragraph
+
+A wrongful close costs 10. An unnecessary question costs 3. Escalating everything scores 0. The system closes only when a document on file explains every alert and no payment of £1,000 or more from a new party is left over. Otherwise it asks or escalates. There is no score and no temperature. 4,000 development cases finished in 16.0 seconds on a laptop. A second run matched the first on verdict, reason code, sentence and evidence IDs. A document that names someone else does not close the case.
+
 ## How we tested it without answers
 
 The development cases carry no labels, so we cannot report an accuracy figure. We tested the reasoning instead.
 
 **Mutation tests.** A system can reach the right verdict for the wrong reason. It might close whenever a document of the right type is present. `tools/mutation_test.py` guards against that. It takes real cases, changes one fact in memory and checks that the verdict moves as the SOP requires. A letter stating a different amount no longer closes a case. A statement in another person's name no longer proves an own account. A gift letter whose date of birth matches the list entry escalates, and the same letter with a different date of birth closes. A fully documented case with one extra £5,000 payment from a stranger no longer closes. A sale receipt with the seller and buyer swapped no longer closes. A dormant account with a statement but no re-verification no longer closes. An order addressed to a company with a similar name no longer closes. A solicitor's letter about a different estate from the one in the payment reference no longer closes. All 35 tests pass.
+
+**Stress tests.** `tools/stress.py` builds new institution folders from the development cases. Each folder changes one thing, so the right outcome is known from how the folder was made. Every folder then goes through `system/run`. The counts below come from one run on the submitted code. They show whether the reasoning holds when the data changes. They are not an accuracy figure.
+
+| Test | What changes | Result |
+|---|---|---|
+| Random batches | Five random folders of 200 cases per institution, the size of the unseen sets | 4,000 of 4,000 answers equal the full-folder answer, down to the reason text |
+| New labels | Every ID and every person's name is replaced, and the lines of every file are shuffled | 4,000 of 4,000 keep their verdict and reason code and cite the same evidence |
+| A stranger's payment | £5,000 from an unknown party is added to the alert behind every close | 2,000 of 2,000 closes stop |
+| Deciding document removed | The first document a close cites is deleted | 1,954 of 2,000 closes stop |
+| Deciding document altered | £100 is added to every amount in that document | 1,552 of 1,585 closes stop |
+| Deciding document renamed | The names in that document are swapped for other names | 1,623 of 1,758 closes stop |
+| Policy multiple | The declared figure is lowered until own-account receipts sit just under, at and just over 5 times it | 1,555 of 1,610 give the expected verdict and reason code. No case closes at 5 times or more |
+| List identity | The listed person's date of birth and office are written into the deciding document | 150 of 150 closes stop |
+
+Each close that still stands has a reason. With the first document removed, 46 investment closes still cite a bank statement that shows the money came from the customer's own account. With £100 added, 33 payments-firm closes cite a purchase order first. The supplier's invoice still quotes the same order number, and the money paid in still covers that invoice. After a name swap, the cases we read changed a name that is not a party to any payment. One was the name of a market in a takings book. Another was the name of the bank on a statement.
+
+Many closes cite a second, supporting document as well. Deleting that one stops 561 of 984 closes. The rest still have their first document on file.
+
+The 55 policy checks that differ are all at the payments firm, and all of them ask a question. Lowering the declared figure also put another receipt over the rule's own limit. The system then asked for the document behind that receipt, not for an updated profile.
+
+After new labels the evidence came out in a different order in 141 cases, and the reason text differed in 228. The system lists documents and names in sorted order. New IDs and names change that order, and sometimes which example a reason names.
+
+One more test is a report, not a pass or fail. It cuts every chat and staff note down to one neutral line. 3,007 of the 3,085 cases with a chat or note on file keep their verdict. The other 78 are structuring escalations that become questions. In those cases the staff note about staying under a limit is the sign of crime, so without its wording there is nothing to escalate on. No verdict moves to a close.
 
 **Repeat runs.** `tools/verify.py` runs each institution five times under five different hash seeds from inside `system/`. The five output files are identical.
 
