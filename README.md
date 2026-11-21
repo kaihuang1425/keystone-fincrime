@@ -1,6 +1,8 @@
 # Keystone
 
-Transaction-monitoring alert triage for Track 1 of the Grok Bot Financial Crime Hack, London, 21 Nov 2026.
+**1st place overall and 1st in Track 1 at the Grok Bot Financial Crime Hackathon, London, 21 Nov 2026.**
+
+Transaction-monitoring alert triage, built for the hackathon's Track 1.
 
 Note: Do feel free to use the website. **Try it** at https://keystone-fincrime-app.vercel.app. The [drop page](https://keystone-fincrime-app.vercel.app/drop.html) runs the scored system in your browser on any cases you drop in. The files stay in the tab. 
 
