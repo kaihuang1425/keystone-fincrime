@@ -11,8 +11,10 @@ in one way, and run through system/run. Every check needs exit code 0 and
 exactly one line per case. Then:
 
   same    the output must equal the undamaged run byte for byte
-  safer   no case may close that did not close undamaged (losing information
-          may move a case towards a person, never towards CLOSE)
+  one     the damaged case is escalated and every other line is unchanged
+  safer   no case may move towards CLOSE: not to CLOSE from RFI or ESCALATE,
+          and not from ESCALATE to RFI (losing information may only move a
+          case towards a person)
 
 Nothing is written to the kit folder or to the repository.
 """
@@ -92,6 +94,19 @@ def unloadable(folder):
     os.makedirs(p)
 
 
+def cut_case_line(folder):
+    """Cut the sixth case line short, after its case ID and first alert ID."""
+    p = os.path.join(folder, "cases.jsonl")
+    with open(p, encoding="utf-8") as fh:
+        lines = fh.read().splitlines()
+    row = json.loads(lines[5])
+    cut = lines[5].index(row["alert_ids"][0]) + len(row["alert_ids"][0]) + 1
+    lines[5] = lines[5][:cut]
+    with open(p, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return row["case_id"]
+
+
 DAMAGE = [
     # name, check, what it does
     ("truncated transaction line", "same", lambda f: append(os.path.join(f, "transactions.jsonl"), '{"transaction_id": "X\n')),
@@ -101,10 +116,14 @@ DAMAGE = [
     ("CRLF line endings", "same", crlf),
     ("unknown extra field", "same", extra_field),
     ("transaction with no transaction_id", "same", lambda f: append(os.path.join(f, "transactions.jsonl"), '{"customer_id": "NONE", "amount_gbp": 1}\n')),
+    ("cut-off line in cases.jsonl", "one", cut_case_line),
     ("internal_list.jsonl missing", "safer", lambda f: os.remove(os.path.join(f, "internal_list.jsonl"))),
     ("named list entries missing", "safer", drop_list_entry),
     ("folder cannot be loaded", "safer", unloadable),
 ]
+
+
+RANK = {"CLOSE": 0, "RFI": 1, "ESCALATE": 2}
 
 
 def verdicts(lines):
@@ -135,7 +154,7 @@ def main(argv):
         for i, (name, check, damage) in enumerate(DAMAGE):
             folder = os.path.join(tmp, "f%d" % i)
             shutil.copytree(src, folder)
-            damage(folder)
+            hit = damage(folder)
             code, lines, last = run(folder, os.path.join(tmp, "out%d.jsonl" % i))
             problems = []
             if code != 0:
@@ -144,13 +163,22 @@ def main(argv):
                 problems.append("%d lines for %d cases" % (len(lines), len(base)))
             if not problems and check == "same" and lines != base:
                 problems.append("%d lines differ from the undamaged run" % sum(x != y for x, y in zip(lines, base)))
-            if not problems and check == "safer":
+            if not problems and check == "one":
                 v = verdicts(lines)
-                new = sorted(c for c in v if v[c] == "CLOSE" and base_v.get(c) != "CLOSE")
-                if new:
-                    problems.append("%d new closes, e.g. %s" % (len(new), new[0]))
+                if v.get(hit) != "ESCALATE":
+                    problems.append("%s is %s, not ESCALATE" % (hit, v.get(hit)))
+                others = [x for x, y in zip(lines, base) if json.loads(y)["case_id"] != hit and x != y]
+                if others:
+                    problems.append("%d other lines changed" % len(others))
+                note = "%s escalated, the other %d lines identical" % (hit, len(base) - 1)
+            elif not problems and check == "safer":
+                v = verdicts(lines)
+                down = sorted(c for c in v if RANK[v[c]] < RANK.get(base_v.get(c), 0))
+                if down:
+                    problems.append("%d cases moved towards CLOSE, e.g. %s %s -> %s"
+                                    % (len(down), down[0], base_v.get(down[0]), v[down[0]]))
                 moved = sum(v[c] != base_v.get(c) for c in v)
-                note = "%d cases moved away from CLOSE or between RFI and ESCALATE" % moved if moved else "no change"
+                note = "%d cases moved towards a person, none towards CLOSE" % moved if moved else "no change"
             else:
                 note = "identical"
             if problems:
