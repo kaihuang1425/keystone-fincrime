@@ -163,8 +163,8 @@
       return;
     }
     var total = f.institutions.reduce(function (s, x) { return s + x.cases; }, 0);
-    $('kd-found-h').innerHTML = pl(total, 'case') + ' in ' + pl(n, 'institution') + '. ' +
-      '<span class="k-turn">' + (f.labels ? pl(f.labels, 'right answer') + ' to score ' + (total === 1 ? 'it' : 'them') + ' on.' : 'No right answers to score ' + (total === 1 ? 'it' : 'them') + ' on.') + '</span>';
+    $('kd-found-h').innerHTML = pl(total, 'case') + ' in ' + pl(n, 'institution') + '.' +
+      (f.labels ? ' <span class="k-turn">' + pl(f.labels, 'right answer') + ' to score ' + (total === 1 ? 'it' : 'them') + ' on.</span>' : '');
     $('kd-insts').innerHTML = f.institutions.map(function (x, i) {
       return '<tr data-row="' + i + '"><td><b>' + esc(x.name) + '</b><span class="kd-sub">' + esc(x.shown) + '</span></td>' +
         '<td class="kd-num">' + fmt(x.cases) + '</td>' +
@@ -216,8 +216,8 @@
   function renderScore() {
     var el = $('kd-score');
     if (!score) {
-      el.innerHTML = '<p class="kd-note">No right answers in the drop, so no score. Add a file with a case ID and a verdict on each line, in the zip or beside it, and drop them together.</p>';
-      el.hidden = false;
+      el.innerHTML = '';
+      el.hidden = true;
       return;
     }
     var t = score.total, files = found.label_files.join(', ') || 'the dropped answers';
